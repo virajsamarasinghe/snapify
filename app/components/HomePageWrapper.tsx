@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import LoadingScreen from "./LoadingScreen";
+import ArtisticReveal from "./ArtisticReveal";
 import AboutNew from "./AboutNew";
 import HeroNew from "./HeroNew";
 import GalleryShowcaseNew from "./GalleryShowcaseNew";
@@ -65,8 +65,8 @@ export default function HomePageWrapper() {
   return (
     <>
       {isLoading && (
-        <LoadingScreen
-          onLoadingComplete={handleLoadingComplete}
+        <ArtisticReveal
+          onRevealComplete={handleLoadingComplete}
         />
       )}
 
