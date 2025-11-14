@@ -21,6 +21,12 @@ export default function Hero() {
   useEffect(() => {
     if (!heroRef.current) return;
 
+    // Lock scroll during loading animation
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+
     // Setup text splitting manually since SplitText is a paid plugin
     const setupTextSplitting = () => {
       const textElements = heroRef.current?.querySelectorAll("h1, h2, p, a");
@@ -276,9 +282,24 @@ export default function Hero() {
         duration: 1,
         stagger: 0.1,
         ease: "power4.out",
+        onComplete: () => {
+          // Unlock scroll after animation completes
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.width = '';
+          document.body.style.height = '';
+        }
       },
       "<"
     );
+
+    // Cleanup function to restore scroll on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    };
   }, []);
 
   // Image paths
@@ -287,7 +308,7 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative w-screen h-screen bg-[#0a0a0a] overflow-hidden"
+      className="relative w-full h-screen bg-[#0a0a0a] overflow-hidden"
     >
       {/* Hero Background */}
       <div className="hero-bg absolute top-0 left-0 w-full h-full bg-[#1a1a1a] origin-bottom scale-y-0" />
@@ -327,7 +348,7 @@ export default function Hero() {
       </div>
 
       {/* Navigation */}
-      <nav className="relative w-screen h-20 px-6 pt-6 pb-6 pl-[120px] flex justify-between items-center">
+      <nav className="relative w-full h-20 px-6 pt-6 pb-6 pl-[120px] flex justify-between items-center">
         <div className="logo-name">
           <a
             href="#"
