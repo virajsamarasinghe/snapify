@@ -1,13 +1,13 @@
-import About from "./components/About";
-import Hero from "./components/Hero";
-import GalleryShowcase from "./components/GalleryShowcase";
+import AboutNew from "./components/AboutNew";
+import HeroNew from "./components/HeroNew";
+import GalleryShowcaseNew from "./components/GalleryShowcaseNew";
 
 export default function Home() {
   return (
     <>
-      <Hero />
-      <About />
-      <GalleryShowcase />
+      <HeroNew />
+      <AboutNew />
+      <GalleryShowcaseNew />
     </>
   );
 }

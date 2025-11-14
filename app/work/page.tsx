@@ -1,71 +1,64 @@
 "use client";
 
-import Gallery from "@/app/components/Gallery";
+import GalleryNew from "@/app/components/GalleryNew";
 import Image from "next/image";
 
 export default function Work() {
   return (
     <>
-      {/* Navigation - Same style as homepage */}
-      <nav className="fixed top-0 left-0 w-full h-20 px-6 pt-6 pb-6 pl-[120px] flex justify-between items-center z-[10001] mix-blend-difference">
-        <div className="logo-name">
+      {/* Navigation - Artistic style matching new design */}
+      <nav className="fixed top-0 left-0 w-full px-8 lg:px-12 py-6 flex justify-between items-center z-[10003] mix-blend-difference">
+        <div className="flex items-center gap-12">
           <a
             href="/"
-            className="text-2xl font-medium text-[#f5f5f5] no-underline"
+            className="text-3xl font-bold text-white"
           >
             JK
           </a>
-        </div>
-
-        <div className="nav-items flex items-center gap-[120px]">
-          <div className="nav-links flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-8">
             <a
               href="/work"
-              className="text-base font-medium text-[#f5f5f5] no-underline"
+              className="text-white font-medium"
             >
               Work
             </a>
-            <p className="text-base font-medium text-[#a0a0a0]">/</p>
             <a
-              href="#"
-              className="text-base font-medium text-[#a0a0a0] hover:text-[#f5f5f5] transition-colors no-underline"
+              href="/#gallery"
+              className="text-white/60 hover:text-white transition-colors"
             >
               Gallery
             </a>
-            <p className="text-base font-medium text-[#a0a0a0]">/</p>
             <a
-              href="#"
-              className="text-base font-medium text-[#a0a0a0] hover:text-[#f5f5f5] transition-colors no-underline"
+              href="/#about"
+              className="text-white/60 hover:text-white transition-colors"
             >
               About
             </a>
           </div>
+        </div>
 
-          <div className="nav-cta">
-            <a
-              href="#"
-              className="text-base font-medium text-[#f5f5f5] border border-[#555] px-6 py-2 rounded-full hover:bg-[#f5f5f5] hover:text-[#0a0a0a] transition-all no-underline inline-block"
-            >
-              Contact
-            </a>
-          </div>
+        <div className="flex items-center gap-4">
+          <a
+            href="#"
+            className="text-white border border-white/30 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all"
+          >
+            Let's Talk
+          </a>
         </div>
       </nav>
 
-      {/* Sidebar - Without divider line */}
-      <div className="fixed top-0 left-0 w-20 h-screen pt-6 flex justify-center items-start z-[10001] mix-blend-difference">
-        <div className="sidebar-logo w-8 aspect-square">
-          <Image
-            src="/hero/camera.jpg"
-            alt=""
-            width={32}
-            height={32}
-            className="w-full h-full object-cover"
-          />
-        </div>
+      {/* Page Title */}
+      <div className="fixed top-24 left-8 lg:left-12 z-[10003]">
+        <p className="text-white/60 text-sm uppercase tracking-[0.3em] mb-2">Portfolio</p>
+        <h1 className="text-3xl font-bold text-white">
+          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Explore Collection
+          </span>
+        </h1>
+        <p className="text-white/40 text-sm mt-2">Drag to explore • Click to view</p>
       </div>
 
-      <Gallery />
+      <GalleryNew />
     </>
   );
 }
