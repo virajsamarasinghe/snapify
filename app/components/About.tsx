@@ -28,6 +28,8 @@ const About = () => {
       gsap.set(".about-stat", { y: 20, opacity: 0 });
       gsap.set(".about-divider", { scaleX: 0 });
       gsap.set(".about-cta", { y: 20, opacity: 0 });
+      gsap.set(".about-sidebar-divider", { scaleY: 0 });
+      gsap.set(".about-top-divider", { scaleX: 0 });
 
       // Create main timeline with ScrollTrigger
       const tl = gsap.timeline({
@@ -39,6 +41,19 @@ const About = () => {
         }
       });
 
+      // Animate dividers first (similar to Hero section)
+      tl.to(".about-sidebar-divider", {
+        scaleY: 1,
+        duration: 1,
+        ease: "power3.inOut"
+      });
+
+      tl.to(".about-top-divider", {
+        scaleX: 1,
+        duration: 1,
+        ease: "power3.inOut"
+      }, "-=0.5");
+
       // Animate title words
       tl.to(".about-title-word", {
         y: 0,
@@ -46,7 +61,7 @@ const About = () => {
         duration: 1.2,
         stagger: 0.1,
         ease: "power3.out"
-      });
+      }, "-=0.5");
 
       // Animate image container
       tl.to(imageContainerRef.current, {
@@ -109,10 +124,16 @@ const About = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen bg-[#0a0a0a] overflow-hidden py-24 px-6 lg:px-[120px]"
+      className="relative w-full min-h-screen bg-[#1a1a1a] overflow-hidden pt-24 pb-24 pl-6 lg:pl-[120px] pr-6"
     >
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-[#0a0a0a] to-[#0a0a0a] opacity-50" />
+
+      {/* Sidebar with vertical divider - matching Hero */}
+      <div className="absolute top-0 left-0 w-20 h-full">
+        <div className="about-sidebar-divider absolute right-0 top-0 w-px h-full bg-white/10 origin-top scale-y-0" />
+      </div>
+
+      {/* Top horizontal divider */}
+      <div className="about-top-divider absolute left-0 top-20 w-full h-px bg-white/10 origin-left scale-x-0" />
 
       <div className="relative z-10 max-w-[1400px] mx-auto">
         {/* Section Title */}
@@ -229,9 +250,6 @@ const About = () => {
         </div>
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-1/2 left-10 w-px h-32 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
-      <div className="absolute top-1/2 right-10 w-px h-32 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
     </section>
   );
 };

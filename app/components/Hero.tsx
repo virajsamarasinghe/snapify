@@ -14,18 +14,13 @@ if (typeof window !== "undefined") {
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<HTMLDivElement[]>([]);
+  const counterRef = useRef<HTMLDivElement>(null);
   const counter1Ref = useRef<HTMLDivElement>(null);
   const counter2Ref = useRef<HTMLDivElement>(null);
   const counter3Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!heroRef.current) return;
-
-    // Lock scroll during loading animation
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.height = '100%';
 
     // Setup text splitting manually since SplitText is a paid plugin
     const setupTextSplitting = () => {
@@ -62,30 +57,17 @@ export default function Hero() {
         counter2Ref.current.appendChild(numDiv);
       }
 
-      // Counter 3 (ones place - cycles through 0-9 three times, ending at 0)
+      // Counter 3 (ones place - cycles through)
       counter3Ref.current.innerHTML = "";
-      // First cycle: 0-9
-      for (let i = 0; i <= 9; i++) {
-        const numDiv = document.createElement("div");
-        numDiv.className = "counter-num";
-        numDiv.textContent = i.toString();
-        counter3Ref.current.appendChild(numDiv);
+      // Three full cycles plus final 0
+      for (let cycle = 0; cycle < 3; cycle++) {
+        for (let i = 0; i <= 9; i++) {
+          const numDiv = document.createElement("div");
+          numDiv.className = "counter-num";
+          numDiv.textContent = i.toString();
+          counter3Ref.current.appendChild(numDiv);
+        }
       }
-      // Second cycle: 0-9
-      for (let i = 0; i <= 9; i++) {
-        const numDiv = document.createElement("div");
-        numDiv.className = "counter-num";
-        numDiv.textContent = i.toString();
-        counter3Ref.current.appendChild(numDiv);
-      }
-      // Third cycle: 0-9
-      for (let i = 0; i <= 9; i++) {
-        const numDiv = document.createElement("div");
-        numDiv.className = "counter-num";
-        numDiv.textContent = i.toString();
-        counter3Ref.current.appendChild(numDiv);
-      }
-      // Final 0 for "100"
       const finalNum = document.createElement("div");
       finalNum.className = "counter-num";
       finalNum.textContent = "0";
@@ -99,7 +81,7 @@ export default function Hero() {
       delay = 0
     ) => {
       if (!counter) return;
-      const numHeight = 120; // height in px
+      const numHeight = 120;
       const totalDistance =
         (counter.querySelectorAll(".counter-num").length - 1) * numHeight;
       gsap.to(counter, {
@@ -166,14 +148,14 @@ export default function Hero() {
     setupTextSplitting();
     createCounterDigits();
 
-    // Start animations
+    // Start counter animations
     animateCounter(counter3Ref.current, 2.5);
     animateCounter(counter2Ref.current, 3);
     animateCounter(counter1Ref.current, 2, 1.5);
 
     const tl = gsap.timeline();
 
-    // Set initial states
+    // Set initial states - Images start visible but small
     gsap.set(".img-container", { scale: 0 });
     gsap.set(".nav-cta", { opacity: 0 });
 
@@ -197,8 +179,8 @@ export default function Hero() {
       "<"
     );
 
-    // Counter fade out and trigger image animations
-    tl.to(".counter", {
+    // Fade out counter and trigger image animations
+    tl.to(counterRef.current, {
       opacity: 0,
       duration: 0.3,
       ease: "power3.out",
@@ -281,25 +263,10 @@ export default function Hero() {
         y: "0%",
         duration: 1,
         stagger: 0.1,
-        ease: "power4.out",
-        onComplete: () => {
-          // Unlock scroll after animation completes
-          document.body.style.overflow = '';
-          document.body.style.position = '';
-          document.body.style.width = '';
-          document.body.style.height = '';
-        }
+        ease: "power4.out"
       },
       "<"
     );
-
-    // Cleanup function to restore scroll on unmount
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-    };
   }, []);
 
   // Image paths
@@ -313,9 +280,10 @@ export default function Hero() {
       {/* Hero Background */}
       <div className="hero-bg absolute top-0 left-0 w-full h-full bg-[#1a1a1a] origin-bottom scale-y-0" />
 
-      {/* Counter */}
+      {/* Counter - Shows during loading */}
       <div
-        className="counter fixed right-12 bottom-8 flex h-[120px] text-[120px] leading-[120px]"
+        ref={counterRef}
+        className="fixed right-12 bottom-8 flex h-[120px] text-[120px] leading-[120px] z-50"
         style={{
           WebkitTextStroke: "2px #f5f5f5",
           WebkitTextFillColor: "transparent",
@@ -335,7 +303,7 @@ export default function Hero() {
             ref={(el) => {
               if (el) imagesRef.current[index] = el;
             }}
-            className="img-container absolute top-6 left-6 w-1/5 aspect-[5/3] rounded-xl overflow-hidden border border-white/5 shadow-2xl"
+            className="img-container absolute top-6 left-6 w-1/5 aspect-[5/3] rounded-xl overflow-hidden border border-white/5"
           >
             <Image
               src={src}
@@ -360,6 +328,15 @@ export default function Hero() {
 
         <div className="nav-items flex items-center gap-[120px]">
           <div className="nav-links flex items-center gap-2">
+            <a
+              href="/work"
+              className="text-base font-medium text-[#a0a0a0] hover:text-[#f5f5f5] transition-colors no-underline overflow-hidden"
+            >
+              <span>Work</span>
+            </a>
+            <p className="text-base font-medium text-[#a0a0a0] overflow-hidden">
+              <span>/</span>
+            </p>
             <a
               href="#"
               className="text-base font-medium text-[#a0a0a0] hover:text-[#f5f5f5] transition-colors no-underline overflow-hidden"
