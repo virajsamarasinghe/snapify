@@ -188,7 +188,7 @@ export default function Achievements() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen bg-gradient-to-b from-[#1a1a1a] via-[#0a0a0a] to-[#1a1a1a] overflow-hidden py-20 lg:py-32"
+      className="relative min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] overflow-hidden py-20 lg:py-32"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
@@ -210,21 +210,26 @@ export default function Achievements() {
             Recognition & Excellence
           </p>
           <h2 className="text-[3rem] lg:text-[6rem] font-bold mb-6 leading-[0.9]">
-            {Array.from("ACHIEVEMENTS").map((char, i) => (
-              <span
-                key={i}
-                className="achievement-title-char inline-block"
-                style={{
-                  background: i < 6 ? 'linear-gradient(90deg, #fff, #888, #fff)' : '#fff',
-                  backgroundClip: i < 6 ? 'text' : 'none',
-                  WebkitBackgroundClip: i < 6 ? 'text' : 'none',
-                  WebkitTextFillColor: i < 6 ? 'transparent' : '#fff',
-                  color: i < 6 ? 'transparent' : '#fff',
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
+            <span className="inline-block bg-white text-black px-4">
+              {Array.from("ACHIEVE").map((char, i) => (
+                <span
+                  key={i}
+                  className="achievement-title-char inline-block"
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
+            <span className="inline-block">
+              {Array.from("MENTS").map((char, i) => (
+                <span
+                  key={i + 10}
+                  className="achievement-title-char inline-block text-white"
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
           </h2>
           <div className="achievement-line h-px bg-gradient-to-r from-transparent via-white/30 to-transparent max-w-md mx-auto origin-center" />
         </div>

@@ -185,21 +185,27 @@ const AboutNew = () => {
             The Artist
           </p>
           <h2 className="text-[3rem] lg:text-[6rem] font-bold mb-4 leading-[0.9]">
-            {Array.from("MY STORY").map((char, i) => (
-              <span
-                key={i}
-                className="about-title-char inline-block"
-                style={{
-                  background: i > 2 ? 'linear-gradient(90deg, #fff, #888, #fff)' : '#fff',
-                  backgroundClip: i > 2 ? 'text' : 'none',
-                  WebkitBackgroundClip: i > 2 ? 'text' : 'none',
-                  WebkitTextFillColor: i > 2 ? 'transparent' : '#fff',
-                  color: i > 2 ? 'transparent' : '#fff',
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
+            <span className="inline-block bg-white text-black px-4">
+              {Array.from("MY").map((char, i) => (
+                <span
+                  key={i}
+                  className="about-title-char inline-block"
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
+            <span className="inline-block mx-3">{"\u00A0"}</span>
+            <span className="inline-block">
+              {Array.from("STORY").map((char, i) => (
+                <span
+                  key={i + 10}
+                  className="about-title-char inline-block text-white"
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
           </h2>
         </div>
 

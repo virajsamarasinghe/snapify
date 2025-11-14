@@ -163,7 +163,7 @@ export default function HeroNew() {
       className="relative w-full h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] overflow-hidden"
     >
       {/* Overlay for entrance animation */}
-      <div className="hero-overlay absolute inset-0 bg-white z-50 pointer-events-none" />
+      <div className="hero-overlay absolute inset-0 bg-[#0a0a0a] z-50 pointer-events-none" />
 
       {/* Custom Cursor */}
       <div

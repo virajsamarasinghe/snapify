@@ -224,32 +224,27 @@ const GalleryShowcaseNew = () => {
             Portfolio
           </p>
           <h2 className="text-[3rem] lg:text-[6rem] font-bold mb-4 leading-[0.9]">
-            {Array.from("SELECTED").map((char, i) => (
-              <span
-                key={i}
-                className="gallery-title-char inline-block text-white"
-                style={{
-                  textShadow: '0 0 60px rgba(255,255,255,0.3)',
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
+            <span className="inline-block bg-white text-black px-4">
+              {Array.from("SELECTED").map((char, i) => (
+                <span
+                  key={i}
+                  className="gallery-title-char inline-block"
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
             <br />
-            {Array.from("WORKS").map((char, i) => (
-              <span
-                key={i}
-                className="gallery-title-char inline-block"
-                style={{
-                  background: 'linear-gradient(90deg, #a855f7, #ec4899, #a855f7)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
+            <span className="inline-block">
+              {Array.from("WORKS").map((char, i) => (
+                <span
+                  key={i + 20}
+                  className="gallery-title-char inline-block text-white"
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
           </h2>
           <p className="gallery-subtitle text-xl text-white/60 max-w-3xl mx-auto">
             A curated collection of moments that define my artistic journey
