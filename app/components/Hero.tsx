@@ -338,7 +338,7 @@ export default function Hero() {
               <span>/</span>
             </p>
             <a
-              href="#"
+              href="#gallery"
               className="text-base font-medium text-[#a0a0a0] hover:text-[#f5f5f5] transition-colors no-underline overflow-hidden"
             >
               <span>Gallery</span>
@@ -347,10 +347,19 @@ export default function Hero() {
               <span>/</span>
             </p>
             <a
-              href="#"
+              href="#about"
               className="text-base font-medium text-[#a0a0a0] hover:text-[#f5f5f5] transition-colors no-underline overflow-hidden"
             >
               <span>About</span>
+            </a>
+            <p className="text-base font-medium text-[#a0a0a0] overflow-hidden">
+              <span>/</span>
+            </p>
+            <a
+              href="/marketplace"
+              className="text-base font-medium text-[#a0a0a0] hover:text-[#f5f5f5] transition-colors no-underline overflow-hidden"
+            >
+              <span>Marketplace</span>
             </a>
           </div>
 

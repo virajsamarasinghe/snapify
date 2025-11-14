@@ -185,6 +185,7 @@ export default function HeroNew() {
             <a href="/work" className="text-white/80 hover:text-white transition-colors">Work</a>
             <a href="#gallery" className="text-white/80 hover:text-white transition-colors">Gallery</a>
             <a href="#about" className="text-white/80 hover:text-white transition-colors">About</a>
+            <a href="/marketplace" className="text-white/80 hover:text-white transition-colors">Marketplace</a>
           </div>
         </div>
         <a href="#" className="text-white border border-white/30 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all">
