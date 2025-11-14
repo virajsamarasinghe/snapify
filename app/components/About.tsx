@@ -29,6 +29,7 @@ const About = () => {
       gsap.set(".about-divider", { scaleX: 0 });
       gsap.set(".about-cta", { y: 20, opacity: 0 });
       gsap.set(".about-sidebar-divider", { scaleY: 0 });
+      gsap.set(".about-sidebar-divider-right", { scaleY: 0 });
       gsap.set(".about-top-divider", { scaleX: 0 });
 
       // Create main timeline with ScrollTrigger
@@ -42,67 +43,68 @@ const About = () => {
       });
 
       // Animate dividers first (similar to Hero section)
-      tl.to(".about-sidebar-divider", {
+      tl.to([".about-sidebar-divider", ".about-sidebar-divider-right"], {
         scaleY: 1,
-        duration: 1,
-        ease: "power3.inOut"
+        duration: 0.6,
+        ease: "power3.inOut",
+        stagger: 0.1
       });
 
       tl.to(".about-top-divider", {
         scaleX: 1,
-        duration: 1,
+        duration: 0.6,
         ease: "power3.inOut"
-      }, "-=0.5");
+      }, "-=0.3");
 
       // Animate title words
       tl.to(".about-title-word", {
         y: 0,
         opacity: 1,
-        duration: 1.2,
-        stagger: 0.1,
+        duration: 0.6,
+        stagger: 0.05,
         ease: "power3.out"
-      }, "-=0.5");
+      }, "-=0.3");
 
       // Animate image container
       tl.to(imageContainerRef.current, {
         scale: 1,
         opacity: 1,
-        duration: 1.5,
+        duration: 0.8,
         ease: "power3.out"
-      }, "-=0.8");
+      }, "-=0.4");
 
       // Animate text lines
       tl.to(".about-text-line", {
         y: 0,
         opacity: 1,
-        duration: 1,
-        stagger: 0.1,
+        duration: 0.5,
+        stagger: 0.05,
         ease: "power3.out"
-      }, "-=1");
+      }, "-=0.5");
 
       // Animate divider
       tl.to(".about-divider", {
         scaleX: 1,
-        duration: 1,
+        duration: 0.5,
         ease: "power3.inOut"
-      }, "-=0.5");
+      }, "-=0.3");
 
       // Animate stats
       tl.to(".about-stat", {
         y: 0,
         opacity: 1,
-        duration: 0.8,
-        stagger: 0.1,
+        duration: 0.4,
+        stagger: 0.05,
         ease: "power3.out"
-      }, "-=0.5");
+      }, "-=0.3");
 
       // Animate CTA button
       tl.to(".about-cta", {
         y: 0,
         opacity: 1,
-        duration: 0.8,
+        duration: 0.4,
         ease: "power3.out"
-      }, "-=0.3");
+      }, "-=0.2");
 
       // Parallax effect for image on scroll
       gsap.to(imageRef.current, {
@@ -124,12 +126,17 @@ const About = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen bg-[#1a1a1a] overflow-hidden pt-24 pb-24 pl-6 lg:pl-[120px] pr-6"
+      className="relative w-full min-h-screen bg-[#1a1a1a] overflow-hidden pt-24 pb-24 pl-6 lg:pl-[120px] pr-6 lg:pr-[120px]"
     >
 
-      {/* Sidebar with vertical divider - matching Hero */}
+      {/* Sidebar with vertical divider on left - matching Hero */}
       <div className="absolute top-0 left-0 w-20 h-full">
         <div className="about-sidebar-divider absolute right-0 top-0 w-px h-full bg-white/10 origin-top scale-y-0" />
+      </div>
+
+      {/* Right sidebar with vertical divider */}
+      <div className="absolute top-0 right-0 w-20 h-full">
+        <div className="about-sidebar-divider-right absolute left-0 top-0 w-px h-full bg-white/10 origin-top scale-y-0" />
       </div>
 
       {/* Top horizontal divider */}
