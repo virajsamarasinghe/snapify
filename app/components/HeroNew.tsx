@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 
-export default function HeroNew() {
+interface HeroNewProps {
+  animationReady?: boolean;
+}
+
+export default function HeroNew({ animationReady = true }: HeroNewProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [currentImage, setCurrentImage] = useState(0);
@@ -48,7 +52,7 @@ export default function HeroNew() {
   }, [featuredImages.length]);
 
   useEffect(() => {
-    if (!heroRef.current) return;
+    if (!heroRef.current || !animationReady) return;
 
     const ctx = gsap.context(() => {
       // Set initial states
@@ -155,7 +159,7 @@ export default function HeroNew() {
     }, heroRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [animationReady]);
 
   return (
     <section

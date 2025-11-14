@@ -72,7 +72,7 @@ export default function HomePageWrapper() {
 
       {/* Main content - render immediately but hidden behind loading screen */}
       <div className={isLoading ? "opacity-0" : "opacity-100 transition-opacity duration-500"}>
-        <HeroNew />
+        <HeroNew animationReady={!isLoading} />
         <AboutNew />
         <GalleryShowcaseNew />
         <Achievements />
