@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import TransitionLink from "./TransitionLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -124,7 +124,7 @@ export default function MarketplaceCTA() {
           </p>
 
           {/* CTA Button */}
-          <Link
+          <TransitionLink
             href="/marketplace"
             className="cta-button inline-flex items-center gap-4 bg-white text-black px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/90 transition-all duration-300 group"
           >
@@ -142,7 +142,7 @@ export default function MarketplaceCTA() {
                 d="M13 7l5 5m0 0l-5 5m5-5H6"
               />
             </svg>
-          </Link>
+          </TransitionLink>
 
           {/* Additional info */}
           <div className="mt-12 flex flex-wrap justify-center gap-8 text-white/50 text-sm">

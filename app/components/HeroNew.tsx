@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
+import TransitionLink from "./TransitionLink";
 
 interface HeroNewProps {
   animationReady?: boolean;
@@ -182,19 +183,19 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
       {/* Navigation */}
       <nav className="hero-nav fixed top-0 left-0 w-full px-8 lg:px-12 py-6 flex justify-between items-center z-30 mix-blend-difference">
         <div className="flex items-center gap-12">
-          <a href="/" className="text-3xl font-bold text-white">
+          <TransitionLink href="/" className="text-3xl font-bold text-white">
             JK
-          </a>
+          </TransitionLink>
           <div className="hidden lg:flex items-center gap-8">
-            <a href="/work" className="text-white/80 hover:text-white transition-colors">Work</a>
-            <a href="#gallery" className="text-white/80 hover:text-white transition-colors">Gallery</a>
-            <a href="#about" className="text-white/80 hover:text-white transition-colors">About</a>
-            <a href="/marketplace" className="text-white/80 hover:text-white transition-colors">Marketplace</a>
+            <TransitionLink href="/work" className="text-white/80 hover:text-white transition-colors">Work</TransitionLink>
+            <TransitionLink href="#gallery" className="text-white/80 hover:text-white transition-colors">Gallery</TransitionLink>
+            <TransitionLink href="#about" className="text-white/80 hover:text-white transition-colors">About</TransitionLink>
+            <TransitionLink href="/marketplace" className="text-white/80 hover:text-white transition-colors">Marketplace</TransitionLink>
           </div>
         </div>
-        <a href="#" className="text-white border border-white/30 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all">
+        <TransitionLink href="#contact" className="text-white border border-white/30 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all">
           Let's Talk
-        </a>
+        </TransitionLink>
       </nav>
 
       {/* Sidebar */}
@@ -283,7 +284,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
           </p>
 
           <div className="hero-cta inline-block">
-            <a
+            <TransitionLink
               href="/work"
               className="group relative inline-flex items-center gap-4 bg-white text-black px-8 py-4 rounded-full text-lg font-medium overflow-hidden"
             >
@@ -302,7 +303,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
                 />
               </svg>
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-            </a>
+            </TransitionLink>
           </div>
         </div>
 

@@ -16,6 +16,18 @@ export default function HomePageWrapper() {
   const [contentReady, setContentReady] = useState(false);
 
   useEffect(() => {
+    // Check if we've already shown the initial animation in this session
+    const hasShownInitialReveal = sessionStorage.getItem('hasShownInitialReveal');
+
+    // If we've already shown it, skip the loading animation
+    if (hasShownInitialReveal === 'true') {
+      setIsLoading(false);
+      setContentReady(true);
+      return;
+    }
+
+    // Mark that we're showing the initial reveal
+    sessionStorage.setItem('hasShownInitialReveal', 'true');
     // Check if all images are loaded
     const checkImagesLoaded = () => {
       const images = document.querySelectorAll('img');

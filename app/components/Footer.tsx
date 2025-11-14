@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
+import TransitionLink from "./TransitionLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -127,7 +127,7 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex gap-4">
               {socialLinks.map((link, index) => (
-                <Link
+                <a
                   key={link.name}
                   href={link.href}
                   className="footer-link group relative"
@@ -141,7 +141,7 @@ export default function Footer() {
                     {/* Hover effect */}
                     <div className="absolute inset-0 rounded-full bg-white/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           </div>
@@ -154,13 +154,13 @@ export default function Footer() {
             <ul className="space-y-3">
               {navigationLinks.map((link, index) => (
                 <li key={link.name}>
-                  <Link
+                  <TransitionLink
                     href={link.href}
                     className="footer-text text-white/60 hover:text-white transition-colors duration-300 inline-block relative group"
                   >
                     {link.name}
                     <span className="absolute left-0 bottom-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-300"></span>
-                  </Link>
+                  </TransitionLink>
                 </li>
               ))}
             </ul>
@@ -198,18 +198,18 @@ export default function Footer() {
           </p>
 
           <div className="flex gap-6">
-            <Link
+            <TransitionLink
               href="/privacy"
               className="footer-text text-white/40 hover:text-white/60 text-sm transition-colors duration-300"
             >
               Privacy Policy
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/terms"
               className="footer-text text-white/40 hover:text-white/60 text-sm transition-colors duration-300"
             >
               Terms of Service
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>
