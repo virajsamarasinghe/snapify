@@ -13,7 +13,6 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [currentImage, setCurrentImage] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Featured images for the hero
   const featuredImages = [
@@ -27,8 +26,6 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
   useEffect(() => {
     // Mouse movement effect
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-
       if (cursorRef.current) {
         gsap.to(cursorRef.current, {
           x: e.clientX - 100,
@@ -59,7 +56,6 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
       // Set initial states
       gsap.set(".hero-title-char", { y: 120, opacity: 0, rotation: 5 });
       gsap.set(".hero-subtitle", { y: 30, opacity: 0 });
-      gsap.set(".hero-image", { scale: 1.2, opacity: 0 });
       gsap.set(".floating-text", { opacity: 0, y: 20 });
       gsap.set(".hero-nav", { y: -100 });
       gsap.set(".hero-sidebar", { x: -100 });
@@ -112,14 +108,6 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         ease: "power3.out"
       }, "-=0.3");
 
-      // Animate images
-      tl.to(".hero-image", {
-        scale: 1,
-        opacity: 1,
-        duration: 1.5,
-        stagger: 0.2,
-        ease: "power3.out"
-      }, "-=0.5");
 
       // Animate floating elements
       tl.to(".floating-text", {
@@ -145,17 +133,6 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         ease: "power3.out"
       }, "-=0.2");
 
-      // Parallax effect on scroll
-      gsap.to(".hero-image", {
-        yPercent: -20,
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1
-        }
-      });
 
     }, heroRef);
 
@@ -215,27 +192,37 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
 
       {/* Main Content */}
       <div className="relative h-full flex items-center justify-center px-8 lg:px-20">
-        {/* Background Images Grid */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-4 p-20 opacity-30">
+        {/* Full Background Images */}
+        <div className="absolute inset-0">
           {featuredImages.map((img, index) => (
             <div
               key={index}
-              className={`hero-image relative overflow-hidden rounded-2xl ${
-                index === currentImage ? 'z-10 scale-105' : 'z-0'
+              className={`absolute inset-0 transition-all duration-1000 ${
+                index === currentImage ? 'opacity-100' : 'opacity-0'
               }`}
-              style={{
-                gridColumn: index === 0 ? 'span 2' : 'span 1',
-                gridRow: index === 0 ? 'span 2' : 'span 1',
-              }}
             >
-              <Image
-                src={img.src}
-                alt={img.title}
-                fill
-                className="object-cover"
-                priority={index === 0}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="relative w-full h-full overflow-hidden">
+                <Image
+                  src={img.src}
+                  alt={img.title}
+                  fill
+                  className={`object-cover transition-transform duration-[8000ms] ${
+                    index === currentImage ? 'scale-110' : 'scale-100'
+                  }`}
+                  priority={index === 0}
+                />
+              </div>
+              {/* Gradient overlays for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+
+              {/* Image info overlay */}
+              <div className={`absolute top-32 left-8 lg:left-12 transition-all duration-500 ${
+                index === currentImage ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}>
+                <p className="text-white/60 text-sm uppercase tracking-[0.3em] mb-1">{img.category}</p>
+                <h3 className="text-white text-xl font-light">{img.title}</h3>
+              </div>
             </div>
           ))}
         </div>
@@ -320,15 +307,27 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
           <p className="text-white/60">Years</p>
         </div>
 
-        {/* Image Counter */}
-        <div className="image-counter absolute bottom-8 right-8 lg:right-12 flex items-center gap-2">
-          {featuredImages.map((_, index) => (
-            <div
+        {/* Image Counter / Indicators */}
+        <div className="image-counter absolute bottom-8 right-8 lg:right-12 flex items-center gap-3 z-30">
+          {featuredImages.map((img, index) => (
+            <button
               key={index}
-              className={`w-12 h-1 rounded-full transition-all duration-500 ${
-                index === currentImage ? 'bg-white w-24' : 'bg-white/30'
-              }`}
-            />
+              onClick={() => setCurrentImage(index)}
+              className="relative group"
+              aria-label={`View ${img.title}`}
+            >
+              <div
+                className={`h-1 rounded-full transition-all duration-500 ${
+                  index === currentImage
+                    ? 'bg-white w-24'
+                    : 'bg-white/30 w-12 hover:bg-white/50'
+                }`}
+              />
+              {/* Tooltip on hover */}
+              <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                {img.title}
+              </span>
+            </button>
           ))}
         </div>
       </div>
