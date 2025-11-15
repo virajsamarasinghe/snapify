@@ -1,7 +1,7 @@
 "use client";
 
 import GalleryNew from "@/app/components/GalleryNew";
-import Image from "next/image";
+import TransitionLink from "@/app/components/TransitionLink";
 
 export default function Work() {
   return (
@@ -9,41 +9,41 @@ export default function Work() {
       {/* Navigation - Artistic style matching new design */}
       <nav className="fixed top-0 left-0 w-full px-8 lg:px-12 py-6 flex justify-between items-center z-[10003] mix-blend-difference">
         <div className="flex items-center gap-12">
-          <a
+          <TransitionLink
             href="/"
             className="text-3xl font-bold text-white"
           >
             JK
-          </a>
+          </TransitionLink>
           <div className="hidden lg:flex items-center gap-8">
-            <a
+            <TransitionLink
               href="/work"
               className="text-white font-medium"
             >
               Work
-            </a>
-            <a
+            </TransitionLink>
+            <TransitionLink
               href="/#gallery"
               className="text-white/60 hover:text-white transition-colors"
             >
               Gallery
-            </a>
-            <a
+            </TransitionLink>
+            <TransitionLink
               href="/#about"
               className="text-white/60 hover:text-white transition-colors"
             >
               About
-            </a>
+            </TransitionLink>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <a
-            href="#"
+          <TransitionLink
+            href="#contact"
             className="text-white border border-white/30 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all"
           >
-            Let's Talk
-          </a>
+            Let&apos;s Talk
+          </TransitionLink>
         </div>
       </nav>
 

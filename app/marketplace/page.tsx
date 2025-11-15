@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "../components/Navbar";
@@ -230,14 +229,26 @@ export default function Marketplace() {
   const openModal = (artwork: Artwork) => {
     setSelectedArtwork(artwork);
     setIsModalOpen(true);
-    document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedArtwork(null);
-    document.body.style.overflow = 'unset';
   };
+
+  // Handle body overflow when modal opens/closes
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
 
   const handleWhatsAppClick = (artwork: Artwork) => {
     const message = `Hi! I'm interested in purchasing "${artwork.title}" (${artwork.price}). Is it still available?`;
