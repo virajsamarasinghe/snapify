@@ -65,7 +65,7 @@ export default function GalleryScroll() {
       duration: 1,
       stagger: {
         each: 0.15,
-        from: "top",
+        from: 0,  // Start from first element (top-left)
         grid: [3, 2]
       },
       ease: "power3.out",
