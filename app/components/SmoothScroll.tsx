@@ -22,7 +22,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     window.history.scrollRestoration = 'manual';
 
     // Hide scrollbar and disable scroll during loading
-    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.classList.add('lenis', 'lenis-stopped');
     document.body.style.overflow = 'hidden';
 
     // Initialize Lenis but keep it stopped initially
@@ -58,7 +58,8 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     // Enable scroll after loading animation completes
     const loadingTimer = setTimeout(() => {
       setIsLoading(false);
-      document.documentElement.style.overflow = '';
+      document.documentElement.classList.remove('lenis-stopped');
+      document.documentElement.classList.add('lenis-smooth');
       document.body.style.overflow = '';
       lenis.start();
     }, 3800); // After counter animation (3.5s) + small buffer
@@ -74,7 +75,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     // Cleanup
     return () => {
       clearTimeout(loadingTimer);
-      document.documentElement.style.overflow = '';
+      document.documentElement.classList.remove('lenis', 'lenis-smooth', 'lenis-stopped');
       document.body.style.overflow = '';
       lenis.destroy();
       gsap.ticker.remove(rafCallback);
