@@ -40,7 +40,7 @@ export default function HomeNavbar({ animateOnMount = true, delay = 0, className
         <div className="hidden lg:flex items-center gap-8">
           {/* <TransitionLink href="/work" className="text-white/80 hover:text-white transition-colors">Work</TransitionLink> */}
           <TransitionLink href="/gallery" className="text-white/80 hover:text-white transition-colors">Gallery</TransitionLink>
-          <TransitionLink href="/about" className="text-white/80 hover:text-white transition-colors">About</TransitionLink>
+          {/* <TransitionLink href="#about" className="text-white/80 hover:text-white transition-colors">About</TransitionLink> */}
           <TransitionLink href="/marketplace" className="text-white/80 hover:text-white transition-colors">Marketplace</TransitionLink>
         </div>
       </div>
