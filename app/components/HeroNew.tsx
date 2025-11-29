@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import TransitionLink from "./TransitionLink";
+import HomeNavbar from "./HomeNavbar";
 
 interface HeroNewProps {
   animationReady?: boolean;
@@ -158,22 +159,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="hero-nav fixed top-0 left-0 w-full px-8 lg:px-12 py-6 flex justify-between items-center z-30 mix-blend-difference">
-        <div className="flex items-center gap-12">
-          <TransitionLink href="/" className="text-3xl font-bold text-white">
-            JK
-          </TransitionLink>
-          <div className="hidden lg:flex items-center gap-8">
-            <TransitionLink href="/work" className="text-white/80 hover:text-white transition-colors">Work</TransitionLink>
-            <TransitionLink href="#gallery" className="text-white/80 hover:text-white transition-colors">Gallery</TransitionLink>
-            <TransitionLink href="#about" className="text-white/80 hover:text-white transition-colors">About</TransitionLink>
-            <TransitionLink href="/marketplace" className="text-white/80 hover:text-white transition-colors">Marketplace</TransitionLink>
-          </div>
-        </div>
-        <TransitionLink href="#contact" className="text-white border border-white/30 px-6 py-2 rounded-full hover:bg-white hover:text-black transition-all">
-          Let's Talk
-        </TransitionLink>
-      </nav>
+      <HomeNavbar animateOnMount={false} />
 
       {/* Sidebar */}
       <div className="hero-sidebar fixed left-0 top-0 h-full w-20 flex flex-col items-center justify-center z-20">

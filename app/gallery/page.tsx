@@ -5,6 +5,7 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TransitionLink from "../components/TransitionLink";
+import HomeNavbar from "../components/HomeNavbar";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,16 +112,8 @@ export default function Gallery() {
   return (
     <div ref={galleryRef} className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-between items-center mix-blend-difference">
-        <TransitionLink href="/" className="text-xl font-bold tracking-tighter uppercase">
-          Snapify
-        </TransitionLink>
-        <div className="flex gap-6 text-sm font-medium uppercase tracking-widest">
-          <TransitionLink href="/" className="hover:opacity-50 transition-opacity">Home</TransitionLink>
-          <TransitionLink href="/work" className="hover:opacity-50 transition-opacity">Work</TransitionLink>
-          <span className="opacity-50 cursor-default">Gallery</span>
-        </div>
-      </nav>
+      {/* Navigation */}
+      <HomeNavbar />
 
       {/* Hero Section */}
       <header className="pt-40 pb-20 px-6 lg:px-12 container mx-auto">
