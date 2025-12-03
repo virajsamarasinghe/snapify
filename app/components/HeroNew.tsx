@@ -162,7 +162,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
       <HomeNavbar animateOnMount={false} />
 
       {/* Sidebar */}
-      <div className="hero-sidebar fixed left-0 top-0 h-full w-20 flex flex-col items-center justify-center z-20">
+      <div className="hero-sidebar fixed left-0 top-0 h-full w-20 hidden lg:flex flex-col items-center justify-center z-20">
         <div className="flex flex-col items-center gap-16">
           <a href="#" className="text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm">
             Instagram
@@ -203,7 +203,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
 
               {/* Image info overlay */}
-              <div className={`absolute top-32 left-8 lg:left-12 transition-all duration-500 ${
+              <div className={`absolute top-32 left-8 lg:left-12 transition-all duration-500 hidden lg:block ${
                 index === currentImage ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}>
                 <p className="text-white/60 text-sm uppercase tracking-[0.3em] mb-1">{img.category}</p>
@@ -221,7 +221,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             </p>
           </div>
 
-          <h1 className="text-[4rem] lg:text-[8rem] font-bold leading-[0.9] mb-8">
+          <h1 className="text-[3rem] sm:text-[4rem] lg:text-[8rem] font-bold leading-[0.9] mb-8">
             {Array.from("CAPTURING").map((char, i) => (
               <span
                 key={i}
@@ -280,18 +280,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
           </div>
         </div>
 
-        {/* Floating Elements */}
-        <div className="floating-text absolute top-1/4 right-12 lg:right-20 text-right">
-          <p className="text-white/40 text-sm uppercase tracking-widest mb-2">Portfolio</p>
-          <p className="text-4xl font-bold text-white">500+</p>
-          <p className="text-white/60">Projects</p>
-        </div>
-
-        <div className="floating-text absolute bottom-1/4 left-12 lg:left-20">
-          <p className="text-white/40 text-sm uppercase tracking-widest mb-2">Experience</p>
-          <p className="text-4xl font-bold text-white">10+</p>
-          <p className="text-white/60">Years</p>
-        </div>
+        {/* Floating Elements removed as requested */}
 
         {/* Image Counter / Indicators */}
         <div className="image-counter absolute bottom-8 right-8 lg:right-12 flex items-center gap-3 z-30">
