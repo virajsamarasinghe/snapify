@@ -149,10 +149,7 @@ const AboutNew = () => {
               </div>
             </div>
             
-            {/* Signature Decoration */}
-            <div className="absolute -bottom-10 -right-10 opacity-20 rotate-[-15deg] pointer-events-none">
-              <h2 className="text-8xl font-serif text-white">JK</h2>
-            </div>
+
           </div>
         </div>
 
