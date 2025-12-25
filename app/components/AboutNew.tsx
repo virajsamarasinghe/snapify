@@ -113,30 +113,27 @@ const AboutNew = () => {
       </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* LEFT COLUMN */}
-          <div className="about-left-content lg:col-span-3 space-y-8 text-center lg:text-left order-2 lg:order-1">
+          <div className="about-left-content lg:col-span-4 space-y-8 text-center lg:text-left order-2 lg:order-1">
             <div>
-              <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
-                <span className="text-purple-500 text-2xl">✻</span>
-                <h2 className="text-3xl font-bold text-white">JK</h2>
+              <div className="flex items-center justify-center lg:justify-start gap-6 mb-6">
+                <svg className="w-12 h-12 text-purple-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" fill="currentColor"/>
+                </svg>
+                <h2 className="text-5xl lg:text-6xl font-bold text-white tracking-wide">JK</h2>
               </div>
-              <div className="h-1 w-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-6 mx-auto lg:mx-0" />
+              <div className="h-0.5 w-20 bg-gradient-to-r from-purple-500 to-transparent mb-8 mx-auto lg:mx-0" />
               
-              <p className="text-white/70 leading-relaxed text-sm lg:text-base">
-                I'm a passionate Visual Storyteller with over a decade of experience crafting intuitive and emotion-driven digital experiences. 
-                Specialized in capturing the raw beauty of the world, I turn complex moments into clean, elegant visual narratives.
+              <p className="text-white/80 leading-relaxed text-lg lg:text-xl font-light">
+                Crafting visual symphonies where light meets emotion. With over a decade of dedication, I don't just capture moments; I immortalize the untold stories hidden within them. My lens is a bridge between the seen and the unseen, revealing the extraordinary in the everyday.
               </p>
-            </div>
-
-            <div className="pt-4">
-              {/* Buttons removed as requested */}
             </div>
           </div>
 
           {/* CENTER IMAGE */}
-          <div className="lg:col-span-6 relative flex justify-center items-center order-1 lg:order-2">
+          <div className="lg:col-span-4 relative flex justify-center items-center order-1 lg:order-2 py-12 lg:py-0">
             <div className="center-image-container relative w-full max-w-[500px] aspect-square flex items-center justify-center">
               
               {/* Decorative Circles Behind - Wrapped for perfect centering */}
@@ -163,26 +160,25 @@ const AboutNew = () => {
                  />
                  
                  {/* Gradient Overlay at bottom for seamless blend */}
-                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+                 <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
               </div>
             </div>
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="about-right-content lg:col-span-3 space-y-10 text-center lg:text-left order-3">
+          <div className="about-right-content lg:col-span-4 space-y-10 text-center lg:text-left order-3">
             
             <div>
-              <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
-                <span className="text-pink-500 text-2xl">✻</span>
-                <h3 className="text-xl font-bold text-white">Digital Domination</h3>
+              <div className="flex items-center justify-center lg:justify-start gap-6 mb-6">
+                <svg className="w-12 h-12 text-pink-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" fill="currentColor"/>
+                </svg>
+                <h3 className="text-3xl lg:text-4xl font-bold text-white tracking-wide">Beyond the Frame</h3>
               </div>
-              <p className="text-white/60 text-sm leading-relaxed">
-                Focused on user needs, interaction flow, and pixel-perfect detail to create products that truly connect.
-                My work spans across continents and cultures.
+              <p className="text-white/80 text-lg lg:text-xl leading-relaxed font-light">
+                An exploration of the human condition through the lens. My work invites you to pause, reflect, and see the world with renewed wonder. Spanning continents and cultures, each image is a testament to the universal language of visual art.
               </p>
             </div>
-
-            {/* Stats removed as requested */}
 
           </div>
 
