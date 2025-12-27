@@ -39,7 +39,7 @@ const About = () => {
           start: "top 80%",
           end: "top 20%",
           toggleActions: "play none none reverse",
-        }
+        },
       });
 
       // Animate dividers first (similar to Hero section)
@@ -47,64 +47,92 @@ const About = () => {
         scaleY: 1,
         duration: 0.6,
         ease: "power3.inOut",
-        stagger: 0.1
+        stagger: 0.1,
       });
 
-      tl.to(".about-top-divider", {
-        scaleX: 1,
-        duration: 0.6,
-        ease: "power3.inOut"
-      }, "-=0.3");
+      tl.to(
+        ".about-top-divider",
+        {
+          scaleX: 1,
+          duration: 0.6,
+          ease: "power3.inOut",
+        },
+        "-=0.3"
+      );
 
       // Animate title words
-      tl.to(".about-title-word", {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        stagger: 0.05,
-        ease: "power3.out"
-      }, "-=0.3");
+      tl.to(
+        ".about-title-word",
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.05,
+          ease: "power3.out",
+        },
+        "-=0.3"
+      );
 
       // Animate image container
-      tl.to(imageContainerRef.current, {
-        scale: 1,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out"
-      }, "-=0.4");
+      tl.to(
+        imageContainerRef.current,
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        "-=0.4"
+      );
 
       // Animate text lines
-      tl.to(".about-text-line", {
-        y: 0,
-        opacity: 1,
-        duration: 0.5,
-        stagger: 0.05,
-        ease: "power3.out"
-      }, "-=0.5");
+      tl.to(
+        ".about-text-line",
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "power3.out",
+        },
+        "-=0.5"
+      );
 
       // Animate divider
-      tl.to(".about-divider", {
-        scaleX: 1,
-        duration: 0.5,
-        ease: "power3.inOut"
-      }, "-=0.3");
+      tl.to(
+        ".about-divider",
+        {
+          scaleX: 1,
+          duration: 0.5,
+          ease: "power3.inOut",
+        },
+        "-=0.3"
+      );
 
       // Animate stats
-      tl.to(".about-stat", {
-        y: 0,
-        opacity: 1,
-        duration: 0.4,
-        stagger: 0.05,
-        ease: "power3.out"
-      }, "-=0.3");
+      tl.to(
+        ".about-stat",
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: "power3.out",
+        },
+        "-=0.3"
+      );
 
       // Animate CTA button
-      tl.to(".about-cta", {
-        y: 0,
-        opacity: 1,
-        duration: 0.4,
-        ease: "power3.out"
-      }, "-=0.2");
+      tl.to(
+        ".about-cta",
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.4,
+          ease: "power3.out",
+        },
+        "-=0.2"
+      );
 
       // Parallax effect for image on scroll
       gsap.to(imageRef.current, {
@@ -114,10 +142,9 @@ const About = () => {
           trigger: imageContainerRef.current,
           start: "top bottom",
           end: "bottom top",
-          scrub: 1
-        }
+          scrub: 1,
+        },
       });
-
     }, sectionRef);
 
     return () => ctx.revert();
@@ -128,7 +155,6 @@ const About = () => {
       ref={sectionRef}
       className="relative w-full min-h-screen bg-[#1a1a1a] overflow-hidden pt-24 pb-24 pl-6 lg:pl-[120px] pr-6 lg:pr-[120px]"
     >
-
       {/* Sidebar with vertical divider on left - matching Hero */}
       <div className="absolute top-0 left-0 w-20 h-full">
         <div className="about-sidebar-divider absolute right-0 top-0 w-px h-full bg-white/10 origin-top scale-y-0" />
@@ -148,7 +174,9 @@ const About = () => {
           <h2 className="text-[3rem] lg:text-[4rem] font-medium tracking-[-0.05rem] leading-[1.1] text-[#f5f5f5]">
             <span className="about-title-word inline-block">Behind</span>{" "}
             <span className="about-title-word inline-block">the</span>{" "}
-            <span className="about-title-word inline-block bg-gradient-to-r from-[#f5f5f5] via-[#d0d0d0] to-[#f5f5f5] bg-clip-text text-transparent">Lens</span>
+            <span className="about-title-word inline-block bg-gradient-to-r from-[#f5f5f5] via-[#d0d0d0] to-[#f5f5f5] bg-clip-text text-transparent">
+              Lens
+            </span>
           </h2>
         </div>
 
@@ -157,12 +185,9 @@ const About = () => {
           {/* Left: Artist Image */}
           <div ref={imageContainerRef} className="relative">
             <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
-              <div
-                ref={imageRef}
-                className="absolute inset-0 scale-110"
-              >
+              <div ref={imageRef} className="absolute inset-0 scale-110">
                 <Image
-                  src="/about/man.webp"
+                  src="/about/man.jpeg"
                   alt="JK - Photographer"
                   fill
                   className="object-cover"
@@ -196,17 +221,17 @@ const About = () => {
                   <span className="about-text-line block">
                     My journey with photography began as a whisper—a quiet
                     fascination with how light dances across surfaces, how
-                    shadows tell stories, and how a single frame can hold
-                    an entire universe of emotion.
+                    shadows tell stories, and how a single frame can hold an
+                    entire universe of emotion.
                   </span>
                 </p>
 
                 <p className="text-base lg:text-lg leading-relaxed text-[#a0a0a0]">
                   <span className="about-text-line block">
-                    What started as curiosity evolved into passion, and
-                    passion transformed into purpose. Through my lens, I
-                    don&apos;t just capture images; I preserve feelings, freeze
-                    time, and reveal the extraordinary hidden in the ordinary.
+                    What started as curiosity evolved into passion, and passion
+                    transformed into purpose. Through my lens, I don&apos;t just
+                    capture images; I preserve feelings, freeze time, and reveal
+                    the extraordinary hidden in the ordinary.
                   </span>
                 </p>
               </div>
@@ -256,7 +281,6 @@ const About = () => {
           </div>
         </div>
       </div>
-
     </section>
   );
 };
