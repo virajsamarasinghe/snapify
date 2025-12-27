@@ -1,19 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import TransitionLink from "./TransitionLink";
+import ContactPopup from "./ContactPopup";
 
 export default function Navbar() {
   const navRef = useRef<HTMLDivElement>(null);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
 
     // Initial animation on mount
-    gsap.fromTo(".nav-item",
+    gsap.fromTo(
+      ".nav-item",
       { opacity: 0, y: -20 },
       {
         opacity: 1,
@@ -21,29 +24,36 @@ export default function Navbar() {
         duration: 0.6,
         stagger: 0.1,
         ease: "power2.out",
-        delay: 0.3
+        delay: 0.3,
       }
     );
 
-    gsap.fromTo(".nav-divider",
+    gsap.fromTo(
+      ".nav-divider",
       { scaleX: 0 },
       {
         scaleX: 1,
         duration: 1,
         ease: "power2.inOut",
-        delay: 0.8
+        delay: 0.8,
       }
     );
   }, []);
 
   return (
-    <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-md">
+    <nav
+      ref={navRef}
+      className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-md"
+    >
       <div className="relative">
         {/* Main Navigation */}
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
-            <TransitionLink href="/" className="nav-item flex items-center gap-3">
+            <TransitionLink
+              href="/"
+              className="nav-item flex items-center gap-3"
+            >
               <div className="w-8 h-8 relative">
                 <Image
                   src="/hero/camera.jpg"
@@ -58,30 +68,52 @@ export default function Navbar() {
 
             {/* Navigation Links */}
             <div className="hidden md:flex items-center gap-8">
-              <TransitionLink href="/" className="nav-item text-white/60 hover:text-white transition-colors">
+              <TransitionLink
+                href="/"
+                className="nav-item text-white/60 hover:text-white transition-colors"
+              >
                 Home
               </TransitionLink>
-              <TransitionLink href="/#about" className="nav-item text-white/60 hover:text-white transition-colors">
+              <TransitionLink
+                href="/#about"
+                className="nav-item text-white/60 hover:text-white transition-colors"
+              >
                 About
               </TransitionLink>
-              <TransitionLink href="/#gallery" className="nav-item text-white/60 hover:text-white transition-colors">
+              <TransitionLink
+                href="/#gallery"
+                className="nav-item text-white/60 hover:text-white transition-colors"
+              >
                 Gallery
               </TransitionLink>
-              <TransitionLink href="/marketplace" className="nav-item text-white/60 hover:text-white transition-colors">
+              <TransitionLink
+                href="/marketplace"
+                className="nav-item text-white/60 hover:text-white transition-colors"
+              >
                 Marketplace
               </TransitionLink>
-              <TransitionLink
-                href="#contact"
+              <button
+                onClick={() => setIsContactOpen(true)}
                 className="nav-item px-6 py-2 border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all duration-300"
               >
-                Contact
-              </TransitionLink>
+                Let's Talk
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
             <button className="md:hidden text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
           </div>
@@ -90,6 +122,12 @@ export default function Navbar() {
         {/* Divider */}
         <div className="nav-divider absolute bottom-0 left-0 right-0 h-[1px] bg-white/10 origin-left"></div>
       </div>
+
+      {/* Contact Popup */}
+      <ContactPopup
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+      />
     </nav>
   );
 }

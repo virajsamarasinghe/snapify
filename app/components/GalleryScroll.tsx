@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
@@ -12,15 +12,92 @@ export default function GalleryScroll() {
   const quoteRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<HTMLDivElement>(null);
 
-  // Gallery images data - using local images
-  const galleryImages = [
-    { id: 1, src: "/assets/img7.jpeg", alt: "Photography showcase" },
-    { id: 2, src: "/assets/img8.jpeg", alt: "Creative photography" },
-    { id: 3, src: "/assets/img9.jpeg", alt: "Artistic capture" },
-    { id: 4, src: "/assets/img10.jpeg", alt: "Visual storytelling" },
-    { id: 5, src: "/assets/img11.jpeg", alt: "Nature photography" },
-    { id: 6, src: "/assets/img12.jpeg", alt: "Landscape capture" },
+  // Gallery images data - from all gallery folders
+  const allGalleryImages = [
+    {
+      id: 1,
+      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.12.jpeg",
+      alt: "School Events",
+    },
+    {
+      id: 2,
+      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.25.jpeg",
+      alt: "Wildlife",
+    },
+    {
+      id: 3,
+      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09.jpeg",
+      alt: "World Photography",
+    },
+    {
+      id: 4,
+      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.15.jpeg",
+      alt: "School Moments",
+    },
+    {
+      id: 5,
+      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.28.jpeg",
+      alt: "Nature",
+    },
+    {
+      id: 6,
+      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.10.jpeg",
+      alt: "Travel",
+    },
+    {
+      id: 7,
+      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17.jpeg",
+      alt: "Events",
+    },
+    {
+      id: 8,
+      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.30.jpeg",
+      alt: "Wildlife Beauty",
+    },
+    {
+      id: 9,
+      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.11.jpeg",
+      alt: "Global Stories",
+    },
+    {
+      id: 10,
+      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.19.jpeg",
+      alt: "School Life",
+    },
+    {
+      id: 11,
+      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.32.jpeg",
+      alt: "Nature's Wonder",
+    },
+    {
+      id: 12,
+      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09 (1).jpeg",
+      alt: "World Views",
+    },
   ];
+
+  // Calculate which set of 6 images to show based on current hour
+  const getCurrentImageSet = () => {
+    const currentHour = new Date().getHours();
+    const startIndex = (currentHour % 2) * 6; // Changes every 2 hours, alternates between 0 and 6
+    return allGalleryImages.slice(startIndex, startIndex + 6);
+  };
+
+  const [galleryImages, setGalleryImages] = useState(getCurrentImageSet());
+
+  useEffect(() => {
+    // Update images based on current hour
+    const updateHourlyImages = () => {
+      setGalleryImages(getCurrentImageSet());
+    };
+
+    // Check every minute if we need to update
+    const hourCheckInterval = setInterval(updateHourlyImages, 60000);
+
+    return () => {
+      clearInterval(hourCheckInterval);
+    };
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -38,24 +115,29 @@ export default function GalleryScroll() {
       scrollTrigger: {
         trigger: section,
         start: "top 70%",
-        toggleActions: "play none none reverse"
-      }
+        toggleActions: "play none none reverse",
+      },
     });
 
     // Animate quote lines
-    quoteTl.to(".quote-line", {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power3.out"
-    })
-    .to(".quote-author", {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      ease: "power2.out"
-    }, "-=0.4");
+    quoteTl
+      .to(".quote-line", {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power3.out",
+      })
+      .to(
+        ".quote-author",
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        "-=0.4"
+      );
 
     // Staggered reveal animation for images
     gsap.to(".gallery-image-wrapper", {
@@ -65,35 +147,37 @@ export default function GalleryScroll() {
       duration: 1,
       stagger: {
         each: 0.15,
-        from: 0,  // Start from first element (top-left)
-        grid: [3, 2]
+        from: 0, // Start from first element (top-left)
+        grid: [3, 2],
       },
       ease: "power3.out",
       scrollTrigger: {
         trigger: images,
         start: "top 80%",
         end: "bottom 20%",
-        toggleActions: "play none none reverse"
-      }
+        toggleActions: "play none none reverse",
+      },
     });
 
     // Parallax effect on scroll for images
-    gsap.utils.toArray(".gallery-image-wrapper").forEach((element: any, index) => {
-      gsap.to(element, {
-        y: -50 * (1 - index * 0.1),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1
-        }
+    gsap.utils
+      .toArray(".gallery-image-wrapper")
+      .forEach((element: any, index) => {
+        gsap.to(element, {
+          y: -50 * (1 - index * 0.1),
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
       });
-    });
 
     // Cleanup
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
@@ -104,7 +188,6 @@ export default function GalleryScroll() {
     >
       <div className="container mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-
           {/* Left Side - Quote */}
           <div ref={quoteRef} className="relative">
             <div className="lg:sticky lg:top-32">
@@ -146,12 +229,16 @@ export default function GalleryScroll() {
                 <div
                   key={image.id}
                   className={`gallery-image-wrapper relative group cursor-pointer ${
-                    index === 1 || index === 4 ? 'mt-12' : ''
+                    index === 1 || index === 4 ? "mt-12" : ""
                   }`}
                 >
-                  <div className={`relative overflow-hidden rounded-lg ${
-                    index === 0 || index === 3 ? 'h-[250px] lg:h-[350px]' : 'h-[200px] lg:h-[280px]'
-                  }`}>
+                  <div
+                    className={`relative overflow-hidden rounded-lg ${
+                      index === 0 || index === 3
+                        ? "h-[250px] lg:h-[350px]"
+                        : "h-[200px] lg:h-[280px]"
+                    }`}
+                  >
                     <Image
                       src={image.src}
                       alt={image.alt}
@@ -166,7 +253,7 @@ export default function GalleryScroll() {
                     {/* Image number */}
                     <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                       <span className="text-white text-xs font-light tracking-wider">
-                        {String(index + 1).padStart(2, '0')}
+                        {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
                   </div>
@@ -176,10 +263,33 @@ export default function GalleryScroll() {
 
             {/* View More Button */}
             <div className="mt-12 text-center lg:text-right">
-              <button className="group relative inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors duration-300">
-                <span className="text-sm uppercase tracking-wider">View Gallery</span>
-                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <button
+                onClick={() => {
+                  const gallerySection = document.getElementById("gallery");
+                  if (gallerySection) {
+                    gallerySection.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }
+                }}
+                className="group relative inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors duration-300 cursor-pointer"
+              >
+                <span className="text-sm uppercase tracking-wider">
+                  View Gallery
+                </span>
+                <svg
+                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
                 </svg>
               </button>
             </div>
