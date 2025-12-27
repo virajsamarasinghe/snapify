@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,50 +17,184 @@ interface Artwork {
   category: string;
   year: string;
   description?: string;
-  size: 'small' | 'medium' | 'large' | 'tall' | 'wide';
+  size: "small" | "medium" | "large" | "tall" | "wide";
 }
 
-// Extended artwork collection with size attributes for the mosaic layout
-const artworks: Artwork[] = [
-  { id: 1, src: "/gallery/mountain-solitude.jpg", title: "Mountain Solitude", category: "Landscape", year: "2024", size: "large" },
-  { id: 2, src: "/gallery/desert-dreams.jpg", title: "Desert Dreams", category: "Landscape", year: "2024", size: "tall" },
-  { id: 3, src: "/gallery/abstract-reality.jpg", title: "Abstract Reality", category: "Abstract", year: "2023", size: "small" },
-  { id: 4, src: "/gallery/urban-poetry.jpg", title: "Urban Poetry", category: "Street", year: "2024", size: "wide" },
-  { id: 5, src: "/gallery/neon-nights.jpg", title: "Neon Nights", category: "Urban", year: "2023", size: "medium" },
-  { id: 6, src: "/gallery/silent-moments.jpg", title: "Silent Moments", category: "Portrait", year: "2024", size: "tall" },
-  { id: 7, src: "/gallery/time-suspended.jpg", title: "Time Suspended", category: "Conceptual", year: "2023", size: "small" },
-  { id: 8, src: "/gallery/rhythm-of-life.jpg", title: "Rhythm of Life", category: "Music", year: "2024", size: "medium" },
-  { id: 9, src: "/gallery/dance-of-shadows.jpg", title: "Dance of Shadows", category: "Performance", year: "2023", size: "wide" },
-  { id: 10, src: "/gallery/mountain-solitude.jpg", title: "Morning Light", category: "Landscape", year: "2024", size: "small" },
-  { id: 11, src: "/gallery/desert-dreams.jpg", title: "Golden Hour", category: "Landscape", year: "2024", size: "medium" },
-  { id: 12, src: "/gallery/abstract-reality.jpg", title: "Color Theory", category: "Abstract", year: "2023", size: "tall" },
-  { id: 13, src: "/gallery/urban-poetry.jpg", title: "City Lights", category: "Street", year: "2024", size: "large" },
-  { id: 14, src: "/gallery/neon-nights.jpg", title: "Night Life", category: "Urban", year: "2023", size: "wide" },
-  { id: 15, src: "/gallery/silent-moments.jpg", title: "Reflection", category: "Portrait", year: "2024", size: "medium" },
+// Category image mappings - maps category names to their folder images
+const categoryImages: { [key: string]: string[] } = {
+  "School Events": [
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.12.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.12 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.13.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.13 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.13 (2).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.14.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.14 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.14 (2).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.15.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.15 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.16.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.16 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.16 (2).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17 (2).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.18.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.19.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.19 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.20.jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.20 (1).jpeg",
+    "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.20 (2).jpeg",
+  ],
+  Wildlife: [
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.25.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.25 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.26.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.26 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.27.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.27 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.27 (2).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.28.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.28 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.28 (2).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.29.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.29 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.29 (2).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.30.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.30 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.30 (2).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.31.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.31 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.32.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.32 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.32 (2).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.33.jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.33 (1).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.33 (2).jpeg",
+    "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.34.jpeg",
+  ],
+  University: [
+    "/gallery/mountain-solitude.jpg",
+    "/gallery/desert-dreams.jpg",
+    "/gallery/abstract-reality.jpg",
+  ],
+  Weddings: [
+    "/gallery/silent-moments.jpg",
+    "/gallery/time-suspended.jpg",
+    "/gallery/rhythm-of-life.jpg",
+  ],
+  Army: ["/gallery/urban-poetry.jpg", "/gallery/neon-nights.jpg"],
+  "Events Coverage": [
+    "/gallery/dance-of-shadows.jpg",
+    "/gallery/mountain-solitude.jpg",
+  ],
+  "World Photography": [
+    "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09.jpeg",
+    "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09 (1).jpeg",
+    "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09 (2).jpeg",
+    "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.10.jpeg",
+    "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.10 (1).jpeg",
+    "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.11.jpeg",
+    "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.11 (1).jpeg",
+  ],
+};
+
+// Generate artworks from category images
+const generateArtworks = (): Artwork[] => {
+  const artworks: Artwork[] = [];
+  let id = 1;
+
+  Object.entries(categoryImages).forEach(([category, images]) => {
+    images.forEach((imagePath, index) => {
+      const fileName = imagePath.split("/").pop() || "";
+      const sizes: Array<"small" | "medium" | "large" | "tall" | "wide"> = [
+        "small",
+        "medium",
+        "large",
+        "tall",
+        "wide",
+      ];
+
+      artworks.push({
+        id: id++,
+        src: imagePath,
+        title: `${category} ${index + 1}`,
+        category: category,
+        year: "2024",
+        size: sizes[index % sizes.length],
+      });
+    });
+  });
+
+  return artworks;
+};
+
+const artworks: Artwork[] = generateArtworks();
+
+const categories = [
+  "All",
+  "University",
+  "Weddings",
+  "Army",
+  "Events Coverage",
+  "School Events",
+  "World Photography",
+  "Wildlife",
 ];
 
-const categories = ["All", "Landscape", "Portrait", "Street", "Urban", "Abstract", "Conceptual"];
+function GalleryContent() {
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
 
-export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const filteredArtworks = useMemo(() => selectedCategory === "All"
-    ? artworks
-    : artworks.filter(art => art.category === selectedCategory), [selectedCategory]);
+  // Set category from URL on mount
+  useEffect(() => {
+    if (categoryFromUrl && categories.includes(categoryFromUrl)) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [categoryFromUrl]);
 
-  // Animation for category change
+  const filteredArtworks = useMemo(
+    () =>
+      selectedCategory === "All"
+        ? artworks
+        : artworks.filter((art) => art.category === selectedCategory),
+    [selectedCategory]
+  );
+
+  // Animation for category change with creative image reveal
   useEffect(() => {
     if (!gridRef.current) return;
-    
+
     const ctx = gsap.context(() => {
-      gsap.fromTo(".gallery-item", 
-        { opacity: 0, scale: 0.9, y: 20 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" }
-      );
+      const items = gsap.utils.toArray(".gallery-item");
+
+      // Set initial state
+      gsap.set(items, {
+        opacity: 0,
+        scale: 0.85,
+        rotationY: -20,
+        transformOrigin: "center center",
+      });
+
+      // Staggered reveal with 3D rotation
+      gsap.to(items, {
+        opacity: 1,
+        scale: 1,
+        rotationY: 0,
+        duration: 1.2,
+        stagger: {
+          each: 0.1,
+          from: "start",
+          ease: "sine.inOut",
+        },
+        ease: "expo.out",
+      });
     }, gridRef);
 
     return () => ctx.revert();
@@ -70,107 +205,245 @@ export default function Gallery() {
     if (!galleryRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Hero Text Animation
-      gsap.fromTo(".hero-text-char",
-        { y: 100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, stagger: 0.02, ease: "power4.out" }
+      // Creative Title Animation - Split reveal with glitch effect
+      const titleChars = gsap.utils.toArray(".hero-text-char");
+
+      gsap.set(titleChars, {
+        y: 200,
+        opacity: 0,
+        rotationX: -90,
+        transformOrigin: "50% 50%",
+      });
+
+      gsap.to(titleChars, {
+        y: 0,
+        opacity: 1,
+        rotationX: 0,
+        duration: 1.8,
+        stagger: {
+          each: 0.04,
+          from: "start",
+          ease: "sine.inOut",
+        },
+        ease: "expo.out",
+      });
+
+      // Subtle glitch effect on title
+      gsap.to(titleChars, {
+        x: "random(-2, 2)",
+        duration: 0.15,
+        repeat: 2,
+        yoyo: true,
+        delay: 1.2,
+        stagger: 0.03,
+        ease: "sine.inOut",
+      });
+
+      // Subtitle fade in
+      gsap.fromTo(
+        ".gallery-subtitle",
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 1.2, delay: 0.8, ease: "expo.out" }
       );
 
-      gsap.fromTo(".category-pill",
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, delay: 0.5, ease: "back.out(1.7)" }
+      // Back button slide in
+      gsap.fromTo(
+        ".back-button",
+        { x: -60, opacity: 0 },
+        { x: 0, opacity: 1, duration: 1, delay: 0.4, ease: "expo.out" }
       );
     }, galleryRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [selectedCategory]);
 
   const openImage = (id: number) => setSelectedImage(id);
   const closeImage = () => setSelectedImage(null);
 
-  const navigateImage = (direction: 'prev' | 'next') => {
+  const navigateImage = (direction: "prev" | "next") => {
     if (!selectedImage) return;
-    const currentIndex = filteredArtworks.findIndex(art => art.id === selectedImage);
+    const currentIndex = filteredArtworks.findIndex(
+      (art) => art.id === selectedImage
+    );
     let newIndex = currentIndex;
-    if (direction === 'prev' && currentIndex > 0) newIndex = currentIndex - 1;
-    else if (direction === 'next' && currentIndex < filteredArtworks.length - 1) newIndex = currentIndex + 1;
+    if (direction === "prev" && currentIndex > 0) newIndex = currentIndex - 1;
+    else if (direction === "next" && currentIndex < filteredArtworks.length - 1)
+      newIndex = currentIndex + 1;
     setSelectedImage(filteredArtworks[newIndex].id);
   };
 
-  const selectedArtwork = artworks.find(art => art.id === selectedImage);
+  const selectedArtwork = artworks.find((art) => art.id === selectedImage);
 
   // Helper to determine grid span classes
   const getGridClass = (size: string) => {
     switch (size) {
-      case 'large': return 'md:col-span-2 md:row-span-2';
-      case 'wide': return 'md:col-span-2 md:row-span-1';
-      case 'tall': return 'md:col-span-1 md:row-span-2';
-      default: return 'md:col-span-1 md:row-span-1';
+      case "large":
+        return "md:col-span-2 md:row-span-2";
+      case "wide":
+        return "md:col-span-2 md:row-span-1";
+      case "tall":
+        return "md:col-span-1 md:row-span-2";
+      default:
+        return "md:col-span-1 md:row-span-1";
     }
   };
 
   return (
-    <div ref={galleryRef} className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
+    <div
+      ref={galleryRef}
+      className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black"
+    >
+      <style jsx global>{`
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+
+        .gallery-item {
+          will-change: transform, opacity;
+        }
+
+        .gallery-item img {
+          will-change: transform, filter;
+        }
+
+        @keyframes shimmer {
+          0% {
+            background-position: -1000px 0;
+          }
+          100% {
+            background-position: 1000px 0;
+          }
+        }
+
+        .gallery-item:hover::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent
+          );
+          animation: shimmer 1.5s;
+          z-index: 1;
+          pointer-events: none;
+        }
+      `}</style>
       {/* Navigation */}
       {/* Navigation */}
       <HomeNavbar />
 
       {/* Hero Section */}
-      <header className="pt-40 pb-20 px-6 lg:px-12 container mx-auto">
+      <header className="pt-32 sm:pt-40 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-12 container mx-auto">
+        {/* Back Button */}
+        <div className="mb-6 sm:mb-8 back-button">
+          <a
+            href="/#gallery"
+            className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors group"
+          >
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:-translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span className="text-xs sm:text-sm uppercase tracking-wider">
+              Back to Categories
+            </span>
+          </a>
+        </div>
+
         <div className="overflow-hidden">
-          <h1 className="text-[12vw] leading-[0.8] font-bold tracking-tighter uppercase text-white/90 mb-8">
-            {Array.from("Visuals").map((char, i) => (
-              <span key={i} className="hero-text-char inline-block">{char}</span>
-            ))}
-            <br />
-            {Array.from("Archive").map((char, i) => (
-              <span key={i + 10} className="hero-text-char inline-block text-white/40">{char}</span>
+          <h1 className="text-[8vw] sm:text-[10vw] lg:text-[12vw] leading-[0.8] font-bold tracking-tighter uppercase text-white/90 mb-6 sm:mb-8 whitespace-nowrap perspective-1000">
+            {Array.from(selectedCategory).map((char, i) => (
+              <span key={i} className="hero-text-char inline-block">
+                {char === " " ? "\u00A0" : char}
+              </span>
             ))}
           </h1>
-        </div>
-        
-        {/* Categories */}
-        <div className="flex flex-wrap gap-3 mt-12">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`category-pill px-6 py-2 rounded-full border border-white/10 text-sm uppercase tracking-wider transition-all duration-300 hover:border-white/40 ${
-                selectedCategory === category ? 'bg-white text-black border-white' : 'bg-transparent text-white/60'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+          <p className="gallery-subtitle text-white/60 text-base sm:text-lg lg:text-xl font-light">
+            Explore our collection of {selectedCategory.toLowerCase()}{" "}
+            photography
+          </p>
         </div>
       </header>
 
-      {/* Mosaic Grid */}
-      <main className="px-4 lg:px-12 pb-32 container mx-auto">
-        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[300px]">
+      {/* Masonry Grid - No gaps, larger photos with margins */}
+      <main className="px-4 sm:px-6 lg:px-12 pb-32 container mx-auto">
+        <div
+          ref={gridRef}
+          className="columns-1 sm:columns-2 lg:columns-3 gap-0"
+        >
           {filteredArtworks.map((artwork, index) => (
             <div
               key={artwork.id}
-              className={`gallery-item group relative overflow-hidden rounded-sm bg-white/5 cursor-pointer ${getGridClass(artwork.size)}`}
+              className="gallery-item group relative overflow-hidden cursor-pointer break-inside-avoid mb-0"
               onClick={() => openImage(artwork.id)}
               onMouseEnter={() => setHoveredId(artwork.id)}
               onMouseLeave={() => setHoveredId(null)}
+              style={{
+                perspective: "1000px",
+              }}
             >
-              <Image
-                src={artwork.src}
-                alt={artwork.title}
-                fill
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                priority={index < 4}
-              />
-              
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                  <p className="text-xs font-mono text-white/70 mb-2 uppercase tracking-widest">{artwork.category}</p>
-                  <h3 className="text-xl font-bold text-white">{artwork.title}</h3>
+              <div className="relative w-full transform-gpu transition-all duration-1000 ease-out group-hover:scale-[1.02]">
+                <Image
+                  src={artwork.src}
+                  alt={artwork.title}
+                  width={1200}
+                  height={800}
+                  className="w-full h-auto object-cover transition-all duration-1000 ease-out group-hover:brightness-110 group-hover:contrast-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  priority={index < 6}
+                />
+
+                {/* Gradient Overlay with slide effect */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                {/* Info Overlay with slide up animation */}
+                <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
+                  <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-out">
+                    <p className="text-xs font-mono text-white/80 mb-2 uppercase tracking-widest">
+                      {artwork.category}
+                    </p>
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+                      {artwork.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-white/60 text-sm">
+                      <span>{artwork.year}</span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        View
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Corner accent */}
+                <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-white/0 group-hover:border-white/30 transition-all duration-700" />
               </div>
             </div>
           ))}
@@ -183,15 +456,32 @@ export default function Gallery() {
           {/* Controls */}
           <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-[110]">
             <div className="text-white/50 font-mono text-sm">
-              {String(filteredArtworks.findIndex(a => a.id === selectedImage) + 1).padStart(2, '0')} / {String(filteredArtworks.length).padStart(2, '0')}
+              {String(
+                filteredArtworks.findIndex((a) => a.id === selectedImage) + 1
+              ).padStart(2, "0")}{" "}
+              / {String(filteredArtworks.length).padStart(2, "0")}
             </div>
-            <button 
+            <button
               onClick={closeImage}
               className="group flex items-center gap-2 text-white/70 hover:text-white transition-colors"
             >
-              <span className="text-sm font-mono uppercase tracking-widest">Close</span>
+              <span className="text-sm font-mono uppercase tracking-widest">
+                Close
+              </span>
               <div className="w-8 h-8 flex items-center justify-center border border-white/20 rounded-full group-hover:border-white transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
               </div>
             </button>
           </div>
@@ -209,19 +499,49 @@ export default function Gallery() {
                   priority
                 />
               </div>
-              
+
               {/* Nav Buttons */}
-              <button 
-                onClick={(e) => { e.stopPropagation(); navigateImage('prev'); }}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateImage("prev");
+                }}
                 className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 p-4 text-white/50 hover:text-white transition-colors"
               >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 19l-7-7 7-7" /></svg>
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
               </button>
-              <button 
-                onClick={(e) => { e.stopPropagation(); navigateImage('next'); }}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateImage("next");
+                }}
                 className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 p-4 text-white/50 hover:text-white transition-colors"
               >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5l7 7-7 7" /></svg>
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
               </button>
             </div>
 
@@ -229,16 +549,25 @@ export default function Gallery() {
             <div className="lg:w-[400px] bg-[#0f0f0f] border-l border-white/5 p-8 lg:p-12 flex flex-col justify-center">
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-4xl font-bold text-white mb-2">{selectedArtwork.title}</h2>
-                  <p className="text-white/40 font-mono text-sm uppercase tracking-widest">{selectedArtwork.category} — {selectedArtwork.year}</p>
+                  <h2 className="text-4xl font-bold text-white mb-2">
+                    {selectedArtwork.title}
+                  </h2>
+                  <p className="text-white/40 font-mono text-sm uppercase tracking-widest">
+                    {selectedArtwork.category} — {selectedArtwork.year}
+                  </p>
                 </div>
-                
+
                 <div className="space-y-6 text-white/60 leading-relaxed font-light">
                   <p>
-                    Captured in {selectedArtwork.year}, this piece explores the relationship between {selectedArtwork.category.toLowerCase()} and light. The composition invites the viewer to pause and reflect on the subtle details often overlooked in our daily lives.
+                    Captured in {selectedArtwork.year}, this piece explores the
+                    relationship between{" "}
+                    {selectedArtwork.category.toLowerCase()} and light. The
+                    composition invites the viewer to pause and reflect on the
+                    subtle details often overlooked in our daily lives.
                   </p>
                   <p>
-                    {selectedArtwork.description || "A unique perspective that challenges traditional boundaries of photography, creating a dialogue between the subject and the observer."}
+                    {selectedArtwork.description ||
+                      "A unique perspective that challenges traditional boundaries of photography, creating a dialogue between the subject and the observer."}
                   </p>
                 </div>
 
@@ -256,5 +585,19 @@ export default function Gallery() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Gallery() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+          <div className="text-white">Loading...</div>
+        </div>
+      }
+    >
+      <GalleryContent />
+    </Suspense>
   );
 }

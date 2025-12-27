@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,27 +10,40 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+const images = ["/about/man.jpeg", "/about/man2.jpeg", "/about/man3.jpeg"];
+
 const About = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const textContentRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const [yearsCount, setYearsCount] = useState(0);
+  const [projectsCount, setProjectsCount] = useState(0);
+  const [clientsCount, setClientsCount] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => {
+        const next = (prev + 1) % images.length;
+        console.log("Changing image from", prev, "to", next);
+        return next;
+      });
+    }, 4000); // Change image every 4 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
       // Set initial states
-      gsap.set(".about-title-word", { y: 100, opacity: 0 });
-      gsap.set(imageContainerRef.current, { scale: 0.8, opacity: 0 });
-      gsap.set(".about-text-line", { y: 30, opacity: 0 });
-      gsap.set(".about-stat", { y: 20, opacity: 0 });
-      gsap.set(".about-divider", { scaleX: 0 });
-      gsap.set(".about-cta", { y: 20, opacity: 0 });
-      gsap.set(".about-sidebar-divider", { scaleY: 0 });
-      gsap.set(".about-sidebar-divider-right", { scaleY: 0 });
-      gsap.set(".about-top-divider", { scaleX: 0 });
+      gsap.set(imageRef.current, { scale: 1.2, opacity: 0 });
+      gsap.set(overlayRef.current, { opacity: 0 });
+      gsap.set(".about-content", { y: 50, opacity: 0 });
+      gsap.set(".about-title-char", { y: 100, opacity: 0 });
+      gsap.set(".about-text", { y: 30, opacity: 0 });
+      gsap.set(".about-stat-item", { y: 20, opacity: 0 });
 
       // Create main timeline with ScrollTrigger
       const tl = gsap.timeline({
@@ -42,104 +55,111 @@ const About = () => {
         },
       });
 
-      // Animate dividers first (similar to Hero section)
-      tl.to([".about-sidebar-divider", ".about-sidebar-divider-right"], {
-        scaleY: 1,
-        duration: 0.6,
-        ease: "power3.inOut",
-        stagger: 0.1,
+      // Animate image first
+      tl.to(imageRef.current, {
+        scale: 1,
+        opacity: 1,
+        duration: 1.2,
+        ease: "power3.out",
       });
 
+      // Animate overlay
       tl.to(
-        ".about-top-divider",
+        overlayRef.current,
         {
-          scaleX: 1,
-          duration: 0.6,
-          ease: "power3.inOut",
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
         },
-        "-=0.3"
+        "-=0.8"
       );
 
-      // Animate title words
+      // Animate title characters
       tl.to(
-        ".about-title-word",
+        ".about-title-char",
         {
           y: 0,
           opacity: 1,
-          duration: 0.6,
-          stagger: 0.05,
-          ease: "power3.out",
-        },
-        "-=0.3"
-      );
-
-      // Animate image container
-      tl.to(
-        imageContainerRef.current,
-        {
-          scale: 1,
-          opacity: 1,
           duration: 0.8,
+          stagger: 0.03,
           ease: "power3.out",
         },
         "-=0.4"
       );
 
-      // Animate text lines
+      // Animate text content
       tl.to(
-        ".about-text-line",
+        ".about-text",
         {
           y: 0,
           opacity: 1,
-          duration: 0.5,
-          stagger: 0.05,
+          duration: 0.6,
+          stagger: 0.1,
           ease: "power3.out",
         },
-        "-=0.5"
-      );
-
-      // Animate divider
-      tl.to(
-        ".about-divider",
-        {
-          scaleX: 1,
-          duration: 0.5,
-          ease: "power3.inOut",
-        },
-        "-=0.3"
+        "-=0.4"
       );
 
       // Animate stats
       tl.to(
-        ".about-stat",
+        ".about-stat-item",
         {
           y: 0,
           opacity: 1,
-          duration: 0.4,
-          stagger: 0.05,
+          duration: 0.5,
+          stagger: 0.1,
           ease: "power3.out",
         },
         "-=0.3"
       );
 
-      // Animate CTA button
-      tl.to(
-        ".about-cta",
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.4,
-          ease: "power3.out",
+      // Counter animation with separate ScrollTrigger
+      ScrollTrigger.create({
+        trigger: ".about-stat-item",
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          // Animate counter for years
+          const yearsObj = { val: 0 };
+          gsap.to(yearsObj, {
+            val: 10,
+            duration: 2,
+            ease: "power2.out",
+            onUpdate: () => {
+              setYearsCount(Math.ceil(yearsObj.val));
+            },
+          });
+
+          // Animate counter for projects
+          const projectsObj = { val: 0 };
+          gsap.to(projectsObj, {
+            val: 500,
+            duration: 2.5,
+            ease: "power2.out",
+            onUpdate: () => {
+              setProjectsCount(Math.ceil(projectsObj.val));
+            },
+          });
+
+          // Animate counter for clients
+          const clientsObj = { val: 0 };
+          gsap.to(clientsObj, {
+            val: 50,
+            duration: 2,
+            ease: "power2.out",
+            onUpdate: () => {
+              setClientsCount(Math.ceil(clientsObj.val));
+            },
+          });
         },
-        "-=0.2"
-      );
+      });
 
       // Parallax effect for image on scroll
       gsap.to(imageRef.current, {
-        yPercent: -10,
+        yPercent: 15,
         ease: "none",
         scrollTrigger: {
-          trigger: imageContainerRef.current,
+          trigger: sectionRef.current,
           start: "top bottom",
           end: "bottom top",
           scrub: 1,
@@ -153,132 +173,152 @@ const About = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen bg-[#1a1a1a] overflow-hidden pt-24 pb-24 pl-6 lg:pl-[120px] pr-6 lg:pr-[120px]"
+      className="relative w-full h-screen overflow-hidden"
     >
-      {/* Sidebar with vertical divider on left - matching Hero */}
-      <div className="absolute top-0 left-0 w-20 h-full">
-        <div className="about-sidebar-divider absolute right-0 top-0 w-px h-full bg-white/10 origin-top scale-y-0" />
-      </div>
-
-      {/* Right sidebar with vertical divider */}
-      <div className="absolute top-0 right-0 w-20 h-full">
-        <div className="about-sidebar-divider-right absolute left-0 top-0 w-px h-full bg-white/10 origin-top scale-y-0" />
-      </div>
-
-      {/* Top horizontal divider */}
-      <div className="about-top-divider absolute left-0 top-20 w-full h-px bg-white/10 origin-left scale-x-0" />
-
-      <div className="relative z-10 max-w-[1400px] mx-auto">
-        {/* Section Title */}
-        <div ref={titleRef} className="mb-16 overflow-hidden">
-          <h2 className="text-[3rem] lg:text-[4rem] font-medium tracking-[-0.05rem] leading-[1.1] text-[#f5f5f5]">
-            <span className="about-title-word inline-block">Behind</span>{" "}
-            <span className="about-title-word inline-block">the</span>{" "}
-            <span className="about-title-word inline-block bg-gradient-to-r from-[#f5f5f5] via-[#d0d0d0] to-[#f5f5f5] bg-clip-text text-transparent">
-              Lens
-            </span>
-          </h2>
+      {/* Full-screen background image */}
+      <div className="absolute inset-0">
+        <div ref={imageRef} className="w-full h-full relative">
+          {images.map((img, index) => (
+            <div
+              key={img}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentImageIndex ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={img}
+                alt={`JK - Photographer ${index + 1}`}
+                fill
+                className="object-cover"
+                priority={index === 0}
+                quality={100}
+              />
+            </div>
+          ))}
         </div>
+      </div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-          {/* Left: Artist Image */}
-          <div ref={imageContainerRef} className="relative">
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
-              <div ref={imageRef} className="absolute inset-0 scale-110">
-                <Image
-                  src="/about/man.jpeg"
-                  alt="JK - Photographer"
-                  fill
-                  className="object-cover"
-                  priority
-                />
+      {/* Gradient overlays for better text readability */}
+      <div
+        ref={overlayRef}
+        className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
+
+      {/* Content overlay */}
+      <div className="relative z-10 h-full flex items-center justify-center px-6 lg:px-20">
+        <div className="max-w-7xl w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Title and main text */}
+            <div className="space-y-8">
+              <div className="overflow-hidden">
+                <h2 className="text-[4rem] lg:text-[6rem] xl:text-[7rem] font-bold tracking-tight leading-[0.9] text-white">
+                  {"BEHIND".split("").map((char, i) => (
+                    <span key={i} className="about-title-char inline-block">
+                      {char}
+                    </span>
+                  ))}
+                  <br />
+                  {"THE".split("").map((char, i) => (
+                    <span
+                      key={i}
+                      className="about-title-char inline-block text-white/60"
+                    >
+                      {char}
+                    </span>
+                  ))}{" "}
+                  {"LENS".split("").map((char, i) => (
+                    <span
+                      key={i}
+                      className="about-title-char inline-block bg-gradient-to-r from-white via-gray-300 to-white bg-clip-text text-transparent"
+                    >
+                      {char}
+                    </span>
+                  ))}
+                </h2>
               </div>
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 via-transparent to-transparent" />
-            </div>
 
-            {/* Floating accent elements */}
-            <div className="absolute -top-4 -right-4 w-24 h-24 border border-white/10 rounded-full" />
-            <div className="absolute -bottom-6 -left-6 w-32 h-32 border border-white/5 rounded-full" />
-          </div>
-
-          {/* Right: Artist Description */}
-          <div ref={textContentRef} className="space-y-8">
-            {/* Main description */}
-            <div className="space-y-6">
-              <p className="text-[1.5rem] lg:text-[1.75rem] font-medium leading-[1.4] text-[#f5f5f5]">
-                <span className="about-text-line block">
-                  I&apos;m JK, a visual storyteller who finds
-                </span>
-                <span className="about-text-line block">
-                  poetry in the unscripted moments of life.
-                </span>
-              </p>
-
-              <div className="space-y-4">
-                <p className="text-base lg:text-lg leading-relaxed text-[#a0a0a0]">
-                  <span className="about-text-line block">
-                    My journey with photography began as a whisper—a quiet
-                    fascination with how light dances across surfaces, how
-                    shadows tell stories, and how a single frame can hold an
-                    entire universe of emotion.
-                  </span>
+              <div className="space-y-6">
+                <p className="about-text text-xl lg:text-2xl font-light leading-relaxed text-white/90">
+                  I&apos;m JK, a visual storyteller who finds poetry in the
+                  unscripted moments of life.
                 </p>
 
-                <p className="text-base lg:text-lg leading-relaxed text-[#a0a0a0]">
-                  <span className="about-text-line block">
-                    What started as curiosity evolved into passion, and passion
-                    transformed into purpose. Through my lens, I don&apos;t just
-                    capture images; I preserve feelings, freeze time, and reveal
-                    the extraordinary hidden in the ordinary.
-                  </span>
+                <p className="about-text text-base lg:text-lg leading-relaxed text-white/70">
+                  My journey with photography began as a whisper—a quiet
+                  fascination with how light dances across surfaces, how shadows
+                  tell stories, and how a single frame can hold an entire
+                  universe of emotion.
+                </p>
+
+                <p className="about-text text-base lg:text-lg leading-relaxed text-white/70">
+                  Through my lens, I don&apos;t just capture images; I preserve
+                  feelings, freeze time, and reveal the extraordinary hidden in
+                  the ordinary.
                 </p>
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="about-divider h-px bg-white/10 origin-left" />
+            {/* Right side - Stats */}
+            <div className="flex flex-col justify-center space-y-8 lg:pl-12">
+              <div className="about-stat-item space-y-2 border-l-2 border-white/30 pl-6">
+                <p className="text-5xl lg:text-6xl font-bold text-white">
+                  {yearsCount}+
+                </p>
+                <p className="text-sm lg:text-base uppercase tracking-widest text-white/60">
+                  Years Experience
+                </p>
+              </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-8">
-              <div className="about-stat">
-                <p className="text-3xl font-medium text-[#f5f5f5]">10+</p>
-                <p className="text-sm text-[#808080] mt-1">Years Experience</p>
+              <div className="about-stat-item space-y-2 border-l-2 border-white/30 pl-6">
+                <p className="text-5xl lg:text-6xl font-bold text-white">
+                  {projectsCount}+
+                </p>
+                <p className="text-sm lg:text-base uppercase tracking-widest text-white/60">
+                  Projects Completed
+                </p>
               </div>
-              <div className="about-stat">
-                <p className="text-3xl font-medium text-[#f5f5f5]">500+</p>
-                <p className="text-sm text-[#808080] mt-1">Projects Done</p>
-              </div>
-              <div className="about-stat">
-                <p className="text-3xl font-medium text-[#f5f5f5]">50+</p>
-                <p className="text-sm text-[#808080] mt-1">Happy Clients</p>
-              </div>
-            </div>
 
-            {/* CTA */}
-            <div className="about-cta">
-              <a
-                href="#gallery"
-                className="inline-flex items-center gap-3 text-lg font-medium text-[#f5f5f5] border border-[#555] px-8 py-4 rounded-full hover:bg-[#f5f5f5] hover:text-[#0a0a0a] transition-all group"
-              >
-                <span>View My Work</span>
-                <svg
-                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <div className="about-stat-item space-y-2 border-l-2 border-white/30 pl-6">
+                <p className="text-5xl lg:text-6xl font-bold text-white">
+                  {clientsCount}+
+                </p>
+                <p className="text-sm lg:text-base uppercase tracking-widest text-white/60">
+                  Happy Clients
+                </p>
+              </div>
+
+              <div className="about-stat-item pt-4">
+                <a
+                  href="#gallery"
+                  className="inline-flex items-center gap-3 text-base lg:text-lg font-medium text-white border-2 border-white/40 px-8 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300 group backdrop-blur-sm"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  />
-                </svg>
-              </a>
+                  <span>View My Work</span>
+                  <svg
+                    className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+        <div className="flex flex-col items-center gap-2 text-white/60">
+          <span className="text-xs uppercase tracking-widest">Scroll</span>
+          <div className="w-px h-12 bg-white/30 animate-pulse" />
         </div>
       </div>
     </section>

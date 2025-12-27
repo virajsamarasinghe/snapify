@@ -32,7 +32,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
           x: e.clientX - 100,
           y: e.clientY - 100,
           duration: 0.5,
-          ease: "power2.out"
+          ease: "power2.out",
         });
       }
     };
@@ -57,6 +57,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
       // Set initial states
       gsap.set(".hero-title-char", { y: 120, opacity: 0, rotation: 5 });
       gsap.set(".hero-subtitle", { y: 30, opacity: 0 });
+      gsap.set(".hero-description", { y: 30, opacity: 0 });
       gsap.set(".floating-text", { opacity: 0, y: 20 });
       gsap.set(".hero-nav", { y: -100 });
       gsap.set(".hero-sidebar", { x: -100 });
@@ -71,74 +72,204 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         scaleY: 0,
         duration: 1.2,
         ease: "power3.inOut",
-        transformOrigin: "bottom"
+        transformOrigin: "bottom",
       });
 
       // Animate navigation
-      tl.to(".hero-nav", {
-        y: 0,
-        duration: 1,
-        ease: "power3.out"
-      }, "-=0.6");
+      tl.to(
+        ".hero-nav",
+        {
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+        },
+        "-=0.6"
+      );
 
       // Animate sidebar
-      tl.to(".hero-sidebar", {
-        x: 0,
-        duration: 1,
-        ease: "power3.out"
-      }, "-=0.8");
+      tl.to(
+        ".hero-sidebar",
+        {
+          x: 0,
+          duration: 1,
+          ease: "power3.out",
+        },
+        "-=0.8"
+      );
 
       // Animate main title with staggered characters
-      tl.to(".hero-title-char", {
-        y: 0,
-        opacity: 1,
-        rotation: 0,
-        duration: 1,
-        stagger: {
-          amount: 0.8,
-          from: "random"
+      tl.to(
+        ".hero-title-char",
+        {
+          y: 0,
+          opacity: 1,
+          rotation: 0,
+          duration: 1,
+          stagger: {
+            amount: 0.8,
+            from: "random",
+          },
+          ease: "back.out(1.7)",
         },
-        ease: "back.out(1.7)"
-      }, "-=0.5");
+        "-=0.5"
+      );
 
       // Animate subtitle
-      tl.to(".hero-subtitle", {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out"
-      }, "-=0.3");
+      tl.to(
+        ".hero-subtitle",
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        "-=0.3"
+      );
 
+      // Animate description
+      tl.to(
+        ".hero-description",
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        "-=0.5"
+      );
 
       // Animate floating elements
-      tl.to(".floating-text", {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.1,
-        ease: "power3.out"
-      }, "-=0.5");
+      tl.to(
+        ".floating-text",
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.1,
+          ease: "power3.out",
+        },
+        "-=0.5"
+      );
 
       // Animate CTA
-      tl.to(".hero-cta", {
-        scale: 1,
-        opacity: 1,
-        duration: 0.8,
-        ease: "back.out(1.7)"
-      }, "-=0.3");
+      tl.to(
+        ".hero-cta",
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+        },
+        "-=0.3"
+      );
 
       // Animate image counter
-      tl.to(".image-counter", {
-        opacity: 1,
-        duration: 0.6,
-        ease: "power3.out"
-      }, "-=0.2");
+      tl.to(
+        ".image-counter",
+        {
+          opacity: 1,
+          duration: 0.6,
+          ease: "power3.out",
+        },
+        "-=0.2"
+      );
 
+      // After 4 seconds (matching image rotation), fade out text and button completely
+      tl.to(
+        [
+          ".hero-title-char",
+          ".hero-subtitle",
+          ".hero-description",
+          ".hero-cta-wrapper",
+        ],
+        {
+          opacity: 0,
+          y: -20,
+          duration: 3,
+          ease: "sine.inOut",
+        },
+        "+=4"
+      );
 
+      // Move button to right middle corner and make it visible again - slower and smoother
+      tl.to(
+        ".hero-cta-wrapper",
+        {
+          position: "fixed",
+          top: "50%",
+          right: "2rem",
+          left: "auto",
+          bottom: "auto",
+          y: "-50%",
+          opacity: 1,
+          duration: 2.5,
+          ease: "sine.inOut",
+        },
+        "+=1.5"
+      );
+
+      // After showing full button, smoothly reduce to circular button - much slower
+      tl.to(
+        ".hero-cta span, .hero-cta svg",
+        {
+          opacity: 0,
+          duration: 3.5,
+          ease: "sine.inOut",
+        },
+        "+=3"
+      );
+
+      tl.to(
+        ".hero-cta",
+        {
+          width: "60px",
+          height: "60px",
+          padding: "0",
+          duration: 3.5,
+          ease: "sine.inOut",
+        },
+        "-=3.5"
+      );
     }, heroRef);
 
     return () => ctx.revert();
   }, [animationReady]);
+
+  // Separate effect for social links pulsing animation
+  useEffect(() => {
+    const socialLinks = document.querySelectorAll(".sidebar-social-link");
+    if (!socialLinks.length) return;
+
+    const pulseAnimation = () => {
+      socialLinks.forEach((link, index) => {
+        setTimeout(() => {
+          gsap.to(link, {
+            color: "#ffffff",
+            duration: 1.2,
+            ease: "sine.inOut",
+            onComplete: () => {
+              gsap.to(link, {
+                color: "rgba(255, 255, 255, 0.6)",
+                duration: 1.2,
+                ease: "sine.inOut",
+              });
+            },
+          });
+        }, index * 1200); // Stagger by 1200ms for smoother sequence
+      });
+    };
+
+    // Start first pulse after initial animations complete (around 8 seconds)
+    const initialDelay = setTimeout(() => {
+      pulseAnimation();
+      // Repeat every 10 seconds for a more relaxed rhythm
+      const interval = setInterval(pulseAnimation, 10000);
+
+      return () => clearInterval(interval);
+    }, 8000);
+
+    return () => clearTimeout(initialDelay);
+  }, []);
 
   return (
     <section
@@ -154,7 +285,9 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         className="fixed w-[200px] h-[200px] pointer-events-none z-40 mix-blend-difference hidden lg:block"
       >
         <div className="w-full h-full border border-white/20 rounded-full flex items-center justify-center">
-          <span className="text-white/60 text-xs uppercase tracking-widest">Explore</span>
+          <span className="text-white/60 text-xs uppercase tracking-widest">
+            Explore
+          </span>
         </div>
       </div>
 
@@ -164,14 +297,29 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
       {/* Sidebar */}
       <div className="hero-sidebar fixed left-0 top-0 h-full w-20 hidden lg:flex flex-col items-center justify-center z-20">
         <div className="flex flex-col items-center gap-16">
-          <a href="#" className="text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm">
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
+          >
             Instagram
           </a>
-          <a href="#" className="text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm">
-            Behance
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
+          >
+            Facebook
           </a>
-          <a href="#" className="text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm">
-            Dribbble
+          <a
+            href="https://tiktok.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
+          >
+            TikTok
           </a>
         </div>
       </div>
@@ -184,7 +332,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             <div
               key={index}
               className={`absolute inset-0 transition-all duration-1000 ${
-                index === currentImage ? 'opacity-100' : 'opacity-0'
+                index === currentImage ? "opacity-100" : "opacity-0"
               }`}
             >
               <div className="relative w-full h-full overflow-hidden">
@@ -193,7 +341,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
                   alt={img.title}
                   fill
                   className={`object-cover transition-transform duration-[8000ms] ${
-                    index === currentImage ? 'scale-110' : 'scale-100'
+                    index === currentImage ? "scale-110" : "scale-100"
                   }`}
                   priority={index === 0}
                 />
@@ -203,10 +351,16 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
 
               {/* Image info overlay */}
-              <div className={`absolute top-32 left-8 lg:left-12 transition-all duration-500 hidden lg:block ${
-                index === currentImage ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-              }`}>
-                <p className="text-white/60 text-sm uppercase tracking-[0.3em] mb-1">{img.category}</p>
+              <div
+                className={`absolute top-32 left-8 lg:left-12 transition-all duration-500 hidden lg:block ${
+                  index === currentImage
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
+                }`}
+              >
+                <p className="text-white/60 text-sm uppercase tracking-[0.3em] mb-1">
+                  {img.category}
+                </p>
                 <h3 className="text-white text-xl font-light">{img.title}</h3>
               </div>
             </div>
@@ -221,13 +375,13 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             </p>
           </div>
 
-          <h1 className="text-[3rem] sm:text-[4rem] lg:text-[8rem] font-bold leading-[0.9] mb-8">
+          <h1 className="text-[2.5rem] sm:text-[3.5rem] md:text-[5rem] lg:text-[8rem] font-bold leading-[0.9] mb-6 sm:mb-8 px-4">
             {Array.from("CAPTURING").map((char, i) => (
               <span
                 key={i}
                 className="hero-title-char inline-block text-white"
                 style={{
-                  textShadow: '0 0 80px rgba(255,255,255,0.5)',
+                  textShadow: "0 0 80px rgba(255,255,255,0.5)",
                 }}
               >
                 {char === " " ? "\u00A0" : char}
@@ -239,11 +393,11 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
                 key={i}
                 className="hero-title-char inline-block"
                 style={{
-                  background: 'linear-gradient(90deg, #fff, #888, #fff)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  textShadow: 'none',
+                  background: "linear-gradient(90deg, #fff, #888, #fff)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  textShadow: "none",
                 }}
               >
                 {char === " " ? "\u00A0" : char}
@@ -251,17 +405,27 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             ))}
           </h1>
 
-          <p className="hero-subtitle text-xl lg:text-2xl text-white/70 max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="hero-description text-base sm:text-lg md:text-xl lg:text-2xl text-white/70 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed px-4">
             Through my lens, I transform fleeting instants into timeless art,
             revealing beauty in the raw, unscripted moments of life.
           </p>
 
-          <div className="hero-cta inline-block">
-            <TransitionLink
-              href="/work"
-              className="group relative inline-flex items-center gap-4 bg-white text-black px-8 py-4 rounded-full text-lg font-medium overflow-hidden"
+          <div className="hero-cta-wrapper inline-block">
+            <button
+              onClick={() => {
+                const gallerySection = document.getElementById("gallery");
+                if (gallerySection) {
+                  gallerySection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }
+              }}
+              className="hero-cta group relative inline-flex items-center justify-center gap-4 bg-white text-black px-8 py-4 rounded-full text-lg font-medium overflow-hidden cursor-pointer z-50"
             >
-              <span className="relative z-10">View My Portfolio</span>
+              <span className="relative z-10 whitespace-nowrap">
+                View My Portfolio
+              </span>
               <svg
                 className="w-5 h-5 transform group-hover:translate-x-1 transition-transform relative z-10"
                 fill="none"
@@ -276,14 +440,14 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
                 />
               </svg>
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-            </TransitionLink>
+            </button>
           </div>
         </div>
 
         {/* Floating Elements removed as requested */}
 
         {/* Image Counter / Indicators */}
-        <div className="image-counter absolute bottom-8 right-8 lg:right-12 flex items-center gap-3 z-30">
+        <div className="image-counter absolute bottom-6 sm:bottom-8 right-4 sm:right-8 lg:right-12 flex items-center gap-2 sm:gap-3 z-30">
           {featuredImages.map((img, index) => (
             <button
               key={index}
@@ -294,8 +458,8 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
               <div
                 className={`h-1 rounded-full transition-all duration-500 ${
                   index === currentImage
-                    ? 'bg-white w-24'
-                    : 'bg-white/30 w-12 hover:bg-white/50'
+                    ? "bg-white w-16 sm:w-24"
+                    : "bg-white/30 w-8 sm:w-12 hover:bg-white/50"
                 }`}
               />
               {/* Tooltip on hover */}
