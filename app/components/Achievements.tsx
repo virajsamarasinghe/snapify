@@ -168,9 +168,11 @@ export default function Achievements() {
           end: "bottom 90%",
           scrub: 1,
           onUpdate: (self) => {
+            if (!gridRef.current || !pathRef.current) return;
+            
             const drawLength = self.progress * pathLength;
 
-            const containerRect = gridRef.current!.getBoundingClientRect();
+            const containerRect = gridRef.current.getBoundingClientRect();
 
             // Check Checkpoints
             const dots = document.querySelectorAll(".timeline-dot-wrapper");

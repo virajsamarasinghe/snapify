@@ -11,130 +11,46 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface CategoryItem {
-  id: number;
+// Interface from DB
+export interface GalleryCategory {
+  id: string;
   title: string;
-  images: string[]; // Multiple images for rotation
+  images: string[]; // We will pass populated product images here
   description: string;
   size: "small" | "medium" | "large";
 }
 
-const categories: CategoryItem[] = [
-  {
-    id: 1,
-    title: "University",
-    images: ["/img1.jpg", "/img2.jpg", "/img3.jpg"],
-    description: "Capturing academic life and campus moments.",
-    size: "large",
-  },
-  {
-    id: 2,
-    title: "Weddings",
-    images: ["/img4.jpg", "/img5.jpg", "/img6.jpg"],
-    description: "Preserving the magic of your special day.",
-    size: "medium",
-  },
-  {
-    id: 3,
-    title: "Army",
-    images: ["/img7.jpg", "/img8.jpg", "/img9.jpg"],
-    description: "Documenting military life and ceremonies.",
-    size: "medium",
-  },
-  {
-    id: 4,
-    title: "Events Coverage",
-    images: ["/img10.jpg", "/img11.jpg", "/img12.jpg"],
-    description: "Professional coverage of corporate and social events.",
-    size: "large",
-  },
-  {
-    id: 5,
-    title: "School Events",
-    images: [
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.12.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.12 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.13.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.13 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.13 (2).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.14.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.14 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.14 (2).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.15.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.15 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.16.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.16 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.16 (2).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17 (2).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.18.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.19.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.19 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.20.jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.20 (1).jpeg",
-      "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.20 (2).jpeg",
-    ],
-    description: "Capturing the joy and energy of school activities.",
-    size: "medium",
-  },
-  {
-    id: 6,
-    title: "World Photography",
-    images: [
-      "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09.jpeg",
-      "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.10.jpeg",
-      "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.11.jpeg",
-      "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09 (1).jpeg",
-      "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.10 (1).jpeg",
-    ],
-    description: "Exploring cultures and landscapes around the globe.",
-    size: "medium",
-  },
-  {
-    id: 7,
-    title: "Wildlife",
-    images: [
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.25.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.26.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.27.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.28.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.29.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.30.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.31.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.32.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.33.jpeg",
-      "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.34.jpeg",
-    ],
-    description: "The beauty and wonder of nature's creatures.",
-    size: "medium",
-  },
-];
+interface GalleryShowcaseNewProps {
+  categories?: GalleryCategory[]; // Make it optional to fallback or loading
+}
 
-const GalleryShowcaseNew = () => {
+const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
-  const [hoveredItem, setHoveredItem] = useState<number | null>(null);
-  const [currentImages, setCurrentImages] = useState<{ [key: number]: number }>(
-    {}
-  );
-  const [activeColorCard, setActiveColorCard] = useState<number | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [currentImages, setCurrentImages] = useState<{ [key: string]: number }>({});
+  const [activeColorCard, setActiveColorCard] = useState<string | null>(null);
   const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Use passed categories or fallback (empty)
+  // Logic: We rely on the parent to pass valid data.
 
   // Initialize current image index for each category
   useEffect(() => {
-    const initialImages: { [key: number]: number } = {};
+    const initialImages: { [key: string]: number } = {};
     categories.forEach((cat) => {
       initialImages[cat.id] = 0;
     });
     setCurrentImages(initialImages);
-  }, []);
+  }, [categories]);
 
   // Auto-rotate images for each category
   useEffect(() => {
     const intervals: NodeJS.Timeout[] = [];
 
     categories.forEach((category, index) => {
+      if (!category.images || category.images.length <= 1) return;
+
       // Different interval for each category (5-8 seconds)
       const interval = setInterval(
         () => {
@@ -151,10 +67,12 @@ const GalleryShowcaseNew = () => {
     return () => {
       intervals.forEach((interval) => clearInterval(interval));
     };
-  }, []);
+  }, [categories]);
 
   // Auto-cycle color through cards randomly
   useEffect(() => {
+    if (categories.length === 0) return;
+
     let lastIndex = -1;
 
     const pickRandomCard = () => {
@@ -168,7 +86,6 @@ const GalleryShowcaseNew = () => {
 
     const activateCard = () => {
       const cardId = pickRandomCard();
-      console.log("Activating card:", cardId); // Debug log
       setActiveColorCard(cardId);
 
       // Clear any existing timeout
@@ -178,7 +95,6 @@ const GalleryShowcaseNew = () => {
 
       // After 2 seconds, remove color
       colorTimeoutRef.current = setTimeout(() => {
-        console.log("Deactivating card"); // Debug log
         setActiveColorCard(null);
       }, 2000);
     };
@@ -195,7 +111,7 @@ const GalleryShowcaseNew = () => {
         clearTimeout(colorTimeoutRef.current);
       }
     };
-  }, []);
+  }, [categories]);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -351,7 +267,7 @@ const GalleryShowcaseNew = () => {
           {categories.map((item, index) => (
             <TransitionLink
               key={item.id}
-              href={`/gallery?category=${encodeURIComponent(item.title)}`}
+              href={`/marketplace`} // Redirect to marketplace instead of specific gallery for now
               className={`gallery-item group relative ${getItemClass(
                 item.size
               )} cursor-pointer block`}
@@ -363,28 +279,33 @@ const GalleryShowcaseNew = () => {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 {/* Multiple Images with crossfade */}
-                {item.images.map((img, imgIndex) => (
-                  <div
-                    key={imgIndex}
-                    className={`absolute inset-0 transition-opacity duration-1000 ${
-                      currentImages[item.id] === imgIndex
-                        ? "opacity-100"
-                        : "opacity-0"
-                    }`}
-                  >
-                    <Image
-                      src={img}
-                      alt={`${item.title} ${imgIndex + 1}`}
-                      fill
-                      className={`object-cover transition-all duration-1000 ${
-                        activeColorCard === item.id || hoveredItem === item.id
-                          ? "grayscale-0"
-                          : "grayscale"
+                {item.images.length > 0 ? (
+                  item.images.map((img, imgIndex) => (
+                    <div
+                      key={imgIndex}
+                      className={`absolute inset-0 transition-opacity duration-1000 ${
+                        (currentImages[item.id] || 0) === imgIndex
+                          ? "opacity-100"
+                          : "opacity-0"
                       }`}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    />
-                  </div>
-                ))}
+                    >
+                      <Image
+                        src={img}
+                        alt={`${item.title} ${imgIndex + 1}`}
+                        fill
+                        className={`object-cover transition-all duration-1000 ${
+                          activeColorCard === item.id || hoveredItem === item.id
+                            ? "grayscale-0"
+                            : "grayscale"
+                        }`}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      />
+                    </div>
+                  ))
+                 ) : (
+                    // Fallback if no images
+                    <div className="absolute inset-0 bg-neutral-800" />
+                 )}
 
                 {/* Gradient Overlays */}
                 <div
