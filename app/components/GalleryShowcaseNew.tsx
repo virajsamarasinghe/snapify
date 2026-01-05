@@ -199,15 +199,48 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
     return () => ctx.revert();
   }, []);
 
-  const getItemClass = (size: string) => {
-    switch (size) {
-      case "large":
-        return "lg:col-span-2 lg:row-span-2";
-      case "medium":
-        return "lg:col-span-1 lg:row-span-2";
-      default:
-        return "lg:col-span-1 lg:row-span-1";
-    }
+  const getBentoClass = (index: number) => {
+    // 4-column grid pattern
+    const pattern = [
+      "lg:col-span-2 lg:row-span-2", // 0: Large
+      "lg:col-span-1 lg:row-span-1", // 1: Small
+      "lg:col-span-1 lg:row-span-1", // 2: Small
+      "lg:col-span-1 lg:row-span-1", // 3: Small
+      "lg:col-span-1 lg:row-span-1", // 4: Small
+      "lg:col-span-2 lg:row-span-1", // 5: Wide
+    ];
+    // This pattern repeats every 6 items but needs to fit the grid-auto-flow
+    // Actually, a simpler pattern might be safer to avoid gaps:
+    // 0: Large (2x2)
+    // 1: Small
+    // 2: Small
+    // 3: Small
+    // 4: Small
+    // Returns a generally safe bento mix.
+    
+    const i = index % 10;
+    
+    if (i === 0) return "lg:col-span-2 lg:row-span-2"; // Big Feature
+    if (i === 1) return "lg:col-span-1 lg:row-span-1";
+    if (i === 2) return "lg:col-span-1 lg:row-span-1"; 
+    // Row 1 full (2+1+1 = 4)
+    // Row 2 starts with Big (from row 1) taking 2 slots.
+    
+    if (i === 3) return "lg:col-span-1 lg:row-span-1";
+    if (i === 4) return "lg:col-span-1 lg:row-span-1";
+    // Row 2 full.
+    
+    if (i === 5) return "lg:col-span-2 lg:row-span-1"; // Wide
+    if (i === 6) return "lg:col-span-1 lg:row-span-2"; // Tall
+    if (i === 7) return "lg:col-span-1 lg:row-span-1";
+    // Row 3: [Wide][Wide][Tall][Small]
+    
+    if (i === 8) return "lg:col-span-1 lg:row-span-1";
+    if (i === 9) return "lg:col-span-2 lg:row-span-1"; // Wide
+    // Row 4: [Small][Wide][Wide][Tall (from prev)] <- No, Tall takes col 3.
+    // Row 4: [Small][Wide][Wide][Tall]
+    
+    return "lg:col-span-1 lg:row-span-1";
   };
 
   return (
@@ -262,15 +295,15 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
         {/* Categories Grid */}
         <div
           ref={galleryRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20 auto-rows-[250px] sm:auto-rows-[300px] grid-flow-dense"
         >
           {categories.map((item, index) => (
             <TransitionLink
               key={item.id}
-              href={`/marketplace`} // Redirect to marketplace instead of specific gallery for now
-              className={`gallery-item group relative ${getItemClass(
-                item.size
-              )} cursor-pointer block`}
+              href={`/marketplace`}
+              className={`gallery-item group relative ${getBentoClass(
+                index
+              )} cursor-pointer block overflow-hidden rounded-xl sm:rounded-2xl`}
               data-speed={0.5 + (index % 3) * 0.3}
             >
               <div
