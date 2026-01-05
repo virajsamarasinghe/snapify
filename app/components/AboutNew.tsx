@@ -215,7 +215,7 @@ const AboutNew = () => {
 
       <div className="relative w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 h-full flex flex-col lg:flex-row items-center justify-center gap-8 sm:gap-12 lg:gap-24">
         {/* LAYER 1: MASSIVE TYPOGRAPHY (Background) */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full select-none pointer-events-none z-0 overflow-hidden mix-blend-difference">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full select-none pointer-events-none z-0 overflow-hidden mix-blend-difference opacity-50">
           <h1 className="big-text-layer text-[15vw] sm:text-[18vw] lg:text-[22vw] font-black leading-[0.8] text-[#222] tracking-tighter whitespace-nowrap pl-2 sm:pl-4 lg:pl-0">
             VISUAL
           </h1>
@@ -227,9 +227,9 @@ const AboutNew = () => {
           </h1>
         </div>
 
-        {/* LAYER 2: ASYMMETRIC IMAGE WITH CAROUSEL */}
-        <div className="relative z-10 w-full lg:w-5/12 h-[50vh] sm:h-[60vh] lg:h-[80vh] flex items-center justify-center lg:justify-end">
-          <div className="image-reveal relative w-[95%] sm:w-[90%] lg:w-[80%] h-full grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out clip-path-slant overflow-hidden">
+        {/* LAYER 2: LARGE IMAGE CAROUSEL */}
+        <div className="relative z-10 w-full lg:w-1/2 h-[50vh] sm:h-[60vh] lg:h-[80vh] flex items-center justify-center">
+          <div className="image-reveal relative w-full h-full transition-all duration-1000 ease-in-out overflow-hidden shadow-2xl">
             {/* Multiple images with diagonal slide animation */}
             {photos.map((photo, index) => (
               <div
@@ -252,12 +252,12 @@ const AboutNew = () => {
                 />
               </div>
             ))}
-            <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/40 to-transparent mix-blend-overlay" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 
             {/* iPhone-style Curved Camera Zoom Control - Right Side */}
             <div
               ref={zoomControlRef}
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20"
             >
               {/* Curved Track Container with Continuous Wheel Rotation */}
               <div
@@ -396,7 +396,7 @@ const AboutNew = () => {
             </div>
 
             {/* Photo indicator dots */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            <div className="absolute bottom-4 left-6 flex gap-2 z-10">
               {photos.map((_, index) => (
                 <div
                   key={index}
@@ -410,38 +410,38 @@ const AboutNew = () => {
         </div>
 
         {/* LAYER 3: FLOATING GLASS CARD (Content) */}
-        <div className="relative z-20 w-full lg:w-5/12">
-          <div className="floating-card bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 lg:p-12 rounded-none border-l-4 border-l-purple-500 shadow-2xl">
+        <div className="relative z-20 w-full lg:w-4/12">
+          <div className="floating-card bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 rounded-2xl border-l-0 shadow-2xl">
             <span className="block text-purple-400 text-[10px] sm:text-xs font-mono tracking-[0.2em] sm:tracking-[0.3em] mb-4 sm:mb-6">
               // THE ARCHITECT OF LIGHT
             </span>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-6 sm:mb-8 leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
               Beyond the <br />
               <span className="italic font-serif text-white/50">Frame</span>
             </h2>
 
-            <p className="text-white/70 text-base sm:text-lg leading-relaxed font-light mb-6 sm:mb-8">
+            <p className="text-white/70 text-base leading-relaxed font-light mb-8">
               My work is an exploration of the human condition. I don't just
               capture moments; I deconstruct them to reveal the raw emotion
               hidden beneath. A visual symphony where every shadow tells a story
               and every highlight sings.
             </p>
 
-            <div className="flex gap-8 sm:gap-12 pt-6 sm:pt-8 border-t border-white/10">
+            <div className="grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
               <div>
-                <span className="block text-3xl sm:text-4xl font-bold text-white mb-1">
+                <span className="block text-4xl font-bold text-white mb-1">
                   12
                 </span>
-                <span className="text-[10px] sm:text-xs text-white/40 uppercase tracking-widest">
+                <span className="text-xs text-white/40 uppercase tracking-widest">
                   Years Experience
                 </span>
               </div>
               <div>
-                <span className="block text-3xl sm:text-4xl font-bold text-white mb-1">
+                <span className="block text-4xl font-bold text-white mb-1">
                   50+
                 </span>
-                <span className="text-[10px] sm:text-xs text-white/40 uppercase tracking-widest">
+                <span className="text-xs text-white/40 uppercase tracking-widest">
                   Global Exhibitions
                 </span>
               </div>
