@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Snapify - Backend & Admin Setup
 
-## Getting Started
+This guide explains how to set up the backend, database, and admin dashboard for **Snapify**.
 
-First, run the development server:
+## Prerequisites
+- **Node.js** (v18 or higher)
+- **MongoDB Atlas** account (or local MongoDB)
+
+## 1. Installation
+
+Install the required dependencies:
+
+```bash
+npm install
+```
+
+## 2. Environment Configuration
+
+Create a `.env` file in the root directory and add the following variables:
+
+```env
+# MongoDB Connection String (Get this from MongoDB Atlas)
+DATABASE_URL="mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/snapify"
+
+# NextAuth Configuration
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-super-secret-key-change-this"
+```
+
+## 3. Database Seeding
+
+We have prepared scripts to populate your database with initial data.
+
+### Seed Admin User
+Creates a default admin account.
+
+```bash
+npx dotenv -e .env -- node scripts/seed-admin.js
+```
+*   **Email**: `admin@snapify.com`
+*   **Password**: `password123`
+
+### Seed Original Categories
+Restores the original 7 categories (University, Weddings, etc.) with default images.
+
+```bash
+npx dotenv -e .env -- node scripts/seed-data.js
+```
+
+## 4. Running the Application
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 5. Admin Dashboard
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Access the admin panel at:
+**[http://localhost:3000/admin](http://localhost:3000/admin)**
 
-## Learn More
+Login with the admin credentials seeded above.
 
-To learn more about Next.js, take a look at the following resources:
+### Features
+-   **Dashboard**: Overview of total categories and products.
+-   **Categories**: Create, Edit, Delete categories.
+-   **Products**: Manage products, set prices, and update status (Available/Sold).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+-   **Framework**: Next.js 15 (App Router)
+-   **Database**: MongoDB (via Mongoose)
+-   **Auth**: NextAuth.js
+-   **Styling**: Tailwind CSS + Lucide Icons

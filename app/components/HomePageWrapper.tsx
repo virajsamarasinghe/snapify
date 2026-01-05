@@ -5,13 +5,17 @@ import dynamic from "next/dynamic";
 import ArtisticReveal from "./ArtisticReveal";
 import AboutNew from "./AboutNew";
 import HeroNew from "./HeroNew";
-import GalleryShowcaseNew from "./GalleryShowcaseNew";
+import GalleryShowcaseNew, { GalleryCategory } from "./GalleryShowcaseNew";
 import Achievements from "./Achievements";
 import GalleryScroll from "./GalleryScroll";
 import MarketplaceCTA from "./MarketplaceCTA";
 import Footer from "./Footer";
 
-export default function HomePageWrapper() {
+interface HomePageWrapperProps {
+  categories?: GalleryCategory[];
+}
+
+export default function HomePageWrapper({ categories = [] }: HomePageWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [contentReady, setContentReady] = useState(false);
 
@@ -86,7 +90,7 @@ export default function HomePageWrapper() {
       <div className={isLoading ? "opacity-0" : "opacity-100 transition-opacity duration-500"}>
         <HeroNew animationReady={!isLoading} />
         <AboutNew />
-        <GalleryShowcaseNew />
+        <GalleryShowcaseNew categories={categories} />
         <Achievements />
         <GalleryScroll />
         <MarketplaceCTA />
