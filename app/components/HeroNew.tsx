@@ -174,62 +174,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         "-=0.2"
       );
 
-      // After 4 seconds (matching image rotation), fade out text and button completely
-      tl.to(
-        [
-          ".hero-title-char",
-          ".hero-subtitle",
-          ".hero-description",
-          ".hero-cta-wrapper",
-        ],
-        {
-          opacity: 0,
-          y: -20,
-          duration: 3,
-          ease: "sine.inOut",
-        },
-        "+=4"
-      );
 
-      // Move button to right middle corner and make it visible again - slower and smoother
-      tl.to(
-        ".hero-cta-wrapper",
-        {
-          position: "fixed",
-          top: "50%",
-          right: "2rem",
-          left: "auto",
-          bottom: "auto",
-          y: "-50%",
-          opacity: 1,
-          duration: 2.5,
-          ease: "sine.inOut",
-        },
-        "+=1.5"
-      );
-
-      // After showing full button, smoothly reduce to circular button - much slower
-      tl.to(
-        ".hero-cta span, .hero-cta svg",
-        {
-          opacity: 0,
-          duration: 3.5,
-          ease: "sine.inOut",
-        },
-        "+=3"
-      );
-
-      tl.to(
-        ".hero-cta",
-        {
-          width: "60px",
-          height: "60px",
-          padding: "0",
-          duration: 3.5,
-          ease: "sine.inOut",
-        },
-        "-=3.5"
-      );
     }, heroRef);
 
     return () => ctx.revert();

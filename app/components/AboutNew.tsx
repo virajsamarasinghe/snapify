@@ -13,8 +13,8 @@ if (typeof window !== "undefined") {
 // Photo list for carousel
 const photos = [
   "/about/man.jpeg",
-  "/about/WhatsApp Image 2025-12-28 at 02.52.03 (2).jpeg",
-  "/about/WhatsApp Image 2025-12-28 at 02.52.04.jpeg",
+  "/about/man2.jpeg",
+  "/about/man3.jpeg",
 ];
 
 const AboutNew = () => {
