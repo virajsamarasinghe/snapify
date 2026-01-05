@@ -174,62 +174,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         "-=0.2"
       );
 
-      // After 4 seconds (matching image rotation), fade out text and button completely
-      tl.to(
-        [
-          ".hero-title-char",
-          ".hero-subtitle",
-          ".hero-description",
-          ".hero-cta-wrapper",
-        ],
-        {
-          opacity: 0,
-          y: -20,
-          duration: 3,
-          ease: "sine.inOut",
-        },
-        "+=4"
-      );
 
-      // Move button to right middle corner and make it visible again - slower and smoother
-      tl.to(
-        ".hero-cta-wrapper",
-        {
-          position: "fixed",
-          top: "50%",
-          right: "2rem",
-          left: "auto",
-          bottom: "auto",
-          y: "-50%",
-          opacity: 1,
-          duration: 2.5,
-          ease: "sine.inOut",
-        },
-        "+=1.5"
-      );
-
-      // After showing full button, smoothly reduce to circular button - much slower
-      tl.to(
-        ".hero-cta span, .hero-cta svg",
-        {
-          opacity: 0,
-          duration: 3.5,
-          ease: "sine.inOut",
-        },
-        "+=3"
-      );
-
-      tl.to(
-        ".hero-cta",
-        {
-          width: "60px",
-          height: "60px",
-          padding: "0",
-          duration: 3.5,
-          ease: "sine.inOut",
-        },
-        "-=3.5"
-      );
     }, heroRef);
 
     return () => ctx.revert();
@@ -324,8 +269,9 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         </div>
       </div>
 
+
       {/* Main Content */}
-      <div className="relative h-full flex items-center justify-center px-8 lg:px-20">
+      <div className="relative h-full px-8 lg:px-20">
         {/* Full Background Images */}
         <div className="absolute inset-0">
           {featuredImages.map((img, index) => (
@@ -346,36 +292,21 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
                   priority={index === 0}
                 />
               </div>
-              {/* Gradient overlays for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
-
-              {/* Image info overlay */}
-              <div
-                className={`absolute top-32 left-8 lg:left-12 transition-all duration-500 hidden lg:block ${
-                  index === currentImage
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-              >
-                <p className="text-white/60 text-sm uppercase tracking-[0.3em] mb-1">
-                  {img.category}
-                </p>
-                <h3 className="text-white text-xl font-light">{img.title}</h3>
-              </div>
+              {/* Subtle bottom gradient for text readability only */}
+              <div className="absolute bottom-0 left-0 right-0 h-[70vh] bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             </div>
           ))}
         </div>
 
-        {/* Hero Text */}
-        <div className="relative z-20 text-center max-w-6xl mx-auto">
-          <div className="mb-6">
+        {/* Hero Text - Positioned Bottom Left */}
+        <div className="absolute bottom-12 left-8 lg:left-20 z-20 text-left max-w-4xl">
+          <div className="mb-4">
             <p className="hero-subtitle text-lg lg:text-xl text-white/60 uppercase tracking-[0.3em] font-light">
               Visual Storyteller
             </p>
           </div>
 
-          <h1 className="text-[2.5rem] sm:text-[3.5rem] md:text-[5rem] lg:text-[8rem] font-bold leading-[0.9] mb-6 sm:mb-8 px-4">
+          <h1 className="hero-title text-[3.5rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-bold leading-[0.9] mb-6">
             {Array.from("CAPTURING").map((char, i) => (
               <span
                 key={i}
@@ -405,7 +336,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             ))}
           </h1>
 
-          <p className="hero-description text-base sm:text-lg md:text-xl lg:text-2xl text-white/70 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed px-4">
+          <p className="hero-description text-base sm:text-lg md:text-xl text-white/70 max-w-xl mb-8 leading-relaxed">
             Through my lens, I transform fleeting instants into timeless art,
             revealing beauty in the raw, unscripted moments of life.
           </p>
@@ -444,38 +375,34 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
           </div>
         </div>
 
-        {/* Floating Elements removed as requested */}
-
-        {/* Image Counter / Indicators */}
-        <div className="image-counter absolute bottom-6 sm:bottom-8 right-4 sm:right-8 lg:right-12 flex items-center gap-2 sm:gap-3 z-30">
-          {featuredImages.map((img, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImage(index)}
-              className="relative group"
-              aria-label={`View ${img.title}`}
-            >
-              <div
-                className={`h-1 rounded-full transition-all duration-500 ${
-                  index === currentImage
-                    ? "bg-white w-16 sm:w-24"
-                    : "bg-white/30 w-8 sm:w-12 hover:bg-white/50"
-                }`}
-              />
-              {/* Tooltip on hover */}
-              <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                {img.title}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/60">
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
-        <div className="w-[1px] h-12 bg-white/30 relative overflow-hidden">
-          <div className="absolute top-0 w-full h-1/3 bg-white animate-bounce" />
+        {/* Image Counter / Indicators - Bottom Right on Desktop, Top Right on Mobile */}
+        <div className="image-counter absolute top-28 right-8 lg:top-auto lg:bottom-12 lg:right-20 flex flex-col items-end gap-4 z-30">
+           {/* Current Image Category Display */}
+           <div className="mb-4 text-right">
+             <p className="text-white/40 text-sm uppercase tracking-widest mb-1">Current Collection</p>
+             <p className="text-white text-xl font-light tracking-wide">
+               {featuredImages[currentImage].category}
+             </p>
+           </div>
+           
+           <div className="flex items-center gap-3">
+            {featuredImages.map((img, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImage(index)}
+                className="relative group"
+                aria-label={`View ${img.title}`}
+              >
+                <div
+                  className={`h-1 rounded-full transition-all duration-500 ${
+                    index === currentImage
+                      ? "bg-white w-16"
+                      : "bg-white/30 w-8 hover:w-12 hover:bg-white/50"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
