@@ -20,8 +20,10 @@ export default async function ProductsPage() {
   const products = productsDocs.map((doc: any) => ({
     id: doc._id.toString(),
     title: doc.title,
+    description: doc.description || "",
     price: doc.price,
     images: doc.images || [],
+    status: doc.status || "available",
     category: doc.category
       ? { id: doc.category._id.toString(), name: doc.category.name }
       : { id: "", name: "Unknown" },
