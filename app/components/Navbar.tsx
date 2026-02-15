@@ -54,7 +54,7 @@ export default function Navbar({ className = "" }: { className?: string; animate
               href="/"
               className="nav-item flex items-center gap-3"
             >
-              <div className="w-8 h-8 relative">
+              {/* <div className="w-8 h-8 relative">
                 <Image
                   src="/hero/camera.jpg"
                   alt="Snapify"
@@ -62,8 +62,8 @@ export default function Navbar({ className = "" }: { className?: string; animate
                   height={32}
                   className="w-full h-full object-cover"
                 />
-              </div>
-              <span className="text-2xl font-bold text-white">SNAPIFY</span>
+              </div> */}
+              <span className="text-2xl font-bold text-white">JK</span>
             </TransitionLink>
 
             {/* Navigation Links */}
@@ -74,12 +74,12 @@ export default function Navbar({ className = "" }: { className?: string; animate
               >
                 Home
               </TransitionLink>
-              <TransitionLink
+              {/* <TransitionLink
                 href="/#about"
                 className="nav-item text-white/60 hover:text-white transition-colors"
               >
                 About
-              </TransitionLink>
+              </TransitionLink> */}
               <TransitionLink
                 href="/#gallery"
                 className="nav-item text-white/60 hover:text-white transition-colors"

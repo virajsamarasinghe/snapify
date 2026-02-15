@@ -243,7 +243,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
       <div className="hero-sidebar fixed left-0 top-0 h-full w-20 hidden lg:flex flex-col items-center justify-center z-20">
         <div className="flex flex-col items-center gap-16">
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/jagathkalupahana_photography?igsh=a2Q4ajBkdXVhb3k="
             target="_blank"
             rel="noopener noreferrer"
             className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
@@ -251,7 +251,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             Instagram
           </a>
           <a
-            href="https://facebook.com"
+            href="https://www.facebook.com/share/1AaFHJ5cJj/?mibextid=wwXIfr"
             target="_blank"
             rel="noopener noreferrer"
             className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
@@ -259,7 +259,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             Facebook
           </a>
           <a
-            href="https://tiktok.com"
+            href="https://www.tiktok.com/@j_kalupahana_photography?_r=1&_t=ZS-93vxK2Wtti9"
             target="_blank"
             rel="noopener noreferrer"
             className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
