@@ -300,7 +300,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           {categories.map((item, index) => (
             <TransitionLink
               key={item.id}
-              href={`/marketplace`}
+              href={`/gallery?category=${encodeURIComponent(item.title)}`}
               className={`gallery-item group relative ${getBentoClass(
                 index
               )} cursor-pointer block overflow-hidden rounded-xl sm:rounded-2xl`}
