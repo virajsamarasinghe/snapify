@@ -366,16 +366,55 @@ function GalleryContent() {
 
         <div className="overflow-hidden">
           <h1 className="text-[8vw] sm:text-[10vw] lg:text-[12vw] leading-[0.8] font-bold tracking-tighter uppercase text-white/90 mb-6 sm:mb-8 whitespace-nowrap perspective-1000">
-            {Array.from(selectedCategory).map((char, i) => (
-              <span key={i} className="hero-text-char inline-block">
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
+            {(["Events Coverage", "School Events", "World Photography"].includes(selectedCategory)) ? (
+              <>
+                {selectedCategory.split(" ").map((word, wordIndex) => (
+                  <span key={wordIndex} className="block whitespace-nowrap leading-[0.9]">
+                    {Array.from(word).map((char, charIndex) => (
+                      <span key={charIndex} className="hero-text-char inline-block">
+                        {char}
+                      </span>
+                    ))}
+                  </span>
+                ))}
+              </>
+            ) : (
+              Array.from(selectedCategory).map((char, i) => (
+                <span key={i} className="hero-text-char inline-block">
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              ))
+            )}
           </h1>
           <p className="gallery-subtitle text-white/60 text-base sm:text-lg lg:text-xl font-light">
-            Explore our collection of {selectedCategory.toLowerCase()}{" "}
-            photography
+            {selectedCategory === "All"
+              ? "photography"
+              : "photography"}
           </p>
+        </div>
+
+        {/* Category Filters */}
+        <div className="flex flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-12 overflow-x-auto pb-4 no-scrollbar">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setSelectedCategory(cat);
+                // Update URL without refreshing
+                const url = new URL(window.location.href);
+                if (cat === "All") url.searchParams.delete("category");
+                else url.searchParams.set("category", cat);
+                window.history.replaceState({}, "", url);
+              }}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full border text-xs sm:text-sm uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
+                selectedCategory === cat
+                  ? "bg-white text-black border-white"
+                  : "bg-transparent text-white/50 border-white/20 hover:text-white hover:border-white/50"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </header>
 
@@ -571,14 +610,7 @@ function GalleryContent() {
                   </p>
                 </div>
 
-                <div className="pt-8 border-t border-white/10 flex flex-col gap-4">
-                  <button className="w-full py-4 bg-white text-black font-bold uppercase tracking-widest hover:bg-white/90 transition-colors">
-                    Acquire Print
-                  </button>
-                  <button className="w-full py-4 border border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white/5 transition-colors">
-                    View Details
-                  </button>
-                </div>
+
               </div>
             </div>
           </div>
