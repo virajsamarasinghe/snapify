@@ -117,7 +117,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <h2 className="footer-link text-3xl lg:text-4xl font-bold text-white mb-4">
-              SNAPIFY
+              JK
             </h2>
             <p className="footer-text text-white/60 mb-6 max-w-md">
               Capturing moments, creating memories. Professional photography
