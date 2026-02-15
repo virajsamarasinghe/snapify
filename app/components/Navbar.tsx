@@ -6,7 +6,7 @@ import gsap from "gsap";
 import TransitionLink from "./TransitionLink";
 import ContactPopup from "./ContactPopup";
 
-export default function Navbar() {
+export default function Navbar({ className = "" }: { className?: string; animateOnMount?: boolean }) {
   const navRef = useRef<HTMLDivElement>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
 
@@ -43,7 +43,7 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-md"
+      className={`fixed top-0 left-0 right-0 z-50 ${className || "bg-[#0a0a0a]/95 backdrop-blur-md"}`}
     >
       <div className="relative">
         {/* Main Navigation */}

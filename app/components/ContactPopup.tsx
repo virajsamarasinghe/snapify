@@ -108,7 +108,12 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
           </div>
 
           {/* Contact Form */}
-          <form className="space-y-6">
+          <form 
+            className="space-y-6"
+            action="mailto:studionethma@yahoo.com"
+            method="post"
+            encType="text/plain"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label
@@ -120,8 +125,10 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
                 <input
                   type="text"
                   id="name"
+                  name="name"
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
                   placeholder="Your name"
+                  required
                 />
               </div>
               <div>
@@ -134,8 +141,10 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
                   placeholder="your@email.com"
+                  required
                 />
               </div>
             </div>
@@ -150,8 +159,10 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
               <input
                 type="text"
                 id="subject"
+                name="subject"
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
                 placeholder="What's this about?"
+                required
               />
             </div>
 
@@ -164,9 +175,11 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
               </label>
               <textarea
                 id="message"
+                name="message"
                 rows={5}
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors resize-none"
                 placeholder="Tell me about your project..."
+                required
               />
             </div>
 
@@ -179,20 +192,37 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
           </form>
 
           {/* Contact Info */}
-          <div className="pt-6 border-t border-white/10 flex flex-wrap gap-6 justify-center text-sm text-white/60">
-            <a
-              href="mailto:hello@jk.com"
-              className="hover:text-white transition-colors"
-            >
-              hello@jk.com
-            </a>
-            <span className="text-white/20">|</span>
-            <a
-              href="tel:+1234567890"
-              className="hover:text-white transition-colors"
-            >
-              +1 (234) 567-890
-            </a>
+          <div className="pt-6 border-t border-white/10 flex flex-col items-center gap-4 text-sm text-white/60">
+            <div className="flex gap-4 flex-wrap justify-center">
+                <a
+                href="mailto:studionethma@yahoo.com"
+                className="hover:text-white transition-colors"
+                >
+                studionethma@yahoo.com
+                </a>
+                <span className="text-white/20 hidden sm:inline">|</span>
+                <a
+                href="mailto:studionethma3@gmail.com"
+                className="hover:text-white transition-colors"
+                >
+                studionethma3@gmail.com
+                </a>
+            </div>
+            <div className="flex gap-4 flex-wrap justify-center">
+                <a
+                href="tel:+94777901129"
+                className="hover:text-white transition-colors"
+                >
+                +94 777 901 129
+                </a>
+                <span className="text-white/20 hidden sm:inline">|</span>
+                <a
+                href="tel:+94112624725"
+                className="hover:text-white transition-colors"
+                >
+                +94 112 624 725
+                </a>
+            </div>
           </div>
         </div>
       </div>

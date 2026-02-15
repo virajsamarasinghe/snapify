@@ -299,14 +299,14 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         </div>
 
         {/* Hero Text - Positioned Bottom Left */}
-        <div className="absolute bottom-12 left-8 lg:left-20 z-20 text-left max-w-4xl">
+        <div className="absolute bottom-12 left-6 min-[380px]:left-8 lg:left-20 z-20 text-left max-w-4xl pr-4">
           <div className="mb-4">
-            <p className="hero-subtitle text-lg lg:text-xl text-white/60 uppercase tracking-[0.3em] font-light">
+            <p className="hero-subtitle text-sm min-[380px]:text-lg lg:text-xl text-white/60 uppercase tracking-[0.2em] min-[380px]:tracking-[0.3em] font-light">
               Visual Storyteller
             </p>
           </div>
 
-          <h1 className="hero-title text-[3.5rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-bold leading-[0.9] mb-6">
+          <h1 className="hero-title text-4xl min-[380px]:text-[3.5rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-bold leading-[1.1] min-[380px]:leading-[0.9] mb-4 min-[380px]:mb-6">
             {Array.from("CAPTURING").map((char, i) => (
               <span
                 key={i}
@@ -336,7 +336,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
             ))}
           </h1>
 
-          <p className="hero-description text-base sm:text-lg md:text-xl text-white/70 max-w-xl mb-8 leading-relaxed">
+          <p className="hero-description text-sm min-[380px]:text-base sm:text-lg md:text-xl text-white/70 max-w-xl mb-6 min-[380px]:mb-8 leading-relaxed">
             Through my lens, I transform fleeting instants into timeless art,
             revealing beauty in the raw, unscripted moments of life.
           </p>
@@ -379,8 +379,8 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
         <div className="image-counter absolute top-28 right-8 lg:top-auto lg:bottom-12 lg:right-20 flex flex-col items-end gap-4 z-30">
            {/* Current Image Category Display */}
            <div className="mb-4 text-right">
-             <p className="text-white/40 text-sm uppercase tracking-widest mb-1">Current Collection</p>
-             <p className="text-white text-xl font-light tracking-wide">
+             <p className="text-white/40 text-xs min-[380px]:text-sm uppercase tracking-widest mb-1">Current Collection</p>
+             <p className="text-white text-lg min-[380px]:text-xl font-light tracking-wide">
                {featuredImages[currentImage].category}
              </p>
            </div>

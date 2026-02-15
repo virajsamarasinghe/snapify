@@ -174,16 +174,18 @@ export default function Footer() {
             <div className="space-y-3">
               <p className="footer-text text-white/60">
                 <span className="text-white/40">Email:</span><br />
-                hello@snapify.com
+                <a href="mailto:studionethma@yahoo.com" className="hover:text-white transition-colors">studionethma@yahoo.com</a><br />
+                <a href="mailto:studionethma3@gmail.com" className="hover:text-white transition-colors">studionethma3@gmail.com</a>
               </p>
               <p className="footer-text text-white/60">
                 <span className="text-white/40">Phone:</span><br />
-                +1 (555) 123-4567
+                <a href="tel:+94777901129" className="hover:text-white transition-colors">+94 777 901 129</a><br />
+                <a href="tel:+94112624725" className="hover:text-white transition-colors">+94 112 624 725</a>
               </p>
               <p className="footer-text text-white/60">
                 <span className="text-white/40">Studio:</span><br />
-                123 Creative Street<br />
-                New York, NY 10001
+                No 144, Raja Mawatha,<br />
+                Ratmalana
               </p>
             </div>
           </div>
@@ -194,7 +196,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="footer-text text-white/40 text-sm">
-            © {currentYear} Snapify. All rights reserved.
+            © {currentYear} Studio Nethma. All rights reserved.
           </p>
 
           <div className="flex gap-6">

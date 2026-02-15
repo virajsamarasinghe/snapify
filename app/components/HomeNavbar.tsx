@@ -60,8 +60,8 @@ export default function HomeNavbar({
             JK
           </TransitionLink>
           <div className="hidden lg:flex items-center gap-8">
-            {/* <TransitionLink href="/work" className="text-white/80 hover:text-white transition-colors">Work</TransitionLink> */}
-            <button
+            <TransitionLink href="/gallery" className="text-white/80 hover:text-white transition-colors">Gallery</TransitionLink>
+            {/* <button
               onClick={() => {
                 const gallerySection = document.getElementById("gallery");
                 if (gallerySection) {
@@ -74,7 +74,7 @@ export default function HomeNavbar({
               className="text-white/80 hover:text-white transition-colors cursor-pointer"
             >
               Gallery
-            </button>
+            </button> */}
             {/* <TransitionLink href="#about" className="text-white/80 hover:text-white transition-colors">About</TransitionLink> */}
             <TransitionLink
               href="/marketplace"

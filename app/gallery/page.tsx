@@ -6,7 +6,7 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import TransitionLink from "../components/TransitionLink";
-import HomeNavbar from "../components/HomeNavbar";
+import Navbar from "../components/Navbar";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -335,7 +335,7 @@ function GalleryContent() {
       `}</style>
       {/* Navigation */}
       {/* Navigation */}
-      <HomeNavbar />
+      <Navbar className="bg-transparent backdrop-blur-none" />
 
       {/* Hero Section */}
       <header className="pt-32 sm:pt-40 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-12 container mx-auto">

@@ -114,7 +114,7 @@ export default function MarketplaceClient({ initialProducts, initialCategories }
 
   const handleWhatsAppClick = (artwork: MarketplaceProduct) => {
     const message = `Hi! I'm interested in purchasing "${artwork.title}" ($${artwork.price}). Is it still available?`;
-    const phoneNumber = "1234567890"; // Replace with actual WhatsApp number
+    const phoneNumber = "94777901129"; // Studio Nethma WhatsApp
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
