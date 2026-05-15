@@ -8,21 +8,25 @@ import HomeNavbar from "./HomeNavbar";
 
 interface HeroNewProps {
   animationReady?: boolean;
+  heroImages?: any[];
 }
 
-export default function HeroNew({ animationReady = true }: HeroNewProps) {
+export default function HeroNew({ animationReady = true, heroImages = [] }: HeroNewProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [currentImage, setCurrentImage] = useState(0);
 
-  // Featured images for the hero
-  const featuredImages = [
+  // Default fallback images
+  const defaultImages = [
     { src: "/hero/1.jpg", title: "Urban Dreams", category: "Street" },
     { src: "/hero/2.jpg", title: "Silent Moments", category: "Portrait" },
-    { src: "/hero/3.jpg", title: "Neon Nights", category: "Urban" },
-    { src: "/hero/4.jpg", title: "Raw Emotions", category: "Documentary" },
-    { src: "/hero/5.jpg", title: "Golden Hour", category: "Landscape" },
   ];
+
+  // Only use defaultImages if heroImages is completely undefined, 
+  // if it's an empty array (meaning they hid everything), use a safe fallback.
+  const featuredImages = heroImages && heroImages.length > 0 
+    ? heroImages 
+    : [{ src: "/placeholder.jpg", title: "Welcome", category: "Featured" }];
 
   useEffect(() => {
     // Mouse movement effect
@@ -284,7 +288,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
               <div className="relative w-full h-full overflow-hidden">
                 <Image
                   src={img.src}
-                  alt={img.title}
+                  alt={img.title || "Hero Image"}
                   fill
                   className={`object-cover transition-transform duration-[8000ms] ${
                     index === currentImage ? "scale-110" : "scale-100"
@@ -381,7 +385,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
            <div className="mb-4 text-right">
              <p className="text-white/40 text-xs min-[380px]:text-sm uppercase tracking-widest mb-1">Current Collection</p>
              <p className="text-white text-lg min-[380px]:text-xl font-light tracking-wide">
-               {featuredImages[currentImage].category}
+               {featuredImages[currentImage]?.category || "Featured"}
              </p>
            </div>
            
@@ -391,7 +395,7 @@ export default function HeroNew({ animationReady = true }: HeroNewProps) {
                 key={index}
                 onClick={() => setCurrentImage(index)}
                 className="relative group"
-                aria-label={`View ${img.title}`}
+                aria-label={`View ${img.title || "Image"}`}
               >
                 <div
                   className={`h-1 rounded-full transition-all duration-500 ${

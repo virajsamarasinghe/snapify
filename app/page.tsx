@@ -1,6 +1,9 @@
 import HomePageWrapper from "./components/HomePageWrapper";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
+import Hero from "@/models/Hero";
+import fs from "fs/promises";
+import path from "path";
 // Ensure Product model is registered for populate
 import "@/models/Product"; 
 
@@ -8,6 +11,22 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   await dbConnect();
+
+  // Fetch hero images from public/hero directory and filter out hidden ones
+  let heroImages: any[] = [];
+  try {
+    const hiddenHeroes = await Hero.find({ isHidden: true }).select("src").lean();
+    const hiddenSrcs = hiddenHeroes.map((h: any) => h.src);
+
+    const heroDir = path.join(process.cwd(), "public/hero");
+    const files = await fs.readdir(heroDir);
+    heroImages = files
+      .filter(file => [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(path.extname(file).toLowerCase()))
+      .map(file => ({ src: `/hero/${file}` }))
+      .filter(img => !hiddenSrcs.includes(img.src));
+  } catch (e) {
+    console.error("Failed to read hero directory:", e);
+  }
 
   // Fetch categories and populate products to get images
   const categoriesDocs = await Category.find()
@@ -46,5 +65,5 @@ export default async function Home() {
     };
   });
 
-  return <HomePageWrapper categories={categories} />;
+  return <HomePageWrapper categories={categories} heroImages={heroImages} />;
 }

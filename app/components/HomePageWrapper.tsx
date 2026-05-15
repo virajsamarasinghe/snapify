@@ -13,9 +13,10 @@ import Footer from "./Footer";
 
 interface HomePageWrapperProps {
   categories?: GalleryCategory[];
+  heroImages?: any[];
 }
 
-export default function HomePageWrapper({ categories = [] }: HomePageWrapperProps) {
+export default function HomePageWrapper({ categories = [], heroImages = [] }: HomePageWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [contentReady, setContentReady] = useState(false);
 
@@ -88,7 +89,7 @@ export default function HomePageWrapper({ categories = [] }: HomePageWrapperProp
 
       {/* Main content - render immediately but hidden behind loading screen */}
       <div className={isLoading ? "opacity-0" : "opacity-100 transition-opacity duration-500"}>
-        <HeroNew animationReady={!isLoading} />
+        <HeroNew animationReady={!isLoading} heroImages={heroImages} />
         <AboutNew />
         <GalleryShowcaseNew categories={categories} />
         <Achievements />
