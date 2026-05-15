@@ -7,7 +7,8 @@ import {
   FolderOpen, 
   PlusCircle, 
   TrendingUp, 
-  ArrowRight
+  ArrowRight,
+  ImageIcon
 } from "lucide-react";
 
 // Ensure models are registered
@@ -87,6 +88,15 @@ export default async function AdminDashboard() {
              >
                  <span className="flex items-center gap-2 text-sm font-medium">
                   <PlusCircle size={16} /> Add Product
+                </span>
+                <ArrowRight size={16} className="opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all" />
+             </Link>
+             <Link
+               href="/admin/hero"
+               className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-blue-600/20 hover:text-blue-300 border border-transparent hover:border-blue-500/30 transition-all duration-300 group/link"
+             >
+                 <span className="flex items-center gap-2 text-sm font-medium">
+                  <ImageIcon size={16} /> Manage Hero
                 </span>
                 <ArrowRight size={16} className="opacity-0 group-hover/link:opacity-100 -translate-x-2 group-hover/link:translate-x-0 transition-all" />
              </Link>
