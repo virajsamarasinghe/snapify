@@ -64,7 +64,6 @@ const Sidebar = () => {
 
   const links = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/categories", label: "Categories", icon: FolderOpen },
     { href: "/admin/hero", label: "Hero Section", icon: Image },
     { href: "/admin/about", label: "About", icon: User },
     { href: "/admin/recognition", label: "Recognition", icon: Trophy },
@@ -166,6 +165,25 @@ const Sidebar = () => {
             </Link>
           );
         })}
+
+        {/* Categories */}
+        <Link
+          href="/admin/categories"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+            pathname === "/admin/categories"
+              ? "bg-purple-600 text-white shadow-lg shadow-purple-500/20"
+              : "text-zinc-400 hover:bg-white/5 hover:text-white"
+          }`}
+        >
+          <FolderOpen
+            size={20}
+            className={`transition-colors ${pathname === "/admin/categories" ? "text-white" : "text-zinc-500 group-hover:text-purple-400"}`}
+          />
+          <span className="font-medium tracking-wide">Categories</span>
+          {pathname === "/admin/categories" && (
+            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          )}
+        </Link>
 
         {/* Products with sub-menu */}
         <div>
