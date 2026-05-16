@@ -98,10 +98,6 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     statusBarStyle: "black-translucent",
   },
-  icons: {
-    icon: "/logo1.jpg",
-    apple: "/logo1.jpg",
-  },
   manifest: "/manifest.json",
   other: {
     "geo.region": "LK",
