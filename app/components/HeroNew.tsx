@@ -20,8 +20,8 @@ export default function HeroNew({
 
   // Default fallback images
   const defaultImages = [
-    { src: "/hero/1.jpg", title: "Urban Dreams", category: "Street" },
-    { src: "/hero/2.jpg", title: "Silent Moments", category: "Portrait" },
+    { src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921228/snapify/hero/1_hemmnu.jpg", title: "Urban Dreams", category: "Street" },
+    { src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921233/snapify/hero/2_ovaqo4.jpg", title: "Silent Moments", category: "Portrait" },
   ];
 
   // Only use defaultImages if heroImages is completely undefined,

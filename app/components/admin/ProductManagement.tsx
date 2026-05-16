@@ -89,6 +89,7 @@ export default function ProductManagement({
         for (let i = 0; i < imageFiles.length; i++) {
           const formData = new FormData();
           formData.append("file", imageFiles[i]);
+          formData.append("folder", "snapify/marketplace/products");
           const res = await fetch("/api/upload", {
             method: "POST",
             body: formData,

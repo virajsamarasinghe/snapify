@@ -64,6 +64,7 @@ export default function CategoryManagement({
       if (imageFile) {
         const formData = new FormData();
         formData.append("file", imageFile);
+        formData.append("folder", "snapify/categories");
         const res = await fetch("/api/upload", {
           method: "POST",
           body: formData,
