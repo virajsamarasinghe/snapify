@@ -246,7 +246,7 @@ export default function AboutAdminPage() {
 
   return (
     <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-wrap gap-3 items-center justify-between">
           <div className="flex items-center gap-3">
@@ -269,150 +269,158 @@ export default function AboutAdminPage() {
           )}
         </div>
 
-        <form onSubmit={handleSave} className="space-y-6">
-          {/* Text content */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-white/10">
-              <p className="text-white font-semibold text-sm">Content</p>
-            </div>
-            <div className="p-6 space-y-4">
-              {field(
-                "Tagline (small top text)",
-                "tagline",
-                "// THE ARCHITECT OF LIGHT",
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {field("Heading", "heading", "Beyond the")}
-                {field("Heading italic part", "headingItalic", "Frame")}
+        <form onSubmit={handleSave}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            {/* LEFT: Content + Stats */}
+            <div className="space-y-5">
+              {/* Text content */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/10">
+                  <p className="text-white font-semibold text-sm">Content</p>
+                </div>
+                <div className="p-5 space-y-4">
+                  {field(
+                    "Tagline (small top text)",
+                    "tagline",
+                    "// THE ARCHITECT OF LIGHT",
+                  )}
+                  <div className="grid grid-cols-2 gap-4">
+                    {field("Heading", "heading", "Beyond the")}
+                    {field("Heading italic part", "headingItalic", "Frame")}
+                  </div>
+                  {field("Bio paragraph", "bio", "Your story...", true)}
+                </div>
               </div>
-              {field("Bio paragraph", "bio", "Your story...", true)}
-            </div>
-          </div>
 
-          {/* Stats */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-white/10">
-              <p className="text-white font-semibold text-sm">Stats</p>
-            </div>
-            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">
-                  Stat 1
-                </p>
-                {field("Value", "stat1Value", "12")}
-                {field("Label", "stat1Label", "Years Experience")}
+              {/* Stats */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/10">
+                  <p className="text-white font-semibold text-sm">Stats</p>
+                </div>
+                <div className="p-5 grid grid-cols-2 gap-5">
+                  <div className="space-y-3">
+                    <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">
+                      Stat 1
+                    </p>
+                    {field("Value", "stat1Value", "12")}
+                    {field("Label", "stat1Label", "Years Experience")}
+                  </div>
+                  <div className="space-y-3">
+                    <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">
+                      Stat 2
+                    </p>
+                    {field("Value", "stat2Value", "50+")}
+                    {field("Label", "stat2Label", "Global Exhibitions")}
+                  </div>
+                </div>
               </div>
-              <div className="space-y-3">
-                <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">
-                  Stat 2
-                </p>
-                {field("Value", "stat2Value", "50+")}
-                {field("Label", "stat2Label", "Global Exhibitions")}
-              </div>
-            </div>
-          </div>
 
-          {/* Photos */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
-            <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between gap-4">
-              <p className="text-white font-semibold text-sm">
-                Carousel Photos
-              </p>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-xs font-semibold transition-all"
-              >
-                {uploading ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  <ImagePlus size={14} />
-                )}
-                {uploading ? "Uploading…" : "Upload Photo"}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handlePhotoUpload(file);
-                  e.target.value = "";
-                }}
-              />
-            </div>
-            <div className="p-6">
-              {form.photos.length === 0 ? (
-                <p className="text-zinc-600 text-sm">No photos added yet.</p>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {form.photos.map((src, i) => (
-                    <div
-                      key={i}
-                      className="relative group aspect-square rounded-xl overflow-hidden border border-white/10"
-                    >
-                      <img
-                        src={src}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => removePhoto(i)}
-                          className="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                      <span className="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-0.5 rounded text-white/70">
-                        #{i + 1}
-                      </span>
-                    </div>
-                  ))}
+              {/* Feedback + Save */}
+              {msg && (
+                <div
+                  className={`flex items-start gap-3 px-4 py-3 rounded-xl text-sm ${msg.type === "success" ? "bg-green-500/10 border border-green-500/25 text-green-300" : "bg-red-500/10 border border-red-500/25 text-red-300"}`}
+                >
+                  {msg.type === "success" ? (
+                    <CheckCircle2
+                      size={17}
+                      className="shrink-0 mt-0.5 text-green-400"
+                    />
+                  ) : (
+                    <AlertCircle
+                      size={17}
+                      className="shrink-0 mt-0.5 text-red-400"
+                    />
+                  )}
+                  <p>{msg.text}</p>
                 </div>
               )}
-              <p className="text-xs text-zinc-600 mt-3">
-                Photos are shown in a carousel. Drag order follows the list
-                above.
-              </p>
+
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-500/20"
+              >
+                {saving ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Save size={16} />
+                )}
+                {saving ? "Saving…" : "Save Changes"}
+              </button>
+            </div>
+
+            {/* RIGHT: Photos */}
+            <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+              <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between gap-4">
+                <p className="text-white font-semibold text-sm">
+                  Carousel Photos
+                </p>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-xs font-semibold transition-all"
+                >
+                  {uploading ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <ImagePlus size={14} />
+                  )}
+                  {uploading ? "Uploading…" : "Upload Photo"}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handlePhotoUpload(file);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              <div className="p-5">
+                {form.photos.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-zinc-600 gap-3">
+                    <ImagePlus size={32} className="opacity-40" />
+                    <p className="text-sm">No photos added yet.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {form.photos.map((src, i) => (
+                      <div
+                        key={i}
+                        className="relative group aspect-square rounded-xl overflow-hidden border border-white/10"
+                      >
+                        <img
+                          src={src}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => removePhoto(i)}
+                            className="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                        <span className="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-0.5 rounded text-white/70">
+                          #{i + 1}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-zinc-600 mt-3">
+                  Photos are shown in a carousel. Drag order follows the list
+                  above.
+                </p>
+              </div>
             </div>
           </div>
-
-          {/* Feedback */}
-          {msg && (
-            <div
-              className={`flex items-start gap-3 px-4 py-3 rounded-xl text-sm ${msg.type === "success" ? "bg-green-500/10 border border-green-500/25 text-green-300" : "bg-red-500/10 border border-red-500/25 text-red-300"}`}
-            >
-              {msg.type === "success" ? (
-                <CheckCircle2
-                  size={17}
-                  className="shrink-0 mt-0.5 text-green-400"
-                />
-              ) : (
-                <AlertCircle
-                  size={17}
-                  className="shrink-0 mt-0.5 text-red-400"
-                />
-              )}
-              <p>{msg.text}</p>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-500/20"
-          >
-            {saving ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Save size={16} />
-            )}
-            {saving ? "Saving…" : "Save Changes"}
-          </button>
         </form>
       </div>
 
