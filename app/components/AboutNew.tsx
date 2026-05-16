@@ -450,7 +450,7 @@ const AboutNew = ({
             </p>
 
             <div className="grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
-              <div>
+              <div className="stat-vertical">
                 <span className="block text-4xl font-bold text-white mb-1">
                   {stat1Value}
                 </span>
@@ -458,7 +458,7 @@ const AboutNew = ({
                   {stat1Label}
                 </span>
               </div>
-              <div>
+              <div className="stat-vertical">
                 <span className="block text-4xl font-bold text-white mb-1">
                   {stat2Value}
                 </span>

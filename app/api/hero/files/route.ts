@@ -19,11 +19,9 @@ export async function GET() {
     }));
 
     return NextResponse.json({ files });
-  } catch (error) {
+  } catch (error: any) {
+    const message = error?.message || "Failed to list images";
     console.error("Error listing hero images from Cloudinary:", error);
-    return NextResponse.json(
-      { error: "Failed to list images" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

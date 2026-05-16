@@ -93,26 +93,28 @@ export default async function Home() {
     .map((r: any) => ({ src: r.secure_url as string }))
     .filter((img) => !hiddenSrcs.includes(img.src));
 
-  const categories = (categoriesDocs as any[]).map((doc: any) => {
-    const sizes: ("small" | "medium" | "large")[] = [
-      "medium",
-      "large",
-      "small",
-      "medium",
-    ];
-    const size = sizes[doc.name.length % sizes.length];
-    const productImages = doc.products
-      ? doc.products.flatMap((p: any) => p.images || [])
-      : [];
-    const images = [doc.image, ...productImages].filter(Boolean);
-    return {
-      id: doc._id.toString(),
-      title: doc.name,
-      images: images.length > 0 ? images : ["/placeholder.jpg"],
-      description: `Explore our ${doc.name} collection.`,
-      size,
-    };
-  });
+  const categories = (categoriesDocs as any[])
+    .map((doc: any) => {
+      const sizes: ("small" | "medium" | "large")[] = [
+        "medium",
+        "large",
+        "small",
+        "medium",
+      ];
+      const size = sizes[doc.name.length % sizes.length];
+      const productImages = doc.products
+        ? doc.products.flatMap((p: any) => p.images || [])
+        : [];
+      const images = [doc.image, ...productImages].filter(Boolean);
+      return {
+        id: doc._id.toString(),
+        title: doc.name,
+        images: images.length > 0 ? images : [],
+        description: `Explore our ${doc.name} collection.`,
+        size,
+      };
+    })
+    .filter((cat: any) => cat.images.length > 0);
 
   const achievements = (recognitionDocs as any[]).map((doc: any) => ({
     _id: doc._id.toString(),

@@ -22,6 +22,7 @@ interface LocalFile {
 export default function ManageHero() {
   const [localFiles, setLocalFiles] = useState<LocalFile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Upload state
   const [uploading, setUploading] = useState(false);
@@ -36,6 +37,7 @@ export default function ManageHero() {
 
   const fetchData = async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       // Fetch local files from public/hero
       const filesRes = await fetch("/api/hero/files");
@@ -46,7 +48,12 @@ export default function ManageHero() {
       const hiddenData = await hiddenRes.json();
       const hiddenSrcs = hiddenData.hiddenSrcs || [];
 
-      if (!filesData.files) throw new Error("Failed to load files");
+      if (!filesData.files) {
+        setFetchError(
+          filesData.error || "Failed to load images from Cloudinary",
+        );
+        return;
+      }
 
       const mergedFiles = filesData.files.map(
         (f: { filename: string; url: string; publicId: string }) => ({
@@ -58,8 +65,9 @@ export default function ManageHero() {
       );
 
       setLocalFiles(mergedFiles);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch data:", error);
+      setFetchError(error?.message || "Unexpected error loading images");
     } finally {
       setLoading(false);
     }
@@ -220,6 +228,22 @@ export default function ManageHero() {
         {loading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="animate-spin text-purple-500" size={32} />
+          </div>
+        ) : fetchError ? (
+          <div className="text-center py-12 border border-dashed border-red-800 rounded-xl space-y-2">
+            <p className="text-red-400 font-medium">Failed to load images</p>
+            <p className="text-zinc-500 text-sm">{fetchError}</p>
+            <p className="text-zinc-600 text-xs mt-2">
+              Ensure CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and
+              CLOUDINARY_API_SECRET are set in your Vercel environment
+              variables.
+            </p>
+            <button
+              onClick={fetchData}
+              className="mt-4 text-sm text-purple-400 underline hover:text-purple-300"
+            >
+              Retry
+            </button>
           </div>
         ) : localFiles.length === 0 ? (
           <div className="text-center py-12 text-zinc-500 border border-dashed border-zinc-800 rounded-xl">

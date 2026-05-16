@@ -53,9 +53,7 @@ export default function HeroNew({
   // Only use defaultImages if heroImages is completely undefined,
   // if it's an empty array (meaning they hid everything), use a safe fallback.
   const featuredImages =
-    heroImages && heroImages.length > 0
-      ? heroImages
-      : [{ src: "/placeholder.jpg", title: "Welcome", category: "Featured" }];
+    heroImages && heroImages.length > 0 ? heroImages : defaultImages;
 
   useEffect(() => {
     // Mouse movement effect

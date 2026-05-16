@@ -120,14 +120,12 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
 
     const ctx = gsap.context(() => {
       // Set initial states
-      gsap.set(".gallery-header-line", { scaleX: 0 });
-      gsap.set(".gallery-title-word", { y: 100, opacity: 0 });
+      gsap.set(".gallery-title-char", { y: 100, opacity: 0 });
       gsap.set(".gallery-subtitle", { y: 30, opacity: 0 });
       gsap.set(".gallery-item", {
         y: 80,
         opacity: 0,
       });
-      gsap.set(".category-number", { opacity: 0, x: -20 });
 
       // Create main timeline with ScrollTrigger
       const tl = gsap.timeline({
@@ -139,25 +137,14 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
         },
       });
 
-      // Animate header line
-      tl.to(".gallery-header-line", {
-        scaleX: 1,
-        duration: 1,
-        ease: "power3.inOut",
+      // Animate title chars
+      tl.to(".gallery-title-char", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.05,
+        ease: "power3.out",
       });
-
-      // Animate title
-      tl.to(
-        ".gallery-title-word",
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-        },
-        "-=0.5",
-      );
 
       // Animate subtitle
       tl.to(
@@ -182,19 +169,6 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           ease: "power3.out",
         },
         "-=0.3",
-      );
-
-      // Animate numbers
-      tl.to(
-        ".category-number",
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.6,
-          stagger: 0.15,
-          ease: "power2.out",
-        },
-        "-=0.6",
       );
     }, sectionRef);
 
