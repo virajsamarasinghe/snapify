@@ -51,7 +51,6 @@ export async function POST(request: NextRequest) {
     const result = await cloudinary.uploader.upload(dataUri, {
       folder,
       resource_type: "image",
-      quality: "auto:best",
       overwrite: false,
     });
 

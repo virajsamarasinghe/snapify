@@ -61,7 +61,6 @@ export async function POST(req: NextRequest) {
   const result = await cloudinary.uploader.upload(dataUri, {
     folder: "snapify/about",
     resource_type: "image",
-    quality: "auto:best",
     overwrite: false,
   });
 
