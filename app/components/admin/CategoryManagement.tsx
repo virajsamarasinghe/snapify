@@ -18,6 +18,7 @@ type Category = {
   id: string;
   name: string;
   image: string | null;
+  showInMarketplace: boolean;
   _count?: { products: number };
 };
 
@@ -34,6 +35,7 @@ export default function CategoryManagement({
 
   // Form states
   const [name, setName] = useState("");
+  const [showInMarketplace, setShowInMarketplace] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
@@ -45,6 +47,7 @@ export default function CategoryManagement({
   const startEdit = (category: Category) => {
     setEditingCategory(category);
     setName(category.name);
+    setShowInMarketplace(category.showInMarketplace);
     setImageFile(null);
     setImagePreview(null);
     setRemoveImage(false);
@@ -55,6 +58,7 @@ export default function CategoryManagement({
   const cancelEdit = () => {
     setEditingCategory(null);
     setName("");
+    setShowInMarketplace(false);
     setImageFile(null);
     setImagePreview(null);
     setRemoveImage(false);
@@ -97,7 +101,7 @@ export default function CategoryManagement({
         imageUrl = url;
       }
 
-      const payload = { name, image: imageUrl };
+      const payload = { name, image: imageUrl, showInMarketplace };
 
       if (editingCategory) {
         // UPDATE
@@ -252,6 +256,32 @@ export default function CategoryManagement({
               />
             </div>
 
+            {/* Marketplace toggle */}
+            <div className="flex items-center justify-between bg-black/30 border border-white/10 rounded-xl px-5 py-4">
+              <div>
+                <p className="text-sm font-medium text-white">
+                  Show in Marketplace
+                </p>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  All categories appear in Gallery. Enable this to also list in
+                  Marketplace.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowInMarketplace((v) => !v)}
+                className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
+                  showInMarketplace ? "bg-purple-600" : "bg-zinc-700"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
+                    showInMarketplace ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-zinc-400 mb-2">
                 Cover Image
@@ -347,6 +377,7 @@ export default function CategoryManagement({
             <tr>
               <th className="px-6 py-4 font-semibold">Image</th>
               <th className="px-6 py-4 font-semibold">Name</th>
+              <th className="px-6 py-4 font-semibold">Visibility</th>
               <th className="px-6 py-4 font-semibold">Products</th>
               <th className="px-6 py-4 font-semibold text-right">Actions</th>
             </tr>
@@ -379,6 +410,18 @@ export default function CategoryManagement({
                   </span>
                 </td>
                 <td className="px-6 py-4">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium w-fit">
+                      Gallery
+                    </span>
+                    {cat.showInMarketplace && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-medium w-fit">
+                        Marketplace
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-xs font-medium">
                     <FolderOpen size={12} /> {cat._count?.products || 0} items
                   </span>
@@ -406,7 +449,7 @@ export default function CategoryManagement({
             {categories.length === 0 && (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={5}
                   className="px-6 py-12 text-center text-zinc-500"
                 >
                   <div className="flex flex-col items-center gap-4">

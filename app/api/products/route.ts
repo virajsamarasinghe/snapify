@@ -4,10 +4,13 @@ import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   await dbConnect();
   try {
-    const products = await Product.find()
+    const { searchParams } = new URL(req.url);
+    const type = searchParams.get("type");
+    const filter = type ? { productType: type } : {};
+    const products = await Product.find(filter)
       .populate("category")
       .sort({ createdAt: -1 });
     return NextResponse.json(products);
@@ -39,8 +42,9 @@ export async function POST(req: NextRequest) {
       description: body.description,
       price: body.price,
       images: body.images,
-      category: body.categoryId, // Ensure this matches frontend payload
+      category: body.categoryId,
       status: body.status,
+      productType: body.productType || "gallery",
     });
 
     // Populate category before returning

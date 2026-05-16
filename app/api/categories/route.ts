@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     await dbConnect();
     const body = await req.json();
-    const { name, image } = body;
+    const { name, image, showInMarketplace } = body;
 
     const slug = name
       .toLowerCase()
@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       name,
       slug,
       image,
+      showInMarketplace: showInMarketplace ?? false,
     });
 
     return NextResponse.json(category);

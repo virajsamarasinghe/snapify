@@ -5,8 +5,9 @@ const CategorySchema = new mongoose.Schema(
     name: { type: String, required: true, unique: true },
     slug: { type: String, required: true, unique: true },
     image: { type: String },
+    showInMarketplace: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Virtual populate for products count

@@ -11,13 +11,19 @@ const ProductSchema = new mongoose.Schema(
       enum: ["available", "coming_soon", "sold"],
       default: "available",
     },
+    productType: {
+      type: String,
+      enum: ["gallery", "marketplace"],
+      default: "gallery",
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.models.Product || mongoose.model("Product", ProductSchema);
+export default mongoose.models.Product ||
+  mongoose.model("Product", ProductSchema);

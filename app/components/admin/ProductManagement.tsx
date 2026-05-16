@@ -30,15 +30,18 @@ type Product = {
   price: number;
   images: string[];
   status: ProductStatus;
+  productType: "gallery" | "marketplace";
   category: Category;
 };
 
 export default function ProductManagement({
   initialProducts,
   categories,
+  productType,
 }: {
   initialProducts: Product[];
   categories: Category[];
+  productType: "gallery" | "marketplace";
 }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [isCreating, setIsCreating] = useState(false);
@@ -109,6 +112,7 @@ export default function ProductManagement({
         categoryId,
         status,
         images: uploadedImages,
+        productType,
       };
 
       if (editingProduct) {
@@ -222,10 +226,14 @@ export default function ProductManagement({
       <div className="flex flex-wrap gap-3 justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">
-            Products
+            {productType === "gallery"
+              ? "Gallery Products"
+              : "Marketplace Products"}
           </h1>
           <p className="text-zinc-400 text-sm mt-1">
-            Manage your inventory and pricing
+            {productType === "gallery"
+              ? "Manage your gallery portfolio items"
+              : "Manage your marketplace inventory and pricing"}
           </p>
         </div>
         <button

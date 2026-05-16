@@ -28,10 +28,16 @@ const Sidebar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
 
   // Auto-expand settings sub-menu when on settings page
   useEffect(() => {
     if (pathname === "/admin/settings") setSettingsOpen(true);
+  }, [pathname]);
+
+  // Auto-expand products sub-menu when on products page
+  useEffect(() => {
+    if (pathname === "/admin/products") setProductsOpen(true);
   }, [pathname]);
 
   useEffect(() => {
@@ -59,7 +65,6 @@ const Sidebar = () => {
   const links = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/categories", label: "Categories", icon: FolderOpen },
-    { href: "/admin/products", label: "Products", icon: ShoppingBag },
     { href: "/admin/hero", label: "Hero Section", icon: Image },
     { href: "/admin/about", label: "About", icon: User },
     { href: "/admin/recognition", label: "Recognition", icon: Trophy },
@@ -68,6 +73,21 @@ const Sidebar = () => {
       label: "Messages",
       icon: Mail,
       badge: unreadCount,
+    },
+  ];
+
+  const productsSubLinks = [
+    {
+      href: "/admin/products?type=gallery",
+      type: "gallery",
+      label: "Gallery",
+      icon: Image,
+    },
+    {
+      href: "/admin/products?type=marketplace",
+      type: "marketplace",
+      label: "Marketplace",
+      icon: ShoppingBag,
     },
   ];
 
@@ -146,6 +166,61 @@ const Sidebar = () => {
             </Link>
           );
         })}
+
+        {/* Products with sub-menu */}
+        <div>
+          <button
+            onClick={() => setProductsOpen((v) => !v)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+              pathname === "/admin/products"
+                ? "bg-purple-600 text-white shadow-lg shadow-purple-500/20"
+                : "text-zinc-400 hover:bg-white/5 hover:text-white"
+            }`}
+          >
+            <ShoppingBag
+              size={20}
+              className={`transition-colors ${pathname === "/admin/products" ? "text-white" : "text-zinc-500 group-hover:text-purple-400"}`}
+            />
+            <span className="font-medium tracking-wide">Products</span>
+            <ChevronDown
+              size={15}
+              className={`ml-auto transition-transform duration-300 ${productsOpen ? "rotate-180" : ""} ${pathname === "/admin/products" ? "text-white/70" : "text-zinc-600 group-hover:text-zinc-400"}`}
+            />
+          </button>
+          <div
+            className={`overflow-hidden transition-all duration-300 ${
+              productsOpen ? "max-h-32 opacity-100 mt-1" : "max-h-0 opacity-0"
+            }`}
+          >
+            <div className="ml-4 pl-4 border-l border-white/10 space-y-1">
+              {productsSubLinks.map((sub) => {
+                const SubIcon = sub.icon;
+                const isSubActive =
+                  pathname === "/admin/products" &&
+                  (searchParams.get("type") ?? "gallery") === sub.type;
+                return (
+                  <Link
+                    key={sub.href}
+                    href={sub.href}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                      isSubActive
+                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/20"
+                        : "text-zinc-500 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <SubIcon
+                      size={15}
+                      className={`transition-colors ${isSubActive ? "text-purple-400" : "text-zinc-600 group-hover:text-purple-400"}`}
+                    />
+                    <span className="text-sm font-medium tracking-wide">
+                      {sub.label}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* Settings with sub-menu */}
         <div>
