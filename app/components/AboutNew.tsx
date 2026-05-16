@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 // Register GSAP plugin
 if (typeof window !== "undefined") {
@@ -11,13 +11,35 @@ if (typeof window !== "undefined") {
 }
 
 // Photo list for carousel
-const photos = [
+const DEFAULT_PHOTOS = [
   "/about/man.jpeg",
   "/about/man2.jpeg",
   "/about/man3.jpeg",
 ];
 
-const AboutNew = () => {
+interface AboutProps {
+  tagline?: string;
+  heading?: string;
+  headingItalic?: string;
+  bio?: string;
+  stat1Value?: string;
+  stat1Label?: string;
+  stat2Value?: string;
+  stat2Label?: string;
+  photos?: string[];
+}
+
+const AboutNew = ({
+  tagline = "// THE ARCHITECT OF LIGHT",
+  heading = "Beyond the",
+  headingItalic = "Frame",
+  bio = "My work is an exploration of the human condition. I don't just capture moments; I deconstruct them to reveal the raw emotion hidden beneath. A visual symphony where every shadow tells a story and every highlight sings.",
+  stat1Value = "12",
+  stat1Label = "Years Experience",
+  stat2Value = "50+",
+  stat2Label = "Global Exhibitions",
+  photos = DEFAULT_PHOTOS,
+}: AboutProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -144,7 +166,7 @@ const AboutNew = () => {
           duration: 1.5,
           ease: "expo.out",
         },
-        "-=0.8"
+        "-=0.8",
       );
 
       // 3. Floating Content Card
@@ -156,7 +178,7 @@ const AboutNew = () => {
           duration: 1,
           ease: "power3.out",
         },
-        "-=1"
+        "-=1",
       );
 
       // 4. Vertical Stats
@@ -169,7 +191,7 @@ const AboutNew = () => {
           stagger: 0.2,
           ease: "back.out(1.7)",
         },
-        "-=0.5"
+        "-=0.5",
       );
 
       // Parallax effect on scroll
@@ -238,9 +260,9 @@ const AboutNew = () => {
                   currentPhotoIndex === index
                     ? "opacity-100 translate-x-0 translate-y-0"
                     : currentPhotoIndex > index ||
-                      (currentPhotoIndex === 0 && index === photos.length - 1)
-                    ? "opacity-0 translate-x-[-100%] translate-y-[100%]"
-                    : "opacity-0 translate-x-[-100%] translate-y-[-100%]"
+                        (currentPhotoIndex === 0 && index === photos.length - 1)
+                      ? "opacity-0 translate-x-[-100%] translate-y-[100%]"
+                      : "opacity-0 translate-x-[-100%] translate-y-[-100%]"
                 }`}
               >
                 <Image
@@ -413,36 +435,35 @@ const AboutNew = () => {
         <div className="relative z-20 w-full lg:w-4/12">
           <div className="floating-card bg-white/5 backdrop-blur-xl border border-white/10 p-6 sm:p-8 rounded-2xl border-l-0 shadow-2xl">
             <span className="block text-purple-400 text-[10px] sm:text-xs font-mono tracking-[0.2em] sm:tracking-[0.3em] mb-4 sm:mb-6">
-              // THE ARCHITECT OF LIGHT
+              {tagline}
             </span>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-              Beyond the <br />
-              <span className="italic font-serif text-white/50">Frame</span>
+              {heading} <br />
+              <span className="italic font-serif text-white/50">
+                {headingItalic}
+              </span>
             </h2>
 
             <p className="text-white/70 text-base leading-relaxed font-light mb-8">
-              My work is an exploration of the human condition. I don't just
-              capture moments; I deconstruct them to reveal the raw emotion
-              hidden beneath. A visual symphony where every shadow tells a story
-              and every highlight sings.
+              {bio}
             </p>
 
             <div className="grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
               <div>
                 <span className="block text-4xl font-bold text-white mb-1">
-                  12
+                  {stat1Value}
                 </span>
                 <span className="text-xs text-white/40 uppercase tracking-widest">
-                  Years Experience
+                  {stat1Label}
                 </span>
               </div>
               <div>
                 <span className="block text-4xl font-bold text-white mb-1">
-                  50+
+                  {stat2Value}
                 </span>
                 <span className="text-xs text-white/40 uppercase tracking-widest">
-                  Global Exhibitions
+                  {stat2Label}
                 </span>
               </div>
             </div>

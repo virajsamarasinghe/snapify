@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { useEffect, useRef, useState } from "react";
 
 interface ArtisticRevealProps {
   onRevealComplete?: () => void;
 }
 
-export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps) {
+export default function ArtisticReveal({
+  onRevealComplete,
+}: ArtisticRevealProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(true);
 
@@ -22,32 +24,32 @@ export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps
         if (onRevealComplete) {
           onRevealComplete();
         }
-      }
+      },
     });
 
     // Set initial states
     gsap.set(".shutter-blade", {
-      scaleY: 1
+      scaleY: 1,
     });
 
     gsap.set(".aperture-blade", {
       scale: 0,
-      rotation: (i) => i * 45
+      rotation: (i) => i * 45,
     });
 
     gsap.set(".focus-ring", {
       scale: 0,
-      opacity: 0
+      opacity: 0,
     });
 
     gsap.set(".artist-text", {
       opacity: 0,
-      y: 30
+      y: 30,
     });
 
     gsap.set(".lens-flare", {
       scale: 0,
-      opacity: 0
+      opacity: 0,
     });
 
     // Camera shutter effect animation
@@ -55,82 +57,106 @@ export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps
       scaleY: 0,
       duration: 0.6,
       ease: "power2.inOut",
-      stagger: 0.1
-    })
-    .to(".shutter-blade:nth-child(even)", {
-      scaleY: 0,
-      duration: 0.6,
-      ease: "power2.inOut",
-      stagger: 0.1
-    }, "-=0.5")
-
-    // Aperture blades animation
-    .to(".aperture-blade", {
-      scale: 1,
-      duration: 0.8,
-      stagger: 0.05,
-      ease: "back.out(1.5)"
-    }, "-=0.3")
-
-    // Focus rings animation
-    .to(".focus-ring", {
-      scale: 1,
-      opacity: 0.3,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power2.out"
-    }, "-=0.5")
-
-    // Artist text reveal
-    .to(".artist-text", {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
       stagger: 0.1,
-      ease: "power3.out"
-    }, "-=0.8")
-
-    // Lens flare effect
-    .to(".lens-flare", {
-      scale: 2,
-      opacity: 0.6,
-      duration: 0.6,
-      ease: "power2.out"
-    }, "-=0.4")
-    .to(".lens-flare", {
-      scale: 3,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power2.in"
     })
+      .to(
+        ".shutter-blade:nth-child(even)",
+        {
+          scaleY: 0,
+          duration: 0.6,
+          ease: "power2.inOut",
+          stagger: 0.1,
+        },
+        "-=0.5",
+      )
 
-    // Aperture closing and rotating
-    .to(".aperture-blade", {
-      scale: 0,
-      rotation: "+=180",
-      duration: 0.8,
-      stagger: 0.03,
-      ease: "power2.in"
-    }, "-=0.4")
+      // Aperture blades animation
+      .to(
+        ".aperture-blade",
+        {
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.05,
+          ease: "back.out(1.5)",
+        },
+        "-=0.3",
+      )
 
-    // Final fade out
-    .to(container, {
-      opacity: 0,
-      duration: 0.5,
-      ease: "power2.out",
-      onComplete: () => {
-        container.style.display = 'none';
-      }
-    });
+      // Focus rings animation
+      .to(
+        ".focus-ring",
+        {
+          scale: 1,
+          opacity: 0.3,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power2.out",
+        },
+        "-=0.5",
+      )
+
+      // Artist text reveal
+      .to(
+        ".artist-text",
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power3.out",
+        },
+        "-=0.8",
+      )
+
+      // Lens flare effect
+      .to(
+        ".lens-flare",
+        {
+          scale: 2,
+          opacity: 0.6,
+          duration: 0.6,
+          ease: "power2.out",
+        },
+        "-=0.4",
+      )
+      .to(".lens-flare", {
+        scale: 3,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.in",
+      })
+
+      // Aperture closing and rotating
+      .to(
+        ".aperture-blade",
+        {
+          scale: 0,
+          rotation: "+=180",
+          duration: 0.8,
+          stagger: 0.03,
+          ease: "power2.in",
+        },
+        "-=0.4",
+      )
+
+      // Final fade out
+      .to(container, {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: () => {
+          container.style.display = "none";
+        },
+      });
 
     // Film grain effect
     const grainAnimation = () => {
-      const grain = document.querySelector('.film-grain');
+      const grain = document.querySelector(".film-grain");
       if (grain) {
         gsap.to(grain, {
           opacity: gsap.utils.random(0.03, 0.08),
           duration: 0.1,
-          onComplete: grainAnimation
+          onComplete: grainAnimation,
         });
       }
     };
@@ -156,7 +182,7 @@ export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps
             key={i}
             className="shutter-blade flex-1 bg-black origin-top"
             style={{
-              background: i % 2 === 0 ? '#0a0a0a' : '#141414'
+              background: i % 2 === 0 ? "#0a0a0a" : "#141414",
             }}
           />
         ))}
@@ -170,16 +196,16 @@ export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps
               key={i}
               className="aperture-blade absolute inset-0"
               style={{
-                transformOrigin: 'center'
+                transformOrigin: "center",
               }}
             >
               <div
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-0 h-0"
                 style={{
-                  borderLeft: '30px solid transparent',
-                  borderRight: '30px solid transparent',
-                  borderTop: '200px solid rgba(255, 255, 255, 0.1)',
-                  filter: 'blur(1px)'
+                  borderLeft: "30px solid transparent",
+                  borderRight: "30px solid transparent",
+                  borderTop: "200px solid rgba(255, 255, 255, 0.1)",
+                  filter: "blur(1px)",
                 }}
               />
             </div>
@@ -195,7 +221,7 @@ export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps
             className="focus-ring absolute rounded-full border border-white/20"
             style={{
               width: `${300 + i * 150}px`,
-              height: `${300 + i * 150}px`
+              height: `${300 + i * 150}px`,
             }}
           />
         ))}
@@ -244,10 +270,11 @@ export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps
       </div>
 
       {/* Film grain overlay */}
-      <div className="film-grain absolute inset-0 opacity-5 pointer-events-none"
+      <div
+        className="film-grain absolute inset-0 opacity-5 pointer-events-none"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.5'/%3E%3C/svg%3E")`,
-          mixBlendMode: 'multiply'
+          mixBlendMode: "multiply",
         }}
       />
 
@@ -262,8 +289,13 @@ export default function ArtisticReveal({ onRevealComplete }: ArtisticRevealProps
 
       <style jsx>{`
         @keyframes flicker {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.8; }
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.8;
+          }
         }
 
         .lens-flare {

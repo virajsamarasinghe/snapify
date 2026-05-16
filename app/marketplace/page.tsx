@@ -1,13 +1,35 @@
 import dbConnect from "@/lib/db";
-import Product from "@/models/Product";
 import Category from "@/models/Category";
+import Product from "@/models/Product";
+import type { Metadata } from "next";
 import MarketplaceClient from "./MarketplaceClient";
 
 // Ensure models are registered
-import "@/models/Product";
 import "@/models/Category";
+import "@/models/Product";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Photography Print Marketplace",
+  description:
+    "Purchase fine-art photography prints by Jagath Kalupahana. Limited edition prints from weddings, wildlife, events and portrait collections. Worldwide shipping.",
+  alternates: { canonical: "https://snapify-sooty.vercel.app/marketplace" },
+  openGraph: {
+    title: "Photography Print Marketplace | Jagath Kalupahana",
+    description:
+      "Buy limited edition fine-art photography prints. Weddings, wildlife, portraits and more. Worldwide shipping.",
+    url: "https://snapify-sooty.vercel.app/marketplace",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Photography Prints Marketplace",
+      },
+    ],
+  },
+};
 
 export default async function MarketplacePage() {
   await dbConnect();
@@ -23,14 +45,14 @@ export default async function MarketplacePage() {
 
   // Calculate counts per category based on fetched products
   const categoryCounts: { [key: string]: number } = {};
-  
+
   const products = productsDocs.map((doc: any) => {
     const categoryDoc = doc.category;
     if (categoryDoc) {
       const catId = categoryDoc._id.toString();
       categoryCounts[catId] = (categoryCounts[catId] || 0) + 1;
     }
-    
+
     return {
       id: doc._id.toString(),
       title: doc.title,
@@ -51,13 +73,13 @@ export default async function MarketplacePage() {
     id: doc._id.toString(),
     name: doc.name,
     slug: doc.slug,
-    count: categoryCounts[doc._id.toString()] || 0
+    count: categoryCounts[doc._id.toString()] || 0,
   }));
 
   return (
-    <MarketplaceClient 
-      initialProducts={products} 
-      initialCategories={categories} 
+    <MarketplaceClient
+      initialProducts={products}
+      initialCategories={categories}
     />
   );
 }

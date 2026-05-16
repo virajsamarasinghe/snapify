@@ -26,6 +26,17 @@ interface HomePageWrapperProps {
   heroImages?: any[];
   achievements?: AchievementItem[];
   showMarketplace?: boolean;
+  about?: {
+    tagline?: string;
+    heading?: string;
+    headingItalic?: string;
+    bio?: string;
+    stat1Value?: string;
+    stat1Label?: string;
+    stat2Value?: string;
+    stat2Label?: string;
+    photos?: string[];
+  };
 }
 
 export default function HomePageWrapper({
@@ -33,6 +44,7 @@ export default function HomePageWrapper({
   heroImages = [],
   achievements = [],
   showMarketplace = true,
+  about = {},
 }: HomePageWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [contentReady, setContentReady] = useState(false);
@@ -52,46 +64,15 @@ export default function HomePageWrapper({
 
     // Mark that we're showing the initial reveal
     sessionStorage.setItem("hasShownInitialReveal", "true");
-    // Check if all images are loaded
-    const checkImagesLoaded = () => {
-      const images = document.querySelectorAll("img");
-      const imagePromises = Array.from(images).map((img) => {
-        if (img.complete) {
-          return Promise.resolve();
-        }
-        return new Promise((resolve) => {
-          img.addEventListener("load", resolve);
-          img.addEventListener("error", resolve); // Resolve even on error to prevent hanging
-        });
+
+    // Just wait for DOM ready — don't block on all images loading
+    if (document.readyState === "complete") {
+      setContentReady(true);
+    } else {
+      window.addEventListener("load", () => setContentReady(true), {
+        once: true,
       });
-
-      return Promise.all(imagePromises);
-    };
-
-    // Check if document is ready and all resources are loaded
-    const handlePageLoad = async () => {
-      // Wait for window load event if not already loaded
-      if (document.readyState === "complete") {
-        // Wait a bit for GSAP animations to initialize
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        await checkImagesLoaded();
-        setContentReady(true);
-      } else {
-        window.addEventListener("load", async () => {
-          // Wait a bit for GSAP animations to initialize
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          await checkImagesLoaded();
-          setContentReady(true);
-        });
-      }
-    };
-
-    handlePageLoad();
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("load", () => {});
-    };
+    }
   }, []);
 
   const handleLoadingComplete = () => {
@@ -111,7 +92,7 @@ export default function HomePageWrapper({
         }
       >
         <HeroNew animationReady={!isLoading} heroImages={heroImages} />
-        <AboutNew />
+        <AboutNew {...about} />
         <GalleryShowcaseNew categories={categories} />
         <Achievements achievements={achievements} />
         <GalleryScroll />

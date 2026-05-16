@@ -146,7 +146,7 @@ export default function CategoryManagement({
         onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}
         onCancel={() => setConfirmDeleteId(null)}
       />
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap gap-3 justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">
             Categories
@@ -230,7 +230,7 @@ export default function CategoryManagement({
               <button
                 type="submit"
                 disabled={uploading}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {uploading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -248,8 +248,8 @@ export default function CategoryManagement({
         </div>
       )}
 
-      <div className="bg-zinc-900/50 backdrop-blur-xl rounded-2xl border border-white/5 overflow-hidden shadow-xl">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-zinc-900/50 backdrop-blur-xl rounded-2xl border border-white/5 overflow-hidden shadow-xl overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[500px]">
           <thead className="bg-white/5 text-zinc-400 uppercase text-xs tracking-wider">
             <tr>
               <th className="px-6 py-4 font-semibold">Image</th>
@@ -291,7 +291,7 @@ export default function CategoryManagement({
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 sm:opacity-0 max-sm:opacity-100 transition-opacity">
                     <button
                       onClick={() => startEdit(cat)}
                       className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"

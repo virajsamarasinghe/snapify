@@ -72,7 +72,7 @@ function RecognitionCard({
       dragListener={false}
       dragControls={controls}
       onDragEnd={onDragEnd}
-      className="flex items-start gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors group select-none"
+      className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors group select-none"
       whileDrag={{
         scale: 1.02,
         boxShadow: "0 8px 32px rgba(168,85,247,0.25)",
@@ -116,7 +116,7 @@ function RecognitionCard({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-2 shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <button
           onClick={() => onEdit(item)}
           className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
@@ -344,7 +344,7 @@ export default function RecognitionAdminPage() {
       />
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap gap-3 items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-yellow-500/20 border border-yellow-500/30">
               <Award size={22} className="text-yellow-400" />
@@ -605,7 +605,7 @@ export default function RecognitionAdminPage() {
                       No photos uploaded yet.
                     </p>
                   ) : (
-                    <div className="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto pr-1">
+                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-48 overflow-y-auto pr-1">
                       {existingPhotos.map((src) => (
                         <button
                           key={src}

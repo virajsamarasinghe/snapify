@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
-import TransitionLink from "./TransitionLink";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import HomeNavbar from "./HomeNavbar";
 
 interface HeroNewProps {
@@ -11,7 +10,10 @@ interface HeroNewProps {
   heroImages?: any[];
 }
 
-export default function HeroNew({ animationReady = true, heroImages = [] }: HeroNewProps) {
+export default function HeroNew({
+  animationReady = true,
+  heroImages = [],
+}: HeroNewProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [currentImage, setCurrentImage] = useState(0);
@@ -22,11 +24,12 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
     { src: "/hero/2.jpg", title: "Silent Moments", category: "Portrait" },
   ];
 
-  // Only use defaultImages if heroImages is completely undefined, 
+  // Only use defaultImages if heroImages is completely undefined,
   // if it's an empty array (meaning they hid everything), use a safe fallback.
-  const featuredImages = heroImages && heroImages.length > 0 
-    ? heroImages 
-    : [{ src: "/placeholder.jpg", title: "Welcome", category: "Featured" }];
+  const featuredImages =
+    heroImages && heroImages.length > 0
+      ? heroImages
+      : [{ src: "/placeholder.jpg", title: "Welcome", category: "Featured" }];
 
   useEffect(() => {
     // Mouse movement effect
@@ -62,7 +65,6 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
       gsap.set(".hero-title-char", { y: 120, opacity: 0, rotation: 5 });
       gsap.set(".hero-subtitle", { y: 30, opacity: 0 });
       gsap.set(".hero-description", { y: 30, opacity: 0 });
-      gsap.set(".floating-text", { opacity: 0, y: 20 });
       gsap.set(".hero-nav", { y: -100 });
       gsap.set(".hero-sidebar", { x: -100 });
       gsap.set(".hero-cta", { scale: 0, opacity: 0 });
@@ -87,7 +89,7 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           duration: 1,
           ease: "power3.out",
         },
-        "-=0.6"
+        "-=0.6",
       );
 
       // Animate sidebar
@@ -98,7 +100,7 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           duration: 1,
           ease: "power3.out",
         },
-        "-=0.8"
+        "-=0.8",
       );
 
       // Animate main title with staggered characters
@@ -115,7 +117,7 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           },
           ease: "back.out(1.7)",
         },
-        "-=0.5"
+        "-=0.5",
       );
 
       // Animate subtitle
@@ -127,7 +129,7 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           duration: 0.8,
           ease: "power3.out",
         },
-        "-=0.3"
+        "-=0.3",
       );
 
       // Animate description
@@ -139,20 +141,7 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           duration: 0.8,
           ease: "power3.out",
         },
-        "-=0.5"
-      );
-
-      // Animate floating elements
-      tl.to(
-        ".floating-text",
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          stagger: 0.1,
-          ease: "power3.out",
-        },
-        "-=0.5"
+        "-=0.5",
       );
 
       // Animate CTA
@@ -164,7 +153,7 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           duration: 0.8,
           ease: "back.out(1.7)",
         },
-        "-=0.3"
+        "-=0.3",
       );
 
       // Animate image counter
@@ -175,10 +164,8 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           duration: 0.6,
           ease: "power3.out",
         },
-        "-=0.2"
+        "-=0.2",
       );
-
-
     }, heroRef);
 
     return () => ctx.revert();
@@ -272,7 +259,6 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
           </a>
         </div>
       </div>
-
 
       {/* Main Content */}
       <div className="relative h-full px-8 lg:px-20">
@@ -381,15 +367,17 @@ export default function HeroNew({ animationReady = true, heroImages = [] }: Hero
 
         {/* Image Counter / Indicators - Bottom Right on Desktop, Top Right on Mobile */}
         <div className="image-counter absolute top-28 right-8 lg:top-auto lg:bottom-12 lg:right-20 flex flex-col items-end gap-4 z-30">
-           {/* Current Image Category Display */}
-           <div className="mb-4 text-right">
-             <p className="text-white/40 text-xs min-[380px]:text-sm uppercase tracking-widest mb-1">Current Collection</p>
-             <p className="text-white text-lg min-[380px]:text-xl font-light tracking-wide">
-               {featuredImages[currentImage]?.category || "Featured"}
-             </p>
-           </div>
-           
-           <div className="flex items-center gap-3">
+          {/* Current Image Category Display */}
+          <div className="mb-4 text-right">
+            <p className="text-white/40 text-xs min-[380px]:text-sm uppercase tracking-widest mb-1">
+              Current Collection
+            </p>
+            <p className="text-white text-lg min-[380px]:text-xl font-light tracking-wide">
+              {featuredImages[currentImage]?.category || "Featured"}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
             {featuredImages.map((img, index) => (
               <button
                 key={index}

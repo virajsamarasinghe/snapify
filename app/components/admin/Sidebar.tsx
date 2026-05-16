@@ -10,6 +10,7 @@ import {
     Settings,
     ShoppingBag,
     Trophy,
+    User,
     X,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
@@ -50,6 +51,7 @@ const Sidebar = () => {
     { href: "/admin/categories", label: "Categories", icon: FolderOpen },
     { href: "/admin/products", label: "Products", icon: ShoppingBag },
     { href: "/admin/hero", label: "Hero Section", icon: Image },
+    { href: "/admin/about", label: "About", icon: User },
     { href: "/admin/recognition", label: "Recognition", icon: Trophy },
     {
       href: "/admin/messages",
