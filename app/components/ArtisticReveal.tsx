@@ -237,8 +237,8 @@ export default function ArtisticReveal({
           </div>
 
           <div className="artist-text mb-4">
-            <h1 className="text-6xl lg:text-8xl font-bold text-white">
-              SNAPIFY
+            <h1 className="text-4xl lg:text-6xl font-bold text-white">
+              STUDIO NETHMA
             </h1>
           </div>
 

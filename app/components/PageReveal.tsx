@@ -198,13 +198,13 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
 
         {/* Main text */}
         <div className="text-center">
-          <h1 className="text-7xl lg:text-9xl font-bold text-white mb-4 tracking-tight">
-            {splitText("SNAPIFY")}
+          <h1 className="text-5xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
+            {splitText("STUDIO NETHMA")}
           </h1>
 
           <div className="overflow-hidden">
             <p className="text-white/60 text-sm uppercase tracking-[0.5em] transform">
-              {splitText("VISUAL ARTISTRY")}
+              {splitText("PHOTOGRAPHY & VISUAL ARTS")}
             </p>
           </div>
         </div>
