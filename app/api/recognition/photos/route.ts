@@ -7,15 +7,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-];
-const MAX_SIZE_BYTES = 4 * 1024 * 1024; // 4 MB (Vercel 4.5 MB payload limit)
-
 // GET — list recognition photos already stored in MongoDB
 export async function GET() {
   try {
@@ -36,43 +27,30 @@ export async function GET() {
   }
 }
 
-// POST — upload a new recognition photo to Cloudinary (admin only)
+// POST — save a Cloudinary URL after a direct browser upload
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || session.user?.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const formData = await req.formData();
-  const file = formData.get("file") as File | null;
+  const body = await req.json();
+  const { url, publicId } = body as { url?: string; publicId?: string };
 
-  if (!file) {
-    return NextResponse.json({ error: "No file provided" }, { status: 400 });
-  }
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
-  }
-  if (file.size > MAX_SIZE_BYTES) {
+  if (!url || !publicId) {
     return NextResponse.json(
-      { error: "File too large. Maximum 4 MB per image." },
+      { error: "url and publicId are required" },
+      { status: 400 },
+    );
+  }
+  if (!publicId.startsWith("snapify/recognition/")) {
+    return NextResponse.json(
+      { error: "Invalid image folder" },
       { status: 400 },
     );
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
-
-  const result = await cloudinary.uploader.upload(dataUri, {
-    folder: "snapify/recognition",
-    resource_type: "image",
-    overwrite: false,
-  });
-
-  return NextResponse.json(
-    { url: result.secure_url, publicId: result.public_id },
-    { status: 201 },
-  );
+  return NextResponse.json({ url, publicId }, { status: 201 });
 }
 
 // DELETE — remove a recognition photo from Cloudinary (admin only)

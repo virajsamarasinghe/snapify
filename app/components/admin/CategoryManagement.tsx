@@ -1,5 +1,6 @@
 "use client";
 
+import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
     Edit2,
     FolderOpen,
@@ -62,15 +63,12 @@ export default function CategoryManagement({
     try {
       // 1. Upload Image if exists
       if (imageFile) {
-        const formData = new FormData();
-        formData.append("file", imageFile);
-        formData.append("folder", "snapify/categories");
-        const res = await fetch("/api/media/save", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await res.json();
-        if (data.url) imageUrl = data.url;
+        // Upload directly from browser → Cloudinary (bypasses Vercel body limit)
+        const { url } = await uploadToCloudinary(
+          imageFile,
+          "snapify/categories",
+        );
+        imageUrl = url;
       }
 
       const payload = { name, image: imageUrl };

@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmDialog from "@/app/components/admin/ConfirmDialog";
+import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
     Eye,
     EyeOff,
@@ -87,17 +88,21 @@ export default function ManageHero() {
     let anyError = false;
     for (let i = 0; i < fileArray.length; i++) {
       try {
-        const uploadData = new FormData();
-        uploadData.append("file", fileArray[i]);
+        // Upload directly from browser → Cloudinary (bypasses Vercel body limit)
+        const { url, publicId } = await uploadToCloudinary(
+          fileArray[i],
+          "snapify/hero",
+        );
 
-        const uploadRes = await fetch("/api/hero/add", {
+        // Persist URL to MongoDB
+        const saveRes = await fetch("/api/hero/save-url", {
           method: "POST",
-          body: uploadData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, publicId }),
         });
-        const uploadResult = await uploadRes.json();
-
-        if (!uploadResult.success) {
-          throw new Error(uploadResult.error || "Upload failed");
+        const saveResult = await saveRes.json();
+        if (!saveResult.success) {
+          throw new Error(saveResult.error || "Failed to save");
         }
 
         setUploadProgress((prev) =>

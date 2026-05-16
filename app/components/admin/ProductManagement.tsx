@@ -1,5 +1,6 @@
 "use client";
 
+import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
     DollarSign,
     Edit2,
@@ -91,15 +92,12 @@ export default function ProductManagement({
       if (imageFiles && imageFiles.length > 0) {
         const newImages: string[] = [];
         for (let i = 0; i < imageFiles.length; i++) {
-          const formData = new FormData();
-          formData.append("file", imageFiles[i]);
-          formData.append("folder", "snapify/marketplace/products");
-          const res = await fetch("/api/media/save", {
-            method: "POST",
-            body: formData,
-          });
-          const data = await res.json();
-          if (data.url) newImages.push(data.url);
+          // Upload directly from browser → Cloudinary (bypasses Vercel body limit)
+          const { url } = await uploadToCloudinary(
+            imageFiles[i],
+            "snapify/marketplace/products",
+          );
+          newImages.push(url);
         }
         uploadedImages = [...uploadedImages, ...newImages];
       }

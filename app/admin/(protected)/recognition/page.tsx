@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmDialog from "@/app/components/admin/ConfirmDialog";
+import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import { Reorder, useDragControls } from "framer-motion";
 import {
     AlertCircle,
@@ -200,12 +201,18 @@ export default function RecognitionAdminPage() {
 
   async function handlePhotoUpload(file: File) {
     setUploading(true);
-    const fd = new FormData();
-    fd.append("file", file);
     try {
+      // Upload directly from browser → Cloudinary (bypasses Vercel body limit)
+      const { url, publicId } = await uploadToCloudinary(
+        file,
+        "snapify/recognition",
+      );
+
+      // Notify backend (auth check + returns url)
       const res = await fetch("/api/recognition/photos", {
         method: "POST",
-        body: fd,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, publicId }),
       });
       const data = await res.json();
       if (res.ok && data.url) {
@@ -214,8 +221,8 @@ export default function RecognitionAdminPage() {
       } else {
         setMsg({ type: "error", text: data.error ?? "Upload failed" });
       }
-    } catch {
-      setMsg({ type: "error", text: "Upload failed" });
+    } catch (err: any) {
+      setMsg({ type: "error", text: err.message ?? "Upload failed" });
     } finally {
       setUploading(false);
     }
