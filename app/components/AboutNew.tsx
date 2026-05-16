@@ -10,6 +10,47 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Parse a stat string like "12", "50+", "100+" into { value, suffix }
+function parseStat(raw: string): { value: number; suffix: string } {
+  const match = raw.match(/^(\d+\.?\d*)(.*)$/);
+  if (!match) return { value: 0, suffix: raw };
+  return { value: parseFloat(match[1]), suffix: match[2] };
+}
+
+// Hook: count from 0 → target when `start` becomes true
+function useCountUp(target: number, start: boolean, duration = 2) {
+  const [count, setCount] = useState(0);
+  const frameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!start) return;
+    const startTime = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = (now - startTime) / 1000;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out quad
+      const eased = 1 - (1 - progress) * (1 - progress);
+      setCount(Math.round(eased * target));
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    frameRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    };
+  }, [start, target, duration]);
+
+  return count;
+}
+
+// Register GSAP plugin
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 // Photo list for carousel — Cloudinary URLs used as fallback
 const DEFAULT_PHOTOS = [
   "https://res.cloudinary.com/deu8faspx/image/upload/v1778921228/snapify/hero/1_hemmnu.jpg",
@@ -40,11 +81,18 @@ const AboutNew = ({
   photos = DEFAULT_PHOTOS,
 }: AboutProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [statsVisible, setStatsVisible] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
   const zoomControlRef = useRef<HTMLDivElement>(null);
+
+  const stat1 = parseStat(stat1Value);
+  const stat2 = parseStat(stat2Value);
+  const count1 = useCountUp(stat1.value, statsVisible, 2);
+  const count2 = useCountUp(stat2.value, statsVisible, 2.4);
 
   // Handle drag on zoom control
   const handleZoomDrag = (e: React.MouseEvent | React.TouchEvent) => {
@@ -126,6 +174,22 @@ const AboutNew = ({
 
     window.addEventListener("wheel", handleZoomScroll, { passive: false });
     return () => window.removeEventListener("wheel", handleZoomScroll);
+  }, []);
+
+  // Trigger counting animation when stats scroll into view
+  useEffect(() => {
+    if (!statsRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStatsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(statsRef.current);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -448,18 +512,23 @@ const AboutNew = ({
               {bio}
             </p>
 
-            <div className="grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
+            <div
+              ref={statsRef}
+              className="grid grid-cols-2 gap-8 border-t border-white/10 pt-8"
+            >
               <div className="stat-vertical">
-                <span className="block text-4xl font-bold text-white mb-1">
-                  {stat1Value}
+                <span className="block text-4xl font-bold text-white mb-1 tabular-nums">
+                  {count1}
+                  {stat1.suffix}
                 </span>
                 <span className="text-xs text-white/40 uppercase tracking-widest">
                   {stat1Label}
                 </span>
               </div>
               <div className="stat-vertical">
-                <span className="block text-4xl font-bold text-white mb-1">
-                  {stat2Value}
+                <span className="block text-4xl font-bold text-white mb-1 tabular-nums">
+                  {count2}
+                  {stat2.suffix}
                 </span>
                 <span className="text-xs text-white/40 uppercase tracking-widest">
                   {stat2Label}
