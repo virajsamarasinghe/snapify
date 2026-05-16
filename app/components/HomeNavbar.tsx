@@ -74,12 +74,12 @@ export default function HomeNavbar({
               Gallery
             </TransitionLink>
             {showMarketplace && (
-              <TransitionLink
-                href="/marketplace"
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                Marketplace
-              </TransitionLink>
+              <span className="relative group cursor-not-allowed">
+                <span className="text-white/30 select-none">Marketplace</span>
+                <span className="absolute -top-5 left-1/2 -translate-x-1/2 bg-amber-400 text-black text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  Coming Soon
+                </span>
+              </span>
             )}
           </div>
         </div>
@@ -137,13 +137,14 @@ export default function HomeNavbar({
           Gallery
         </button>
         {showMarketplace && (
-          <TransitionLink
-            href="/marketplace"
-            className="text-4xl font-light text-white hover:text-purple-400 transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Marketplace
-          </TransitionLink>
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-4xl font-light text-white/30 cursor-not-allowed select-none">
+              Marketplace
+            </span>
+            <span className="bg-amber-400 text-black text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+              Coming Soon
+            </span>
+          </div>
         )}
         <button
           onClick={() => {

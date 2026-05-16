@@ -1,6 +1,7 @@
 "use client";
 
 import gsap from "gsap";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ContactPopup from "./ContactPopup";
 import TransitionLink from "./TransitionLink";
@@ -14,6 +15,7 @@ export default function Navbar({
   const navRef = useRef<HTMLDivElement>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
     fetch("/api/settings/public", { cache: "no-store" })
@@ -92,19 +94,21 @@ export default function Navbar({
               >
                 About
               </TransitionLink> */}
-              <TransitionLink
-                href="/#gallery"
-                className="nav-item text-white/60 hover:text-white transition-colors"
-              >
-                Gallery
-              </TransitionLink>
-              {showMarketplace && (
+              {pathname !== "/gallery" && (
                 <TransitionLink
-                  href="/marketplace"
+                  href="/#gallery"
                   className="nav-item text-white/60 hover:text-white transition-colors"
                 >
-                  Marketplace
+                  Gallery
                 </TransitionLink>
+              )}
+              {showMarketplace && (
+                <span className="nav-item relative group cursor-not-allowed">
+                  <span className="text-white/30 select-none">Marketplace</span>
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 bg-amber-400 text-black text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Coming Soon
+                  </span>
+                </span>
               )}
               <button
                 onClick={() => setIsContactOpen(true)}
