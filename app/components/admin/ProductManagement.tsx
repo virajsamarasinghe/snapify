@@ -2,6 +2,7 @@
 
 import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
+    ArrowLeft,
     DollarSign,
     Edit2,
     Image as ImageIcon,
@@ -13,6 +14,7 @@ import {
     X,
 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 
@@ -38,11 +40,14 @@ export default function ProductManagement({
   initialProducts,
   categories,
   productType,
+  fixedCategory,
 }: {
   initialProducts: Product[];
   categories: Category[];
   productType: "gallery" | "marketplace";
+  fixedCategory?: { id: string; name: string };
 }) {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [isCreating, setIsCreating] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -52,7 +57,7 @@ export default function ProductManagement({
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [status, setStatus] = useState<ProductStatus>("available");
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState(fixedCategory?.id ?? "");
   const [imageFiles, setImageFiles] = useState<FileList | null>(null);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -75,7 +80,7 @@ export default function ProductManagement({
     setTitle("");
     setDescription("");
     setPrice("");
-    setCategoryId("");
+    setCategoryId(fixedCategory?.id ?? "");
     setStatus("available");
     setImageFiles(null);
     setExistingImages([]);
@@ -234,17 +239,32 @@ export default function ProductManagement({
         onCancel={() => setConfirmDeleteId(null)}
       />
       <div className="flex flex-wrap gap-3 justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">
-            {productType === "gallery"
-              ? "Gallery Products"
-              : "Marketplace Products"}
-          </h1>
-          <p className="text-zinc-400 text-sm mt-1">
-            {productType === "gallery"
-              ? "Manage your gallery portfolio items"
-              : "Manage your marketplace inventory and pricing"}
-          </p>
+        <div className="flex items-center gap-3">
+          {fixedCategory && (
+            <button
+              onClick={() => router.push("/admin/products?type=marketplace")}
+              className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+              title="Back to categories"
+            >
+              <ArrowLeft size={20} />
+            </button>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              {fixedCategory
+                ? fixedCategory.name
+                : productType === "gallery"
+                  ? "Gallery Products"
+                  : "Marketplace Products"}
+            </h1>
+            <p className="text-zinc-400 text-sm mt-1">
+              {fixedCategory
+                ? "Manage marketplace listings for this category"
+                : productType === "gallery"
+                  ? "Manage your gallery portfolio items"
+                  : "Manage your marketplace inventory and pricing"}
+            </p>
+          </div>
         </div>
         <button
           onClick={() => setIsCreating(true)}
@@ -320,31 +340,43 @@ export default function ProductManagement({
                     <label className="block text-sm font-medium text-zinc-400 mb-2">
                       Category
                     </label>
-                    <div className="relative">
-                      <Tag
-                        size={16}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
-                      />
-                      <select
-                        value={categoryId}
-                        onChange={(e) => setCategoryId(e.target.value)}
-                        className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all appearance-none cursor-pointer"
-                        required
-                      >
-                        <option value="" className="bg-zinc-900 text-zinc-500">
-                          Select a Category
-                        </option>
-                        {categories.map((cat) => (
+                    {fixedCategory ? (
+                      <div className="flex items-center gap-3 bg-black/30 border border-white/10 rounded-xl px-4 py-3">
+                        <Tag size={15} className="text-zinc-500 shrink-0" />
+                        <span className="text-white font-medium">
+                          {fixedCategory.name}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <Tag
+                          size={16}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+                        />
+                        <select
+                          value={categoryId}
+                          onChange={(e) => setCategoryId(e.target.value)}
+                          className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all appearance-none cursor-pointer"
+                          required
+                        >
                           <option
-                            key={cat.id}
-                            value={cat.id}
-                            className="bg-zinc-900"
+                            value=""
+                            className="bg-zinc-900 text-zinc-500"
                           >
-                            {cat.name}
+                            Select a Category
                           </option>
-                        ))}
-                      </select>
-                    </div>
+                          {categories.map((cat) => (
+                            <option
+                              key={cat.id}
+                              value={cat.id}
+                              className="bg-zinc-900"
+                            >
+                              {cat.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-zinc-400 mb-2">
