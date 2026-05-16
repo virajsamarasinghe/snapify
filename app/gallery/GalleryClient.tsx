@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import TransitionLink from "../components/TransitionLink";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -13,138 +12,39 @@ gsap.registerPlugin(ScrollTrigger);
 interface Artwork {
   id: number;
   src: string;
-  title: string;
   category: string;
-  year: string;
-  description?: string;
-  size: "small" | "medium" | "large" | "tall" | "wide";
 }
 
-// Category image mappings - maps category names to their folder images
-const categoryImages: { [key: string]: string[] } = {
-  "School Events": [
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921201/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.12_s8jhwl.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921200/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.12_1_o9vvhm.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921202/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.13_bqddak.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921201/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.13_1_l5h5to.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921202/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.13_2_czmmmi.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921204/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.14_fedsh2.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921201/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.14_1_a15gxu.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921203/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.14_2_i93cqt.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921204/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.15_jcozuu.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921204/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.15_1_hpkhdl.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921206/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.16_nmykgv.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921204/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.16_1_vubr9q.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921205/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.16_2_vovt7o.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921206/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.17_pmbrfy.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921206/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.17_1_p6pj1o.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921207/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.17_2_zjqfnn.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921208/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.18_m6kppv.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921208/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.19_m4nxih.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921208/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.19_1_p8hglw.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921210/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.20_oa1xil.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921208/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.20_1_ewduei.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921208/snapify/gallery/school-events/WhatsApp_Image_2025-12-28_at_01.41.20_2_a8ozya.jpg",
-  ],
-  Wildlife: [
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921212/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.25_yfcv7c.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921210/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.25_1_bmg3hm.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921212/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.26_lwsbfm.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921212/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.26_1_yhaudx.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921213/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.27_wossrl.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921212/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.27_1_tkozzf.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921212/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.27_2_lunmm4.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921215/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.28_pzpl89.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921213/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.28_1_ioy9d8.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921213/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.28_2_qi9yct.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921216/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.29_eyz7i0.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921214/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.29_1_irtycl.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921216/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.29_2_k6wazp.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921216/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.30_u6vgsm.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921216/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.30_1_geqe6u.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921216/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.30_2_sckiu4.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921218/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.31_t65dt7.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921218/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.31_1_vuolhx.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921218/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.32_wzhwgz.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921218/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.32_1_szmkk4.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921218/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.32_2_tpvv4j.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921220/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.33_rxdwly.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921220/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.33_1_xmqzg1.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921221/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.33_2_hyrcmv.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921221/snapify/gallery/wildlife/WhatsApp_Image_2025-12-28_at_02.34.34_ghgyup.jpg",
-  ],
-  University: [
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921200/snapify/gallery/general/mountain-solitude_pori07.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921200/snapify/gallery/general/desert-dreams_w6qpah.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921197/snapify/gallery/general/abstract-reality_cwspuj.jpg",
-  ],
-  Weddings: [
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921210/snapify/gallery/general/silent-moments_s8ysju.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921210/snapify/gallery/general/time-suspended_pnvaba.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921200/snapify/gallery/general/rhythm-of-life_m6g3t2.jpg",
-  ],
-  Army: ["https://res.cloudinary.com/deu8faspx/image/upload/v1778921210/snapify/gallery/general/urban-poetry_gcioix.jpg", "https://res.cloudinary.com/deu8faspx/image/upload/v1778921200/snapify/gallery/general/neon-nights_mjvsve.jpg"],
-  "Events Coverage": [
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921198/snapify/gallery/general/dance-of-shadows_rlmadx.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921200/snapify/gallery/general/mountain-solitude_pori07.jpg",
-  ],
-  "World Photography": [
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921222/snapify/gallery/world-photography/WhatsApp_Image_2025-12-28_at_02.43.09_zt7m7c.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921220/snapify/gallery/world-photography/WhatsApp_Image_2025-12-28_at_02.43.09_1_n0dncd.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921223/snapify/gallery/world-photography/WhatsApp_Image_2025-12-28_at_02.43.09_2_t2pmsf.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921222/snapify/gallery/world-photography/WhatsApp_Image_2025-12-28_at_02.43.10_yymclg.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921222/snapify/gallery/world-photography/WhatsApp_Image_2025-12-28_at_02.43.10_1_fxqqna.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921224/snapify/gallery/world-photography/WhatsApp_Image_2025-12-28_at_02.43.11_hqdujz.jpg",
-    "https://res.cloudinary.com/deu8faspx/image/upload/v1778921223/snapify/gallery/world-photography/WhatsApp_Image_2025-12-28_at_02.43.11_1_jda0xb.jpg",
-  ],
-};
+interface GalleryCategoryProp {
+  id: string;
+  name: string;
+  images: string[];
+}
 
-// Generate artworks from category images
-const generateArtworks = (): Artwork[] => {
-  const artworks: Artwork[] = [];
-  let id = 1;
+interface GalleryClientProps {
+  galleryCategories: GalleryCategoryProp[];
+}
 
-  Object.entries(categoryImages).forEach(([category, images]) => {
-    images.forEach((imagePath, index) => {
-      const fileName = imagePath.split("/").pop() || "";
-      const sizes: Array<"small" | "medium" | "large" | "tall" | "wide"> = [
-        "small",
-        "medium",
-        "large",
-        "tall",
-        "wide",
-      ];
-
-      artworks.push({
-        id: id++,
-        src: imagePath,
-        title: `${category} ${index + 1}`,
-        category: category,
-        year: "2024",
-        size: sizes[index % sizes.length],
-      });
-    });
-  });
-
-  return artworks;
-};
-
-const artworks: Artwork[] = generateArtworks();
-
-const categories = [
-  "All",
-  "University",
-  "Weddings",
-  "Army",
-  "Events Coverage",
-  "School Events",
-  "World Photography",
-  "Wildlife",
-];
-
-function GalleryContent() {
+function GalleryContent({ galleryCategories }: GalleryClientProps) {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
+
+  // Build flat artwork list from DB categories
+  const artworks: Artwork[] = useMemo(() => {
+    let id = 1;
+    const list: Artwork[] = [];
+    galleryCategories.forEach((cat) => {
+      cat.images.forEach((src) => {
+        list.push({ id: id++, src, category: cat.name });
+      });
+    });
+    return list;
+  }, [galleryCategories]);
+
+  const categoryNames = useMemo(
+    () => ["All", ...galleryCategories.map((c) => c.name)],
+    [galleryCategories],
+  );
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
@@ -154,108 +54,68 @@ function GalleryContent() {
 
   // Set category from URL on mount
   useEffect(() => {
-    if (categoryFromUrl && categories.includes(categoryFromUrl)) {
+    if (categoryFromUrl && categoryNames.includes(categoryFromUrl)) {
       setSelectedCategory(categoryFromUrl);
     }
-  }, [categoryFromUrl]);
+  }, [categoryFromUrl, categoryNames]);
 
   const filteredArtworks = useMemo(
     () =>
       selectedCategory === "All"
         ? artworks
         : artworks.filter((art) => art.category === selectedCategory),
-    [selectedCategory]
+    [selectedCategory, artworks],
   );
 
-  // Animation for category change with creative image reveal
+  // Animation for category change
   useEffect(() => {
     if (!gridRef.current) return;
-
     const ctx = gsap.context(() => {
       const items = gsap.utils.toArray(".gallery-item");
-
-      // Set initial state
-      gsap.set(items, {
-        opacity: 0,
-        scale: 0.85,
-        rotationY: -20,
-        transformOrigin: "center center",
-      });
-
-      // Staggered reveal with 3D rotation
+      gsap.set(items, { opacity: 0, scale: 0.85 });
       gsap.to(items, {
         opacity: 1,
         scale: 1,
-        rotationY: 0,
         duration: 1.2,
-        stagger: {
-          each: 0.1,
-          from: "start",
-          ease: "sine.inOut",
-        },
+        stagger: { each: 0.05, from: "start", ease: "sine.inOut" },
         ease: "expo.out",
       });
     }, gridRef);
-
     return () => ctx.revert();
   }, [selectedCategory]);
 
   // Initial Page Animation
   useEffect(() => {
     if (!galleryRef.current) return;
-
     const ctx = gsap.context(() => {
-      // Creative Title Animation - Split reveal with glitch effect
       const titleChars = gsap.utils.toArray(".hero-text-char");
-
       gsap.set(titleChars, {
         y: 200,
         opacity: 0,
         rotationX: -90,
         transformOrigin: "50% 50%",
       });
-
       gsap.to(titleChars, {
         y: 0,
         opacity: 1,
         rotationX: 0,
         duration: 1.8,
-        stagger: {
-          each: 0.04,
-          from: "start",
-          ease: "sine.inOut",
-        },
+        stagger: { each: 0.04, from: "start" },
         ease: "expo.out",
       });
-
-      // Subtle glitch effect on title
-      gsap.to(titleChars, {
-        x: "random(-2, 2)",
-        duration: 0.15,
-        repeat: 2,
-        yoyo: true,
-        delay: 1.2,
-        stagger: 0.03,
-        ease: "sine.inOut",
-      });
-
-      // Subtitle fade in
       gsap.fromTo(
         ".gallery-subtitle",
         { opacity: 0, y: 40 },
-        { opacity: 1, y: 0, duration: 1.2, delay: 0.8, ease: "expo.out" }
+        { opacity: 1, y: 0, duration: 1.2, delay: 0.8, ease: "expo.out" },
       );
-
-      // Back button slide in
       gsap.fromTo(
         ".back-button",
         { x: -60, opacity: 0 },
-        { x: 0, opacity: 1, duration: 1, delay: 0.4, ease: "expo.out" }
+        { x: 0, opacity: 1, duration: 1, delay: 0.4, ease: "expo.out" },
       );
     }, galleryRef);
-
     return () => ctx.revert();
-  }, [selectedCategory]);
+  }, []);
 
   const openImage = (id: number) => setSelectedImage(id);
   const closeImage = () => setSelectedImage(null);
@@ -263,7 +123,7 @@ function GalleryContent() {
   const navigateImage = (direction: "prev" | "next") => {
     if (!selectedImage) return;
     const currentIndex = filteredArtworks.findIndex(
-      (art) => art.id === selectedImage
+      (art) => art.id === selectedImage,
     );
     let newIndex = currentIndex;
     if (direction === "prev" && currentIndex > 0) newIndex = currentIndex - 1;
@@ -274,38 +134,18 @@ function GalleryContent() {
 
   const selectedArtwork = artworks.find((art) => art.id === selectedImage);
 
-  // Helper to determine grid span classes
-  const getGridClass = (size: string) => {
-    switch (size) {
-      case "large":
-        return "md:col-span-2 md:row-span-2";
-      case "wide":
-        return "md:col-span-2 md:row-span-1";
-      case "tall":
-        return "md:col-span-1 md:row-span-2";
-      default:
-        return "md:col-span-1 md:row-span-1";
-    }
-  };
-
   return (
     <div
       ref={galleryRef}
       className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black"
     >
       <style jsx global>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-
         .gallery-item {
           will-change: transform, opacity;
         }
-
         .gallery-item img {
           will-change: transform, filter;
         }
-
         @keyframes shimmer {
           0% {
             background-position: -1000px 0;
@@ -314,7 +154,6 @@ function GalleryContent() {
             background-position: 1000px 0;
           }
         }
-
         .gallery-item:hover::before {
           content: "";
           position: absolute;
@@ -333,13 +172,11 @@ function GalleryContent() {
           pointer-events: none;
         }
       `}</style>
-      {/* Navigation */}
-      {/* Navigation */}
+
       <Navbar className="bg-transparent backdrop-blur-none" />
 
       {/* Hero Section */}
       <header className="pt-32 sm:pt-40 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-12 container mx-auto">
-        {/* Back Button */}
         <div className="mb-6 sm:mb-8 back-button">
           <a
             href="/#gallery"
@@ -365,42 +202,43 @@ function GalleryContent() {
         </div>
 
         <div className="overflow-hidden">
-          <h1 className="text-[8vw] sm:text-[10vw] lg:text-[12vw] leading-[0.8] font-bold tracking-tighter uppercase text-white/90 mb-6 sm:mb-8 whitespace-nowrap perspective-1000">
-            {(["Events Coverage", "School Events", "World Photography"].includes(selectedCategory)) ? (
-              <>
-                {selectedCategory.split(" ").map((word, wordIndex) => (
-                  <span key={wordIndex} className="block whitespace-nowrap leading-[0.9]">
+          <h1 className="text-[8vw] sm:text-[10vw] lg:text-[12vw] leading-[0.8] font-bold tracking-tighter uppercase text-white/90 mb-6 sm:mb-8 perspective-1000">
+            {["Events Coverage", "School Events", "World Photography"].includes(
+              selectedCategory,
+            )
+              ? selectedCategory.split(" ").map((word, wordIndex) => (
+                  <span
+                    key={wordIndex}
+                    className="block whitespace-nowrap leading-[0.9]"
+                  >
                     {Array.from(word).map((char, charIndex) => (
-                      <span key={charIndex} className="hero-text-char inline-block">
+                      <span
+                        key={charIndex}
+                        className="hero-text-char inline-block"
+                      >
                         {char}
                       </span>
                     ))}
                   </span>
+                ))
+              : Array.from(selectedCategory).map((char, i) => (
+                  <span key={i} className="hero-text-char inline-block">
+                    {char === " " ? "\u00A0" : char}
+                  </span>
                 ))}
-              </>
-            ) : (
-              Array.from(selectedCategory).map((char, i) => (
-                <span key={i} className="hero-text-char inline-block">
-                  {char === " " ? "\u00A0" : char}
-                </span>
-              ))
-            )}
           </h1>
           <p className="gallery-subtitle text-white/60 text-base sm:text-lg lg:text-xl font-light">
-            {selectedCategory === "All"
-              ? "photography"
-              : "photography"}
+            photography
           </p>
         </div>
 
         {/* Category Filters */}
         <div className="flex flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-12 overflow-x-auto pb-4 no-scrollbar">
-          {categories.map((cat) => (
+          {categoryNames.map((cat) => (
             <button
               key={cat}
               onClick={() => {
                 setSelectedCategory(cat);
-                // Update URL without refreshing
                 const url = new URL(window.location.href);
                 if (cat === "All") url.searchParams.delete("category");
                 else url.searchParams.set("category", cat);
@@ -418,85 +256,76 @@ function GalleryContent() {
         </div>
       </header>
 
-      {/* Masonry Grid - No gaps, larger photos with margins */}
+      {/* Masonry Grid */}
       <main className="px-4 sm:px-6 lg:px-12 pb-32 container mx-auto">
-        <div
-          ref={gridRef}
-          className="columns-1 sm:columns-2 lg:columns-3 gap-0"
-        >
-          {filteredArtworks.map((artwork, index) => (
-            <div
-              key={artwork.id}
-              className="gallery-item group relative overflow-hidden cursor-pointer break-inside-avoid mb-0"
-              onClick={() => openImage(artwork.id)}
-              onMouseEnter={() => setHoveredId(artwork.id)}
-              onMouseLeave={() => setHoveredId(null)}
-              style={{
-                perspective: "1000px",
-              }}
-            >
-              <div className="relative w-full transform-gpu transition-all duration-1000 ease-out group-hover:scale-[1.02]">
-                <Image
-                  src={artwork.src}
-                  alt={artwork.title}
-                  width={1200}
-                  height={800}
-                  className="w-full h-auto object-cover transition-all duration-1000 ease-out group-hover:brightness-110 group-hover:contrast-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  priority={index < 6}
-                />
-
-                {/* Gradient Overlay with slide effect */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                {/* Info Overlay with slide up animation */}
-                <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
-                  <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-out">
-                    <p className="text-xs font-mono text-white/80 mb-2 uppercase tracking-widest">
-                      {artwork.category}
-                    </p>
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
-                      {artwork.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-white/60 text-sm">
-                      <span>{artwork.year}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
-                        View
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </span>
+        {filteredArtworks.length === 0 ? (
+          <div className="text-center text-white/40 py-32">
+            No photos found for this category.
+          </div>
+        ) : (
+          <div
+            ref={gridRef}
+            className="columns-1 sm:columns-2 lg:columns-3 gap-0"
+          >
+            {filteredArtworks.map((artwork, index) => (
+              <div
+                key={artwork.id}
+                className="gallery-item group relative overflow-hidden cursor-pointer break-inside-avoid mb-0"
+                onClick={() => openImage(artwork.id)}
+                onMouseEnter={() => setHoveredId(artwork.id)}
+                onMouseLeave={() => setHoveredId(null)}
+              >
+                <div className="relative w-full transform-gpu transition-all duration-1000 ease-out group-hover:scale-[1.02]">
+                  <Image
+                    src={artwork.src}
+                    alt={`${artwork.category} photo`}
+                    width={1200}
+                    height={800}
+                    className="w-full h-auto object-cover transition-all duration-1000 ease-out group-hover:brightness-110"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={index < 6}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
+                    <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-out">
+                      <p className="text-xs font-mono text-white/80 mb-2 uppercase tracking-widest">
+                        {artwork.category}
+                      </p>
+                      <div className="flex items-center gap-2 text-white/60 text-sm">
+                        <span className="flex items-center gap-1">
+                          View
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-white/0 group-hover:border-white/30 transition-all duration-700" />
                 </div>
-
-                {/* Corner accent */}
-                <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-white/0 group-hover:border-white/30 transition-all duration-700" />
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
 
-      {/* Modern Lightbox */}
+      {/* Lightbox */}
       {selectedImage && selectedArtwork && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center">
-          {/* Controls */}
           <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-[110]">
             <div className="text-white/50 font-mono text-sm">
               {String(
-                filteredArtworks.findIndex((a) => a.id === selectedImage) + 1
+                filteredArtworks.findIndex((a) => a.id === selectedImage) + 1,
               ).padStart(2, "0")}{" "}
               / {String(filteredArtworks.length).padStart(2, "0")}
             </div>
@@ -525,21 +354,17 @@ function GalleryContent() {
             </button>
           </div>
 
-          {/* Main Content */}
           <div className="w-full h-full flex flex-col lg:flex-row">
-            {/* Image Area */}
             <div className="flex-1 relative h-full flex items-center justify-center p-4 lg:p-12">
               <div className="relative w-full h-full max-w-5xl max-h-[80vh]">
                 <Image
                   src={selectedArtwork.src}
-                  alt={selectedArtwork.title}
+                  alt={selectedArtwork.category}
                   fill
                   className="object-contain"
                   priority
                 />
               </div>
-
-              {/* Nav Buttons */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -584,33 +409,21 @@ function GalleryContent() {
               </button>
             </div>
 
-            {/* Info Sidebar */}
-            <div className="lg:w-[400px] bg-[#0f0f0f] border-l border-white/5 p-8 lg:p-12 flex flex-col justify-center">
-              <div className="space-y-8">
+            <div className="lg:w-[360px] bg-[#0f0f0f] border-l border-white/5 p-8 lg:p-12 flex flex-col justify-center">
+              <div className="space-y-6">
                 <div>
-                  <h2 className="text-4xl font-bold text-white mb-2">
-                    {selectedArtwork.title}
+                  <h2 className="text-3xl font-bold text-white mb-2">
+                    {selectedArtwork.category}
                   </h2>
                   <p className="text-white/40 font-mono text-sm uppercase tracking-widest">
-                    {selectedArtwork.category} — {selectedArtwork.year}
+                    Photography
                   </p>
                 </div>
-
-                <div className="space-y-6 text-white/60 leading-relaxed font-light">
-                  <p>
-                    Captured in {selectedArtwork.year}, this piece explores the
-                    relationship between{" "}
-                    {selectedArtwork.category.toLowerCase()} and light. The
-                    composition invites the viewer to pause and reflect on the
-                    subtle details often overlooked in our daily lives.
-                  </p>
-                  <p>
-                    {selectedArtwork.description ||
-                      "A unique perspective that challenges traditional boundaries of photography, creating a dialogue between the subject and the observer."}
-                  </p>
-                </div>
-
-
+                <p className="text-white/60 leading-relaxed font-light">
+                  A captured moment from the{" "}
+                  {selectedArtwork.category.toLowerCase()} collection. Each
+                  image tells a unique story through light and composition.
+                </p>
               </div>
             </div>
           </div>
@@ -620,7 +433,7 @@ function GalleryContent() {
   );
 }
 
-export default function Gallery() {
+export default function Gallery({ galleryCategories }: GalleryClientProps) {
   return (
     <Suspense
       fallback={
@@ -629,7 +442,7 @@ export default function Gallery() {
         </div>
       }
     >
-      <GalleryContent />
+      <GalleryContent galleryCategories={galleryCategories} />
     </Suspense>
   );
 }

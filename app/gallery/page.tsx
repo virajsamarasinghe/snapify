@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import dbConnect from "@/lib/db";
+import Album from "@/models/Album";
+import Category from "@/models/Category";
 import type { Metadata } from "next";
 import GalleryClient from "./GalleryClient";
 
@@ -91,14 +95,55 @@ const gallerySchema = {
   ],
 };
 
-export default function GalleryPage() {
+export const dynamic = "force-dynamic";
+
+export default async function GalleryPage() {
+  await dbConnect();
+
+  // Fetch all gallery-visible categories
+  const categoriesDocs = await Category.find({ showInGallery: { $ne: false } })
+    .sort({ name: 1 })
+    .lean()
+    .catch(() => []);
+
+  const categoryIds = (categoriesDocs as any[]).map((c: any) => c._id);
+
+  // Fetch all albums for these categories
+  const albumsDocs =
+    categoryIds.length > 0
+      ? await Album.find({ category: { $in: categoryIds } })
+          .sort({ conductDate: -1, createdAt: -1 })
+          .lean()
+          .catch(() => [])
+      : [];
+
+  // Build gallery data: per category, collect all photos (cover + album photos)
+  const galleryCategories = (categoriesDocs as any[]).map((doc: any) => {
+    const catAlbums = (albumsDocs as any[]).filter(
+      (a: any) => a.category.toString() === doc._id.toString(),
+    );
+    const allPhotos: string[] = [];
+    // category cover image first
+    if (doc.image) allPhotos.push(doc.image);
+    // all album photos
+    catAlbums.forEach((album: any) => {
+      if (album.coverPhoto) allPhotos.push(album.coverPhoto);
+      (album.photos || []).forEach((p: string) => allPhotos.push(p));
+    });
+    return {
+      id: doc._id.toString(),
+      name: doc.name,
+      images: allPhotos.filter(Boolean),
+    };
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(gallerySchema) }}
       />
-      <GalleryClient />
+      <GalleryClient galleryCategories={galleryCategories} />
     </>
   );
 }
