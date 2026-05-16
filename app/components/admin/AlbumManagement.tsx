@@ -1,18 +1,14 @@
 "use client";
 
-import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
     ArrowLeft,
     Calendar,
     Camera,
-    ChevronDown,
-    ChevronUp,
     Edit2,
     Image as ImageIcon,
     MapPin,
     Plus,
     Trash2,
-    Upload,
     X,
 } from "lucide-react";
 import Image from "next/image";
@@ -43,7 +39,6 @@ export default function AlbumManagement({
   const [albums, setAlbums] = useState<Album[]>(initialAlbums);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
-  const [expandedAlbumId, setExpandedAlbumId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,12 +50,6 @@ export default function AlbumManagement({
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-
-  // Photo upload states
-  const [photoFiles, setPhotoFiles] = useState<FileList | null>(null);
-  const [uploadingPhotosId, setUploadingPhotosId] = useState<string | null>(
-    null,
-  );
 
   const openCreate = () => {
     setEditingAlbum(null);
@@ -181,66 +170,6 @@ export default function AlbumManagement({
     setConfirmDeleteId(null);
   }
 
-  async function handleUploadPhotos(albumId: string) {
-    if (!photoFiles || photoFiles.length === 0) return;
-    setUploadingPhotosId(albumId);
-
-    // Get the album to derive folder path
-    const album = albums.find((a) => a.id === albumId)!;
-    const toSlug = (s: string) =>
-      s
-        .toLowerCase()
-        .replace(/ /g, "-")
-        .replace(/[^\w-]+/g, "");
-    const catSlug = toSlug(categoryName);
-    const albumSlug = toSlug(album.name);
-    const folder = `snapify/categories/gallery/${catSlug}/${albumSlug}`;
-
-    try {
-      const newUrls: string[] = [];
-      for (let i = 0; i < photoFiles.length; i++) {
-        const { url } = await uploadToCloudinary(photoFiles[i], folder);
-        newUrls.push(url);
-      }
-      const album = albums.find((a) => a.id === albumId)!;
-      const updatedPhotos = [...album.photos, ...newUrls];
-      const res = await fetch(`/api/albums/${albumId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ photos: updatedPhotos }),
-      });
-      if (res.ok) {
-        setAlbums(
-          albums.map((a) =>
-            a.id === albumId ? { ...a, photos: updatedPhotos } : a,
-          ),
-        );
-        setPhotoFiles(null);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setUploadingPhotosId(null);
-    }
-  }
-
-  async function handleRemovePhoto(albumId: string, photoUrl: string) {
-    const album = albums.find((a) => a.id === albumId)!;
-    const updatedPhotos = album.photos.filter((p) => p !== photoUrl);
-    const res = await fetch(`/api/albums/${albumId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ photos: updatedPhotos }),
-    });
-    if (res.ok) {
-      setAlbums(
-        albums.map((a) =>
-          a.id === albumId ? { ...a, photos: updatedPhotos } : a,
-        ),
-      );
-    }
-  }
-
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return null;
     return new Date(dateStr).toLocaleDateString("en-US", {
@@ -319,27 +248,40 @@ export default function AlbumManagement({
             >
               {/* Album row */}
               <div className="flex items-center gap-4 p-4">
-                {/* Cover thumbnail */}
-                <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-white/10 shrink-0">
+                {/* Cover thumbnail — click to open album detail */}
+                <button
+                  onClick={() =>
+                    router.push(`/admin/gallery/${categoryId}/${album.id}`)
+                  }
+                  className="relative w-20 h-20 rounded-xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-colors shrink-0 group/thumb"
+                  title="Open album"
+                >
                   {album.coverPhoto ? (
                     <Image
                       src={album.coverPhoto}
                       alt={album.name}
                       fill
-                      className="object-cover"
+                      className="object-cover group-hover/thumb:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
                       <Camera size={24} className="text-zinc-600" />
                     </div>
                   )}
-                </div>
+                </button>
 
                 {/* Album info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-semibold text-lg leading-tight truncate">
-                    {album.name}
-                  </h3>
+                  <button
+                    onClick={() =>
+                      router.push(`/admin/gallery/${categoryId}/${album.id}`)
+                    }
+                    className="text-left"
+                  >
+                    <h3 className="text-white font-semibold text-lg leading-tight truncate hover:text-purple-300 transition-colors">
+                      {album.name}
+                    </h3>
+                  </button>
                   {album.description && (
                     <p className="text-zinc-500 text-sm mt-0.5 line-clamp-1">
                       {album.description}
@@ -384,98 +326,15 @@ export default function AlbumManagement({
                   </button>
                   <button
                     onClick={() =>
-                      setExpandedAlbumId(
-                        expandedAlbumId === album.id ? null : album.id,
-                      )
+                      router.push(`/admin/gallery/${categoryId}/${album.id}`)
                     }
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors text-sm font-medium"
                   >
-                    Photos
-                    {expandedAlbumId === album.id ? (
-                      <ChevronUp size={14} />
-                    ) : (
-                      <ChevronDown size={14} />
-                    )}
+                    <ImageIcon size={14} />
+                    Open
                   </button>
                 </div>
               </div>
-
-              {/* Expanded photos panel */}
-              {expandedAlbumId === album.id && (
-                <div className="border-t border-white/5 px-4 py-5">
-                  {/* Upload bar */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="relative flex-1 group">
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => setPhotoFiles(e.target.files)}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                      />
-                      <div className="bg-black/30 border border-white/10 border-dashed rounded-xl px-4 py-3 flex items-center gap-3 group-hover:border-purple-500/50 transition-colors">
-                        <Upload
-                          size={15}
-                          className="text-zinc-500 group-hover:text-purple-400 transition-colors shrink-0"
-                        />
-                        <span className="text-zinc-500 text-sm group-hover:text-zinc-300 truncate">
-                          {photoFiles && photoFiles.length > 0
-                            ? `${photoFiles.length} file${photoFiles.length > 1 ? "s" : ""} selected`
-                            : "Click to select photos"}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      disabled={
-                        !photoFiles ||
-                        photoFiles.length === 0 ||
-                        uploadingPhotosId === album.id
-                      }
-                      onClick={() => handleUploadPhotos(album.id)}
-                      className="flex items-center gap-2 px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-                    >
-                      {uploadingPhotosId === album.id ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <Upload size={14} />
-                      )}
-                      {uploadingPhotosId === album.id ? "Uploading…" : "Upload"}
-                    </button>
-                  </div>
-
-                  {/* Photo grid */}
-                  {album.photos.length > 0 ? (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
-                      {album.photos.map((url, i) => (
-                        <div
-                          key={i}
-                          className="relative aspect-square group rounded-lg overflow-hidden border border-white/10"
-                        >
-                          <Image
-                            src={url}
-                            alt={`Photo ${i + 1}`}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <button
-                              onClick={() => handleRemovePhoto(album.id, url)}
-                              className="p-1.5 bg-red-600/90 hover:bg-red-600 text-white rounded-full transition-colors"
-                              title="Remove photo"
-                            >
-                              <Trash2 size={11} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-zinc-600 text-sm">
-                      No photos yet. Upload some above.
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           ))}
         </div>
