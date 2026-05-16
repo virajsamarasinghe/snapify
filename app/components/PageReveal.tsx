@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { useEffect, useRef, useState } from "react";
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
@@ -29,31 +29,31 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
         if (onRevealComplete) {
           onRevealComplete();
         }
-      }
+      },
     });
 
     // Set initial states
     gsap.set(".reveal-overlay", {
       scaleY: 1,
-      transformOrigin: "bottom"
+      transformOrigin: "bottom",
     });
 
     gsap.set(".reveal-text-wrapper", {
-      opacity: 1
+      opacity: 1,
     });
 
     gsap.set(".reveal-letter", {
       y: 50,
-      opacity: 0
+      opacity: 0,
     });
 
     gsap.set(".reveal-line", {
       scaleX: 0,
-      transformOrigin: "left"
+      transformOrigin: "left",
     });
 
     gsap.set(".reveal-counter", {
-      opacity: 1
+      opacity: 1,
     });
 
     // Counter animation
@@ -68,65 +68,93 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
         const progress = Math.round(counter.value);
         const counterElement = document.querySelector(".counter-number");
         if (counterElement) {
-          counterElement.textContent = progress.toString().padStart(3, '0');
+          counterElement.textContent = progress.toString().padStart(3, "0");
         }
-      }
-    })
-    // Animate letters smoothly without rotation
-    .to(".reveal-letter", {
-      y: 0,
-      opacity: 1,
-      duration: 0.8,
-      stagger: {
-        each: 0.02,
-        from: "start"
       },
-      ease: "power2.out"
-    }, 0.3)
-    // Animate decorative lines
-    .to(".reveal-line", {
-      scaleX: 1,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power3.inOut"
-    }, 0.5)
-    // Fade out counter
-    .to(".reveal-counter", {
-      opacity: 0,
-      duration: 0.5,
-      ease: "power2.in"
-    }, 2)
-    // Fade out text without scaling
-    .to(".reveal-text-wrapper", {
-      opacity: 0,
-      duration: 0.6,
-      ease: "power2.in"
-    }, 2.2)
-    // Split screen reveal effect
-    .to(".reveal-overlay-left", {
-      xPercent: -100,
-      duration: 1.2,
-      ease: "power4.inOut"
-    }, 2.8)
-    .to(".reveal-overlay-right", {
-      xPercent: 100,
-      duration: 1.2,
-      ease: "power4.inOut"
-    }, 2.8)
-    // Scale and fade the entire container
-    .to(container, {
-      opacity: 0,
-      duration: 0.5,
-      ease: "power2.out",
-      onComplete: () => {
-        container.style.display = 'none';
-      }
-    }, 3.5);
+    })
+      // Animate letters smoothly without rotation
+      .to(
+        ".reveal-letter",
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: {
+            each: 0.02,
+            from: "start",
+          },
+          ease: "power2.out",
+        },
+        0.3,
+      )
+      // Animate decorative lines
+      .to(
+        ".reveal-line",
+        {
+          scaleX: 1,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power3.inOut",
+        },
+        0.5,
+      )
+      // Fade out counter
+      .to(
+        ".reveal-counter",
+        {
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.in",
+        },
+        2,
+      )
+      // Fade out text without scaling
+      .to(
+        ".reveal-text-wrapper",
+        {
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.in",
+        },
+        2.2,
+      )
+      // Split screen reveal effect
+      .to(
+        ".reveal-overlay-left",
+        {
+          xPercent: -100,
+          duration: 1.2,
+          ease: "power4.inOut",
+        },
+        2.8,
+      )
+      .to(
+        ".reveal-overlay-right",
+        {
+          xPercent: 100,
+          duration: 1.2,
+          ease: "power4.inOut",
+        },
+        2.8,
+      )
+      // Scale and fade the entire container
+      .to(
+        container,
+        {
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: () => {
+            container.style.display = "none";
+          },
+        },
+        3.5,
+      );
 
     // Add floating particles animation
     const createParticle = () => {
-      const particle = document.createElement('div');
-      particle.className = 'reveal-particle';
+      const particle = document.createElement("div");
+      particle.className = "reveal-particle";
       container.appendChild(particle);
 
       const size = gsap.utils.random(2, 6);
@@ -137,7 +165,7 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
         height: size,
         left: gsap.utils.random(0, window.innerWidth),
         bottom: -20,
-        opacity: gsap.utils.random(0.3, 0.7)
+        opacity: gsap.utils.random(0.3, 0.7),
       });
 
       gsap.to(particle, {
@@ -148,7 +176,7 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
         ease: "power1.out",
         onComplete: () => {
           particle.remove();
-        }
+        },
       });
     };
 
@@ -171,10 +199,7 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
   // Split text into individual letters for animation
   const splitText = (text: string) => {
     return text.split("").map((char, i) => (
-      <span
-        key={i}
-        className="reveal-letter inline-block"
-      >
+      <span key={i} className="reveal-letter inline-block">
         {char === " " ? "\u00A0" : char}
       </span>
     ));
@@ -217,7 +242,9 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
         {/* Counter */}
         <div className="reveal-counter absolute -bottom-32 left-1/2 -translate-x-1/2">
           <div className="flex items-baseline gap-2">
-            <span className="counter-number text-white text-2xl font-light tracking-wider">000</span>
+            <span className="counter-number text-white text-2xl font-light tracking-wider">
+              000
+            </span>
             <span className="text-white/40 text-xs">%</span>
           </div>
         </div>
@@ -238,7 +265,12 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
       <style jsx>{`
         .reveal-particle {
           position: absolute;
-          background: linear-gradient(135deg, #ffffff 0%, #a855f7 50%, #ec4899 100%);
+          background: linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #a855f7 50%,
+            #ec4899 100%
+          );
           border-radius: 50%;
           pointer-events: none;
           z-index: 20;
@@ -250,8 +282,13 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
         }
 
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
         }
       `}</style>
     </div>
