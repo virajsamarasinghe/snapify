@@ -51,8 +51,8 @@ export default async function Home() {
       .sort({ createdAt: -1 })
       .lean()
       .catch(() => []),
-    // Only gallery categories (not marketplace-only)
-    Category.find({ showInMarketplace: { $ne: true } })
+    // Only gallery-visible categories
+    Category.find({ showInGallery: { $ne: false } })
       .sort({ name: 1 })
       .populate({ path: "products", select: "images" })
       .lean()
