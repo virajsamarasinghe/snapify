@@ -1,31 +1,37 @@
+import { authOptions } from "@/lib/auth";
+import cloudinary from "@/lib/cloudinary";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ filename: string }> }
+  { params }: { params: Promise<{ filename: string }> },
 ) {
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as { role?: string })?.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const resolvedParams = await params;
-    const { filename } = resolvedParams;
-    
-    // Prevent directory traversal attacks
-    if (filename.includes("/") || filename.includes("\\") || filename.includes("..")) {
-      return NextResponse.json({ error: "Invalid filename" }, { status: 400 });
+    const { filename } = await params;
+    // filename is the URL-encoded Cloudinary publicId (e.g. "snapify%2Fhero%2F1")
+    const publicId = decodeURIComponent(filename);
+
+    // Security: only allow deleting images in the snapify/ namespace
+    if (!publicId.startsWith("snapify/")) {
+      return NextResponse.json(
+        { error: "Invalid image reference" },
+        { status: 400 },
+      );
     }
 
-    const filepath = path.join(process.cwd(), "public/hero", filename);
-
-    // Delete the file
-    await fs.unlink(filepath);
-
+    await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    console.error("Error deleting file:", error);
+  } catch (error) {
+    console.error("Hero delete error:", error);
     return NextResponse.json(
-      { error: "Failed to delete file" },
-      { status: 500 }
+      { error: "Failed to delete image" },
+      { status: 500 },
     );
   }
 }

@@ -1,56 +1,61 @@
-import { writeFile, mkdir } from "fs/promises";
+import { authOptions } from "@/lib/auth";
+import cloudinary from "@/lib/cloudinary";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
+
+export const dynamic = "force-dynamic";
+
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
+const MAX_SIZE_BYTES = 15 * 1024 * 1024;
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as { role?: string })?.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
-    const file = formData.get("file") as File;
+    const file = formData.get("file") as File | null;
 
     if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+    }
+    if (file.size > MAX_SIZE_BYTES) {
       return NextResponse.json(
-        { error: "No file uploaded" },
-        { status: 400 }
+        { error: "File too large. Max 15 MB." },
+        { status: 400 },
       );
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-    // Use original filename (cleaned up) or let user override. We'll use original for simplicity, but sanitize it.
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "");
-    
-    // Add timestamp to prevent overwriting if file with same name exists
-    const timestamp = Date.now();
-    const ext = path.extname(safeName);
-    const basename = path.basename(safeName, ext);
-    const filename = `${basename}-${timestamp}${ext}`;
-
-    const uploadDir = path.join(process.cwd(), "public/hero");
-    
-    // Ensure upload directory exists
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      // Ignore if exists
-    }
-
-    const filepath = path.join(uploadDir, filename);
-
-    // Write file to public/hero
-    await writeFile(filepath, buffer);
-
-    return NextResponse.json({ 
-      filename: filename,
-      url: `/hero/${filename}`,
-      success: true 
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder: "snapify/hero",
+      resource_type: "image",
+      quality: "auto:good",
+      overwrite: false,
     });
 
+    return NextResponse.json({
+      filename: result.public_id.split("/").pop() + "." + result.format,
+      url: result.secure_url,
+      publicId: result.public_id,
+      success: true,
+    });
   } catch (error) {
-    console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Error uploading file" },
-      { status: 500 }
-    );
+    console.error("Hero upload error:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

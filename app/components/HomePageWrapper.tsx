@@ -37,6 +37,8 @@ interface HomePageWrapperProps {
     stat2Label?: string;
     photos?: string[];
   };
+  galleryQuote?: string;
+  galleryQuoteAuthor?: string;
 }
 
 export default function HomePageWrapper({
@@ -45,6 +47,8 @@ export default function HomePageWrapper({
   achievements = [],
   showMarketplace = true,
   about = {},
+  galleryQuote,
+  galleryQuoteAuthor,
 }: HomePageWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [contentReady, setContentReady] = useState(false);
@@ -79,6 +83,16 @@ export default function HomePageWrapper({
     setIsLoading(false);
   };
 
+  // Flatten category images into the format GalleryScroll expects
+  const galleryScrollImages = categories
+    .flatMap((cat) =>
+      cat.images
+        .filter((src) => src && src !== "/placeholder.jpg")
+        .map((src) => ({ src, alt: cat.title })),
+    )
+    .slice(0, 12)
+    .map((img, i) => ({ id: i + 1, ...img }));
+
   return (
     <>
       {isLoading && <ArtisticReveal onRevealComplete={handleLoadingComplete} />}
@@ -95,7 +109,11 @@ export default function HomePageWrapper({
         <AboutNew {...about} />
         <GalleryShowcaseNew categories={categories} />
         <Achievements achievements={achievements} />
-        <GalleryScroll />
+        <GalleryScroll
+          quote={galleryQuote}
+          quoteAuthor={galleryQuoteAuthor}
+          images={galleryScrollImages}
+        />
         {showMarketplace && <MarketplaceCTA />}
         <Footer />
       </div>

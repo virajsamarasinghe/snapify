@@ -1,4 +1,5 @@
 import { authOptions } from "@/lib/auth";
+import cloudinary, { extractPublicId } from "@/lib/cloudinary";
 import dbConnect from "@/lib/db";
 import Recognition from "@/models/Recognition";
 import { getServerSession } from "next-auth";
@@ -51,6 +52,13 @@ export async function DELETE(
 
   const { id } = await params;
   await dbConnect();
+  const item = await Recognition.findById(id);
+  if (item?.image) {
+    const publicId = extractPublicId(item.image);
+    if (publicId && publicId.startsWith("snapify/recognition/")) {
+      await cloudinary.uploader.destroy(publicId).catch(() => {});
+    }
+  }
   await Recognition.findByIdAndDelete(id);
   return NextResponse.json({ message: "Deleted" });
 }

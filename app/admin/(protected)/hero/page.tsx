@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 interface LocalFile {
   filename: string;
   url: string;
+  publicId: string;
   isHidden: boolean;
 }
 
@@ -47,14 +48,14 @@ export default function ManageHero() {
 
       if (!filesData.files) throw new Error("Failed to load files");
 
-      const mergedFiles = filesData.files.map((filename: string) => {
-        const url = `/hero/${filename}`;
-        return {
-          filename,
-          url,
-          isHidden: hiddenSrcs.includes(url),
-        };
-      });
+      const mergedFiles = filesData.files.map(
+        (f: { filename: string; url: string; publicId: string }) => ({
+          filename: f.filename,
+          url: f.url,
+          publicId: f.publicId,
+          isHidden: hiddenSrcs.includes(f.url),
+        }),
+      );
 
       setLocalFiles(mergedFiles);
     } catch (error) {
@@ -98,13 +99,11 @@ export default function ManageHero() {
     }
   };
 
-  const handleDelete = async (filename: string) => {
+  const handleDelete = async (publicId: string) => {
     try {
       const res = await fetch(
-        `/api/hero/files/${encodeURIComponent(filename)}`,
-        {
-          method: "DELETE",
-        },
+        `/api/hero/files/${encodeURIComponent(publicId)}`,
+        { method: "DELETE" },
       );
 
       if (res.ok) {
@@ -171,7 +170,7 @@ export default function ManageHero() {
         onCancel={() => setConfirmDeleteFile(null)}
       />
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
           Manage Hero Images
         </h1>
       </div>
@@ -244,7 +243,7 @@ export default function ManageHero() {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent" />
 
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
@@ -280,7 +279,7 @@ export default function ManageHero() {
                   </button>
 
                   <button
-                    onClick={() => setConfirmDeleteFile(file.filename)}
+                    onClick={() => setConfirmDeleteFile(file.publicId)}
                     className="p-2 bg-red-500/90 hover:bg-red-600 text-white rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium"
                     title="Delete Image File"
                   >

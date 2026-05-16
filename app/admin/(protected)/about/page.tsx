@@ -36,7 +36,7 @@ const DEFAULTS: AboutForm = {
   stat1Label: "Years Experience",
   stat2Value: "50+",
   stat2Label: "Global Exhibitions",
-  photos: ["/about/man.jpeg", "/about/man2.jpeg", "/about/man3.jpeg"],
+  photos: [],
 };
 
 export default function AboutAdminPage() {
@@ -92,9 +92,21 @@ export default function AboutAdminPage() {
   }, [isDirty]);
 
   useEffect(() => {
-    fetch("/api/about", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d) => {
+    Promise.all([
+      fetch("/api/about", { cache: "no-store" }).then((r) => r.json()),
+      fetch("/api/about/photos", { cache: "no-store" }).then((r) => r.json()),
+    ])
+      .then(([d, cloudinaryPhotos]) => {
+        const storedPhotos: string[] = Array.isArray(d.photos) ? d.photos : [];
+        // If stored photos are local paths (not Cloudinary URLs) or empty, use Cloudinary list
+        const hasLocalPaths = storedPhotos.some((p) => !p.startsWith("http"));
+        const photos =
+          hasLocalPaths || storedPhotos.length === 0
+            ? Array.isArray(cloudinaryPhotos) && cloudinaryPhotos.length > 0
+              ? cloudinaryPhotos
+              : []
+            : storedPhotos;
+
         const loaded: AboutForm = {
           tagline: d.tagline ?? DEFAULTS.tagline,
           heading: d.heading ?? DEFAULTS.heading,
@@ -104,10 +116,7 @@ export default function AboutAdminPage() {
           stat1Label: d.stat1Label ?? DEFAULTS.stat1Label,
           stat2Value: d.stat2Value ?? DEFAULTS.stat2Value,
           stat2Label: d.stat2Label ?? DEFAULTS.stat2Label,
-          photos:
-            Array.isArray(d.photos) && d.photos.length > 0
-              ? d.photos
-              : DEFAULTS.photos,
+          photos,
         };
         savedFormRef.current = loaded;
         setForm(loaded);
@@ -174,7 +183,21 @@ export default function AboutAdminPage() {
   }
 
   function removePhoto(index: number) {
+    const photoUrl = form.photos[index];
     setForm((f) => ({ ...f, photos: f.photos.filter((_, i) => i !== index) }));
+
+    // Delete from Cloudinary if it's a Cloudinary URL
+    if (photoUrl && photoUrl.includes("res.cloudinary.com")) {
+      const match = photoUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/);
+      const publicId = match ? match[1] : null;
+      if (publicId && publicId.startsWith("snapify/about/")) {
+        fetch("/api/about/photos", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ publicId }),
+        }).catch(console.error);
+      }
+    }
   }
 
   function field(
@@ -351,32 +374,6 @@ export default function AboutAdminPage() {
                 Photos are shown in a carousel. Drag order follows the list
                 above.
               </p>
-
-              {/* Manual URL input */}
-              <div className="mt-4 flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Or paste a photo path: /about/photo.jpg"
-                  id="manualPhotoUrl"
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const el = document.getElementById(
-                      "manualPhotoUrl",
-                    ) as HTMLInputElement;
-                    const val = el?.value?.trim();
-                    if (val) {
-                      setForm((f) => ({ ...f, photos: [...f.photos, val] }));
-                      el.value = "";
-                    }
-                  }}
-                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-all"
-                >
-                  Add
-                </button>
-              </div>
             </div>
           </div>
 

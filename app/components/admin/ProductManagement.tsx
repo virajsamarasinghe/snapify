@@ -50,6 +50,7 @@ export default function ProductManagement({
   const [status, setStatus] = useState<ProductStatus>("available");
   const [categoryId, setCategoryId] = useState("");
   const [imageFiles, setImageFiles] = useState<FileList | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
@@ -60,6 +61,7 @@ export default function ProductManagement({
     setPrice(product.price.toString());
     setCategoryId(product.category?.id || "");
     setStatus(product.status || "available");
+    setExistingImages(product.images || []);
     setIsCreating(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -72,6 +74,7 @@ export default function ProductManagement({
     setCategoryId("");
     setStatus("available");
     setImageFiles(null);
+    setExistingImages([]);
     setIsCreating(false);
   };
 
@@ -80,7 +83,8 @@ export default function ProductManagement({
     if (!title || !price || !categoryId || !description) return;
 
     setUploading(true);
-    let uploadedImages: string[] = editingProduct?.images || [];
+    // Start from current existingImages (already has removed ones filtered out)
+    let uploadedImages: string[] = editingProduct ? existingImages : [];
 
     try {
       // 1. Upload Images
@@ -361,6 +365,34 @@ export default function ProductManagement({
               <label className="block text-sm font-medium text-zinc-400 mb-2">
                 Images {editingProduct && "(Upload to add more)"}
               </label>
+
+              {/* Existing images with remove buttons */}
+              {existingImages.length > 0 && (
+                <div className="flex flex-wrap gap-3 mb-3">
+                  {existingImages.map((url, i) => (
+                    <div key={i} className="relative group w-20 h-20">
+                      <Image
+                        src={url}
+                        alt={`Image ${i + 1}`}
+                        fill
+                        className="object-cover rounded-lg border border-white/10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExistingImages((imgs) =>
+                            imgs.filter((_, idx) => idx !== i),
+                          )
+                        }
+                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Remove image"
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="relative group">
                 <input
                   type="file"

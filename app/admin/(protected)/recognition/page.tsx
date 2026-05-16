@@ -90,7 +90,7 @@ function RecognitionCard({
       </div>
 
       {/* Image */}
-      {item.image && (
+      {item.image && item.image.startsWith("http") && (
         <img
           src={item.image}
           alt={item.title}
@@ -578,14 +578,14 @@ export default function RecognitionAdminPage() {
                       }}
                     />
 
-                    {/* Manual path fallback */}
+                    {/* Manual URL input for Cloudinary or external URL */}
                     <input
                       type="text"
                       value={form.image}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, image: e.target.value }))
                       }
-                      placeholder="or type a path: /gallery/photo.jpg"
+                      placeholder="or paste a Cloudinary URL"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-xs placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
                     />
                   </div>

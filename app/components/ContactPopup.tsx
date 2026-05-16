@@ -9,6 +9,20 @@ interface ContactPopupProps {
   onClose: () => void;
 }
 
+interface ContactInfo {
+  email1: string;
+  email2: string;
+  phone1: string;
+  phone2: string;
+}
+
+const CONTACT_DEFAULTS: ContactInfo = {
+  email1: "studionethma@yahoo.com",
+  email2: "studionethma3@gmail.com",
+  phone1: "+94 777 901 129",
+  phone2: "+94 112 624 725",
+};
+
 export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -23,6 +37,14 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [contactInfo, setContactInfo] = useState<ContactInfo>(CONTACT_DEFAULTS);
+
+  useEffect(() => {
+    fetch("/api/settings/contact", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setContactInfo((prev) => ({ ...prev, ...d })))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -304,36 +326,52 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
 
           {/* Contact Info */}
           <div className="pt-6 border-t border-white/10 flex flex-col items-center gap-4 text-sm text-white/60">
-            <div className="flex gap-4 flex-wrap justify-center">
-              <a
-                href="mailto:studionethma@yahoo.com"
-                className="hover:text-white transition-colors"
-              >
-                studionethma@yahoo.com
-              </a>
-              <span className="text-white/20 hidden sm:inline">|</span>
-              <a
-                href="mailto:studionethma3@gmail.com"
-                className="hover:text-white transition-colors"
-              >
-                studionethma3@gmail.com
-              </a>
-            </div>
-            <div className="flex gap-4 flex-wrap justify-center">
-              <a
-                href="tel:+94777901129"
-                className="hover:text-white transition-colors"
-              >
-                +94 777 901 129
-              </a>
-              <span className="text-white/20 hidden sm:inline">|</span>
-              <a
-                href="tel:+94112624725"
-                className="hover:text-white transition-colors"
-              >
-                +94 112 624 725
-              </a>
-            </div>
+            {(contactInfo.email1 || contactInfo.email2) && (
+              <div className="flex gap-4 flex-wrap justify-center">
+                {contactInfo.email1 && (
+                  <a
+                    href={`mailto:${contactInfo.email1}`}
+                    className="hover:text-white transition-colors"
+                  >
+                    {contactInfo.email1}
+                  </a>
+                )}
+                {contactInfo.email1 && contactInfo.email2 && (
+                  <span className="text-white/20 hidden sm:inline">|</span>
+                )}
+                {contactInfo.email2 && (
+                  <a
+                    href={`mailto:${contactInfo.email2}`}
+                    className="hover:text-white transition-colors"
+                  >
+                    {contactInfo.email2}
+                  </a>
+                )}
+              </div>
+            )}
+            {(contactInfo.phone1 || contactInfo.phone2) && (
+              <div className="flex gap-4 flex-wrap justify-center">
+                {contactInfo.phone1 && (
+                  <a
+                    href={`tel:${contactInfo.phone1.replace(/\s/g, "")}`}
+                    className="hover:text-white transition-colors"
+                  >
+                    {contactInfo.phone1}
+                  </a>
+                )}
+                {contactInfo.phone1 && contactInfo.phone2 && (
+                  <span className="text-white/20 hidden sm:inline">|</span>
+                )}
+                {contactInfo.phone2 && (
+                  <a
+                    href={`tel:${contactInfo.phone2.replace(/\s/g, "")}`}
+                    className="hover:text-white transition-colors"
+                  >
+                    {contactInfo.phone2}
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

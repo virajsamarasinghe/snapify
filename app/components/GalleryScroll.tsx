@@ -1,103 +1,51 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function GalleryScroll() {
+interface GalleryImage {
+  id: number;
+  src: string;
+  alt: string;
+}
+
+export default function GalleryScroll({
+  quote = "Photography is the story I fail to put into words.",
+  quoteAuthor = "Destin Sparks",
+  images = [],
+}: {
+  quote?: string;
+  quoteAuthor?: string;
+  images?: GalleryImage[];
+}) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const quoteRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<HTMLDivElement>(null);
 
-  // Gallery images data - from all gallery folders
-  const allGalleryImages = [
-    {
-      id: 1,
-      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.12.jpeg",
-      alt: "School Events",
-    },
-    {
-      id: 2,
-      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.25.jpeg",
-      alt: "Wildlife",
-    },
-    {
-      id: 3,
-      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09.jpeg",
-      alt: "World Photography",
-    },
-    {
-      id: 4,
-      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.15.jpeg",
-      alt: "School Moments",
-    },
-    {
-      id: 5,
-      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.28.jpeg",
-      alt: "Nature",
-    },
-    {
-      id: 6,
-      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.10.jpeg",
-      alt: "Travel",
-    },
-    {
-      id: 7,
-      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.17.jpeg",
-      alt: "Events",
-    },
-    {
-      id: 8,
-      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.30.jpeg",
-      alt: "Wildlife Beauty",
-    },
-    {
-      id: 9,
-      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.11.jpeg",
-      alt: "Global Stories",
-    },
-    {
-      id: 10,
-      src: "/gallery/school-events/WhatsApp Image 2025-12-28 at 01.41.19.jpeg",
-      alt: "School Life",
-    },
-    {
-      id: 11,
-      src: "/gallery/wildlife/WhatsApp Image 2025-12-28 at 02.34.32.jpeg",
-      alt: "Nature's Wonder",
-    },
-    {
-      id: 12,
-      src: "/gallery/world-photography/WhatsApp Image 2025-12-28 at 02.43.09 (1).jpeg",
-      alt: "World Views",
-    },
-  ];
-
-  // Calculate which set of 6 images to show based on current hour
-  const getCurrentImageSet = () => {
+  // Show up to 6 images, rotating by hour if more are available
+  const getCurrentImageSet = (imgs: GalleryImage[]) => {
+    if (imgs.length <= 6) return imgs;
     const currentHour = new Date().getHours();
-    const startIndex = (currentHour % 2) * 6; // Changes every 2 hours, alternates between 0 and 6
-    return allGalleryImages.slice(startIndex, startIndex + 6);
+    const startIndex = (currentHour % Math.ceil(imgs.length / 6)) * 6;
+    return imgs.slice(startIndex, startIndex + 6);
   };
 
-  const [galleryImages, setGalleryImages] = useState(getCurrentImageSet());
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(() =>
+    getCurrentImageSet(images),
+  );
 
   useEffect(() => {
-    // Update images based on current hour
-    const updateHourlyImages = () => {
-      setGalleryImages(getCurrentImageSet());
-    };
-
-    // Check every minute if we need to update
-    const hourCheckInterval = setInterval(updateHourlyImages, 60000);
-
-    return () => {
-      clearInterval(hourCheckInterval);
-    };
-  }, []);
+    setGalleryImages(getCurrentImageSet(images));
+    const interval = setInterval(
+      () => setGalleryImages(getCurrentImageSet(images)),
+      60000,
+    );
+    return () => clearInterval(interval);
+  }, [images]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -136,7 +84,7 @@ export default function GalleryScroll() {
           duration: 0.8,
           ease: "power2.out",
         },
-        "-=0.4"
+        "-=0.4",
       );
 
     // Staggered reveal animation for images
@@ -191,29 +139,28 @@ export default function GalleryScroll() {
           {/* Left Side - Quote */}
           <div ref={quoteRef} className="relative">
             <div className="lg:sticky lg:top-32">
-              {/* Quote mark */}
-              <div className="absolute -top-10 -left-4 text-white/10 text-[150px] leading-none font-serif">
-                "
+              {/* Opening quote mark */}
+              <div className="absolute -top-10 -left-4 text-white/10 text-[150px] leading-none font-serif select-none pointer-events-none">
+                &ldquo;
               </div>
 
               {/* Quote content */}
-              <div className="relative z-10 space-y-6">
+              <div className="relative z-10 pt-16 pb-2">
                 <h2 className="quote-line text-3xl lg:text-5xl font-light leading-tight text-white">
-                  Photography is the
-                </h2>
-                <h2 className="quote-line text-3xl lg:text-5xl font-light leading-tight text-white">
-                  <span className="font-bold italic">story</span> I fail to put
-                </h2>
-                <h2 className="quote-line text-3xl lg:text-5xl font-light leading-tight text-white">
-                  into words.
+                  {quote}
                 </h2>
               </div>
 
+              {/* Closing quote mark */}
+              <div className="relative z-10 text-white/10 text-[120px] leading-none font-serif text-right -mt-6 select-none pointer-events-none">
+                &rdquo;
+              </div>
+
               {/* Author */}
-              <div className="quote-author mt-12 flex items-center gap-4">
-                <div className="w-16 h-[1px] bg-white/40"></div>
+              <div className="quote-author mt-6 flex items-center gap-4">
+                <div className="w-16 h-px bg-white/40"></div>
                 <p className="text-white/60 text-sm uppercase tracking-widest">
-                  Destin Sparks
+                  {quoteAuthor}
                 </p>
               </div>
 

@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import cloudinary from "@/lib/cloudinary";
 import dbConnect from "@/lib/db";
 import AboutSettings from "@/models/AboutSettings";
 import Category from "@/models/Category";
 import Hero from "@/models/Hero";
 import Recognition from "@/models/Recognition";
 import SiteSettings from "@/models/SiteSettings";
-import fs from "fs/promises";
 import type { Metadata } from "next";
-import path from "path";
 import HomePageWrapper from "./components/HomePageWrapper";
 // Ensure Product model is registered for populate
 import "@/models/Product";
@@ -40,12 +39,10 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   await dbConnect();
 
-  const heroDir = path.join(process.cwd(), "public/hero");
-
-  // Run all DB queries + file read in parallel
+  // Run all DB queries + Cloudinary list in parallel
   const [
     hiddenHeroes,
-    heroFiles,
+    cloudinaryHeroResult,
     categoriesDocs,
     recognitionDocs,
     aboutDoc,
@@ -55,7 +52,14 @@ export default async function Home() {
       .select("src")
       .lean()
       .catch(() => []),
-    fs.readdir(heroDir).catch(() => [] as string[]),
+    (cloudinary.api as any)
+      .resources({
+        type: "upload",
+        prefix: "snapify/hero/",
+        max_results: 10,
+        resource_type: "image",
+      })
+      .catch(() => ({ resources: [] })),
     Category.find()
       .sort({ name: 1 })
       .populate({ path: "products", select: "images", options: { limit: 5 } })
@@ -74,15 +78,10 @@ export default async function Home() {
       .catch(() => null),
   ]);
 
-  // Build hero images list
+  // Build hero images list from Cloudinary
   const hiddenSrcs = (hiddenHeroes as any[]).map((h: any) => h.src);
-  const heroImages = (heroFiles as string[])
-    .filter((file) =>
-      [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(
-        path.extname(file).toLowerCase(),
-      ),
-    )
-    .map((file) => ({ src: `/hero/${file}` }))
+  const heroImages = ((cloudinaryHeroResult as any).resources as any[])
+    .map((r: any) => ({ src: r.secure_url as string }))
     .filter((img) => !hiddenSrcs.includes(img.src));
 
   const categories = (categoriesDocs as any[]).map((doc: any) => {
@@ -348,6 +347,8 @@ export default async function Home() {
         achievements={achievements}
         showMarketplace={showMarketplace}
         about={aboutSettings}
+        galleryQuote={(siteSettingsDoc as any)?.galleryQuote}
+        galleryQuoteAuthor={(siteSettingsDoc as any)?.galleryQuoteAuthor}
       />
     </>
   );

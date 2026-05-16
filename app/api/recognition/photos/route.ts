@@ -1,30 +1,36 @@
 import { authOptions } from "@/lib/auth";
-import { mkdir, readdir, writeFile } from "fs/promises";
+import cloudinary from "@/lib/cloudinary";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
 
 export const dynamic = "force-dynamic";
 
-const RECOGNITION_DIR = path.join(process.cwd(), "public/uploads/recognition");
-const PUBLIC_PREFIX = "/uploads/recognition";
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
+const MAX_SIZE_BYTES = 15 * 1024 * 1024;
 
-// GET: list existing recognition photos
+// GET — list existing recognition photos from Cloudinary
 export async function GET() {
   try {
-    await mkdir(RECOGNITION_DIR, { recursive: true });
-    const files = await readdir(RECOGNITION_DIR);
-    const images = files
-      .filter((f) => /\.(jpe?g|png|webp|gif)$/i.test(f))
-      .map((f) => `${PUBLIC_PREFIX}/${f}`);
-    return NextResponse.json(images);
+    const result = await (cloudinary.api as any).resources({
+      type: "upload",
+      prefix: "snapify/recognition/",
+      max_results: 50,
+      resource_type: "image",
+    });
+    const photos = (result.resources as any[]).map((r) => r.secure_url);
+    return NextResponse.json(photos);
   } catch {
     return NextResponse.json([]);
   }
 }
 
-// POST: upload a new recognition photo (admin only)
+// POST — upload a new recognition photo to Cloudinary (admin only)
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || session.user?.role !== "admin") {
@@ -37,21 +43,45 @@ export async function POST(req: NextRequest) {
   if (!file) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
   }
-
-  const ext = path.extname(file.name).toLowerCase();
-  if (![".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext)) {
+  if (!ALLOWED_TYPES.includes(file.type)) {
     return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
   }
+  if (file.size > MAX_SIZE_BYTES) {
+    return NextResponse.json(
+      { error: "File too large. Max 15 MB." },
+      { status: 400 },
+    );
+  }
 
-  await mkdir(RECOGNITION_DIR, { recursive: true });
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-  const filename = `${uuidv4()}${ext}`;
-  const filepath = path.join(RECOGNITION_DIR, filename);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filepath, buffer);
+  const result = await cloudinary.uploader.upload(dataUri, {
+    folder: "snapify/recognition",
+    resource_type: "image",
+    quality: "auto:good",
+    overwrite: false,
+  });
 
   return NextResponse.json(
-    { url: `${PUBLIC_PREFIX}/${filename}` },
+    { url: result.secure_url, publicId: result.public_id },
     { status: 201 },
   );
+}
+
+// DELETE — remove a recognition photo from Cloudinary (admin only)
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { publicId } = await req.json();
+  if (!publicId || !String(publicId).startsWith("snapify/recognition/")) {
+    return NextResponse.json({ error: "Invalid publicId" }, { status: 400 });
+  }
+
+  await cloudinary.uploader.destroy(publicId);
+  return NextResponse.json({ success: true });
 }

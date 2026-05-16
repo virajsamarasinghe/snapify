@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import TransitionLink from "./TransitionLink";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import TransitionLink from "./TransitionLink";
 
 // Register GSAP plugin
 if (typeof window !== "undefined") {
@@ -28,10 +28,12 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [currentImages, setCurrentImages] = useState<{ [key: string]: number }>({});
+  const [currentImages, setCurrentImages] = useState<{ [key: string]: number }>(
+    {},
+  );
   const [activeColorCard, setActiveColorCard] = useState<string | null>(null);
   const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Use passed categories or fallback (empty)
   // Logic: We rely on the parent to pass valid data.
 
@@ -59,7 +61,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
             [category.id]: (prev[category.id] + 1) % category.images.length,
           }));
         },
-        5000 + index * 500 // Stagger: 5s, 5.5s, 6s, 6.5s, 7s, 7.5s, 8s
+        5000 + index * 500, // Stagger: 5s, 5.5s, 6s, 6.5s, 7s, 7.5s, 8s
       );
       intervals.push(interval);
     });
@@ -154,7 +156,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           stagger: 0.1,
           ease: "power3.out",
         },
-        "-=0.5"
+        "-=0.5",
       );
 
       // Animate subtitle
@@ -166,7 +168,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           duration: 0.6,
           ease: "power3.out",
         },
-        "-=0.4"
+        "-=0.4",
       );
 
       // Animate gallery items
@@ -179,7 +181,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           stagger: 0.15,
           ease: "power3.out",
         },
-        "-=0.3"
+        "-=0.3",
       );
 
       // Animate numbers
@@ -192,7 +194,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           stagger: 0.15,
           ease: "power2.out",
         },
-        "-=0.6"
+        "-=0.6",
       );
     }, sectionRef);
 
@@ -217,29 +219,29 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
     // 3: Small
     // 4: Small
     // Returns a generally safe bento mix.
-    
+
     const i = index % 10;
-    
+
     if (i === 0) return "lg:col-span-2 lg:row-span-2"; // Big Feature
     if (i === 1) return "lg:col-span-1 lg:row-span-1";
-    if (i === 2) return "lg:col-span-1 lg:row-span-1"; 
+    if (i === 2) return "lg:col-span-1 lg:row-span-1";
     // Row 1 full (2+1+1 = 4)
     // Row 2 starts with Big (from row 1) taking 2 slots.
-    
+
     if (i === 3) return "lg:col-span-1 lg:row-span-1";
     if (i === 4) return "lg:col-span-1 lg:row-span-1";
     // Row 2 full.
-    
+
     if (i === 5) return "lg:col-span-2 lg:row-span-1"; // Wide
     if (i === 6) return "lg:col-span-1 lg:row-span-2"; // Tall
     if (i === 7) return "lg:col-span-1 lg:row-span-1";
     // Row 3: [Wide][Wide][Tall][Small]
-    
+
     if (i === 8) return "lg:col-span-1 lg:row-span-1";
     if (i === 9) return "lg:col-span-2 lg:row-span-1"; // Wide
     // Row 4: [Small][Wide][Wide][Tall (from prev)] <- No, Tall takes col 3.
     // Row 4: [Small][Wide][Wide][Tall]
-    
+
     return "lg:col-span-1 lg:row-span-1";
   };
 
@@ -302,7 +304,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
               key={item.id}
               href={`/gallery?category=${encodeURIComponent(item.title)}`}
               className={`gallery-item group relative ${getBentoClass(
-                index
+                index,
               )} cursor-pointer block overflow-hidden rounded-xl sm:rounded-2xl`}
               data-speed={0.5 + (index % 3) * 0.3}
             >
@@ -326,19 +328,15 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
                         src={img}
                         alt={`${item.title} ${imgIndex + 1}`}
                         fill
-                        className={`object-cover transition-all duration-1000 ${
-                          activeColorCard === item.id || hoveredItem === item.id
-                            ? "grayscale-0"
-                            : "grayscale"
-                        }`}
+                        className="object-cover transition-all duration-1000"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                       />
                     </div>
                   ))
-                 ) : (
-                    // Fallback if no images
-                    <div className="absolute inset-0 bg-neutral-800" />
-                 )}
+                ) : (
+                  // Fallback if no images
+                  <div className="absolute inset-0 bg-neutral-800" />
+                )}
 
                 {/* Gradient Overlays */}
                 <div

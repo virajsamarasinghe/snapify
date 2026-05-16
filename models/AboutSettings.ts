@@ -28,7 +28,7 @@ const AboutSettingsSchema = new Schema<IAboutSettings>(
     stat2Label: { type: String, default: "Global Exhibitions" },
     photos: {
       type: [String],
-      default: ["/about/man.jpeg", "/about/man2.jpeg", "/about/man3.jpeg"],
+      default: [],
     },
   },
   { timestamps: true },

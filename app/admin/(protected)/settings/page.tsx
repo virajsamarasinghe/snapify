@@ -6,8 +6,11 @@ import {
     CheckCircle2,
     Eye,
     EyeOff,
+    Globe,
     Lock,
     Mail,
+    MapPin,
+    Phone,
     Save,
     Shield,
     ShoppingBag,
@@ -152,11 +155,41 @@ export default function SettingsPage() {
   const [marketplaceMsg, setMarketplaceMsg] = useState<Msg>(null);
   const [confirmMarketplace, setConfirmMarketplace] = useState(false);
 
+  // --- Contact & Social state ---
+  const [contact, setContact] = useState({
+    email1: "",
+    email2: "",
+    phone1: "",
+    phone2: "",
+    studioAddress: "",
+    studioCity: "",
+    whatsapp: "",
+    instagram: "",
+    facebook: "",
+    tiktok: "",
+    youtube: "",
+    twitter: "",
+    linkedin: "",
+    footerTagline: "",
+    copyrightName: "",
+    galleryQuote: "",
+    galleryQuoteAuthor: "",
+  });
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactMsg, setContactMsg] = useState<Msg>(null);
+
   useEffect(() => {
     fetch("/api/settings/public", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setShowMarketplace(d.showMarketplace))
       .catch(() => setShowMarketplace(true));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/settings/contact", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setContact((prev) => ({ ...prev, ...d })))
+      .catch(() => {});
   }, []);
 
   async function toggleMarketplace() {
@@ -273,6 +306,32 @@ export default function SettingsPage() {
       });
     } finally {
       setPwLoading(false);
+    }
+  }
+
+  async function handleContactSave(e: React.FormEvent) {
+    e.preventDefault();
+    setContactLoading(true);
+    setContactMsg(null);
+    try {
+      const res = await fetch("/api/settings/contact", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contact),
+      });
+      if (res.ok) {
+        setContactMsg({
+          type: "success",
+          text: "Contact & social settings saved.",
+        });
+      } else {
+        const d = await res.json();
+        setContactMsg({ type: "error", text: d.error ?? "Failed to save." });
+      }
+    } catch {
+      setContactMsg({ type: "error", text: "Something went wrong." });
+    } finally {
+      setContactLoading(false);
     }
   }
 
@@ -477,6 +536,198 @@ export default function SettingsPage() {
             </div>
             <Feedback msg={marketplaceMsg} />
           </div>
+        </div>
+
+        {/* Contact & Social Settings */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
+            <Globe size={18} className="text-purple-400" />
+            <h2 className="text-white font-semibold text-sm tracking-wide">
+              Contact & Social Media
+            </h2>
+          </div>
+          <form onSubmit={handleContactSave} className="p-6 space-y-6">
+            {/* Contact Info */}
+            <div>
+              <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                <Mail size={13} className="text-purple-400" /> Email Addresses
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {(["email1", "email2"] as const).map((k, i) => (
+                  <input
+                    key={k}
+                    type="email"
+                    value={contact[k]}
+                    onChange={(e) =>
+                      setContact((p) => ({ ...p, [k]: e.target.value }))
+                    }
+                    placeholder={`Email ${i + 1}`}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                <Phone size={13} className="text-purple-400" /> Phone Numbers
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {(["phone1", "phone2"] as const).map((k, i) => (
+                  <input
+                    key={k}
+                    type="text"
+                    value={contact[k]}
+                    onChange={(e) =>
+                      setContact((p) => ({ ...p, [k]: e.target.value }))
+                    }
+                    placeholder={`Phone ${i + 1}`}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                <MapPin size={13} className="text-purple-400" /> Studio Address
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  value={contact.studioAddress}
+                  onChange={(e) =>
+                    setContact((p) => ({ ...p, studioAddress: e.target.value }))
+                  }
+                  placeholder="Street address"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                />
+                <input
+                  type="text"
+                  value={contact.studioCity}
+                  onChange={(e) =>
+                    setContact((p) => ({ ...p, studioCity: e.target.value }))
+                  }
+                  placeholder="City, Country"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div>
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                Social Media URLs
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {(
+                  [
+                    { key: "instagram", label: "Instagram URL" },
+                    { key: "facebook", label: "Facebook URL" },
+                    { key: "tiktok", label: "TikTok URL" },
+                    { key: "youtube", label: "YouTube URL" },
+                    { key: "twitter", label: "Twitter / X URL" },
+                    { key: "linkedin", label: "LinkedIn URL" },
+                  ] as { key: keyof typeof contact; label: string }[]
+                ).map(({ key, label }) => (
+                  <input
+                    key={key}
+                    type="url"
+                    value={contact[key]}
+                    onChange={(e) =>
+                      setContact((p) => ({ ...p, [key]: e.target.value }))
+                    }
+                    placeholder={label}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* WhatsApp — Marketplace only */}
+            <div>
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
+                WhatsApp Number
+              </p>
+              <p className="text-xs text-zinc-600 mb-3">
+                Used for the &ldquo;Inquire on WhatsApp&rdquo; button in the
+                Marketplace. Enter digits only (e.g. 94777901129).
+              </p>
+              <input
+                type="text"
+                value={contact.whatsapp}
+                onChange={(e) =>
+                  setContact((p) => ({ ...p, whatsapp: e.target.value }))
+                }
+                placeholder="e.g. 94777901129"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-green-500/60 transition-all"
+              />
+            </div>
+
+            {/* Footer text */}
+            <div>
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                Footer Text
+              </p>
+              <div className="space-y-3">
+                <textarea
+                  value={contact.footerTagline}
+                  onChange={(e) =>
+                    setContact((p) => ({ ...p, footerTagline: e.target.value }))
+                  }
+                  placeholder="Footer tagline / description"
+                  rows={2}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
+                />
+                <input
+                  type="text"
+                  value={contact.copyrightName}
+                  onChange={(e) =>
+                    setContact((p) => ({ ...p, copyrightName: e.target.value }))
+                  }
+                  placeholder="Copyright name (e.g. Studio Nethma)"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Gallery Quote */}
+            <div>
+              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
+                Gallery Section Quote
+              </p>
+              <p className="text-xs text-zinc-600 mb-3">
+                Displayed in the scrolling gallery section on the home page.
+              </p>
+              <div className="space-y-3">
+                <textarea
+                  value={contact.galleryQuote}
+                  onChange={(e) =>
+                    setContact((p) => ({ ...p, galleryQuote: e.target.value }))
+                  }
+                  placeholder="e.g. Photography is the story I fail to put into words."
+                  rows={2}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
+                />
+                <input
+                  type="text"
+                  value={contact.galleryQuoteAuthor}
+                  onChange={(e) =>
+                    setContact((p) => ({
+                      ...p,
+                      galleryQuoteAuthor: e.target.value,
+                    }))
+                  }
+                  placeholder="Quote author (e.g. Destin Sparks)"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                />
+              </div>
+            </div>
+
+            <Feedback msg={contactMsg} />
+            <SubmitButton
+              loading={contactLoading}
+              label="Save Contact & Social"
+            />
+          </form>
         </div>
 
         {/* Security note */}

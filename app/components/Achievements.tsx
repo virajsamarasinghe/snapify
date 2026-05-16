@@ -340,12 +340,21 @@ export default function Achievements({
                 {/* Image Side */}
                 <div className="flex-1">
                   <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-white/10 group">
-                    <Image
-                      src={achievement.image}
-                      alt={achievement.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                    {achievement.image &&
+                    achievement.image.startsWith("http") ? (
+                      <Image
+                        src={achievement.image}
+                        alt={achievement.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-black flex items-center justify-center">
+                        <span className="text-white/20 text-4xl font-bold">
+                          {achievement.year}
+                        </span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                   </div>
                 </div>

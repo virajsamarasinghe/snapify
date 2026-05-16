@@ -8,3 +8,17 @@ cloudinary.config({
 });
 
 export default cloudinary;
+
+/**
+ * Extract Cloudinary public_id from a secure URL.
+ * e.g. https://res.cloudinary.com/xyz/image/upload/v123/snapify/hero/1.webp
+ * → "snapify/hero/1"
+ */
+export function extractPublicId(url: string): string | null {
+  try {
+    const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
