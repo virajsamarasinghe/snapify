@@ -354,7 +354,7 @@ export default function SettingsPage() {
       />
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
-        <div>
+        <div id="account">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
               <Shield size={22} className="text-purple-400" />
@@ -499,7 +499,10 @@ export default function SettingsPage() {
         {/* end grid */}
 
         {/* Marketplace visibility */}
-        <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+        <div
+          id="features"
+          className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
+        >
           <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
             <ShoppingBag size={18} className="text-purple-400" />
             <h2 className="text-white font-semibold text-sm tracking-wide">
@@ -539,7 +542,10 @@ export default function SettingsPage() {
         </div>
 
         {/* Contact & Social Settings */}
-        <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+        <div
+          id="contact"
+          className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
+        >
           <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
             <Globe size={18} className="text-purple-400" />
             <h2 className="text-white font-semibold text-sm tracking-wide">

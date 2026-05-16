@@ -43,6 +43,7 @@ export default async function Home() {
   const [
     hiddenHeroes,
     cloudinaryHeroResult,
+    cloudinaryAboutResult,
     categoriesDocs,
     recognitionDocs,
     aboutDoc,
@@ -57,6 +58,14 @@ export default async function Home() {
         type: "upload",
         prefix: "snapify/hero/",
         max_results: 10,
+        resource_type: "image",
+      })
+      .catch(() => ({ resources: [] })),
+    (cloudinary.api as any)
+      .resources({
+        type: "upload",
+        prefix: "snapify/about/",
+        max_results: 20,
         resource_type: "image",
       })
       .catch(() => ({ resources: [] })),
@@ -116,7 +125,21 @@ export default async function Home() {
     order: doc.order,
   }));
 
-  const aboutSettings = aboutDoc ? JSON.parse(JSON.stringify(aboutDoc)) : {};
+  const aboutSettings = (() => {
+    const doc = aboutDoc ? JSON.parse(JSON.stringify(aboutDoc)) : {};
+    const storedPhotos: string[] = Array.isArray(doc.photos) ? doc.photos : [];
+    const hasLocalPaths =
+      storedPhotos.length === 0 ||
+      storedPhotos.some((p: string) => !p.startsWith("http"));
+    if (hasLocalPaths) {
+      const cloudinaryAboutPhotos = (
+        (cloudinaryAboutResult as any).resources as any[]
+      ).map((r: any) => r.secure_url as string);
+      doc.photos =
+        cloudinaryAboutPhotos.length > 0 ? cloudinaryAboutPhotos : [];
+    }
+    return doc;
+  })();
   const showMarketplace = siteSettingsDoc
     ? (siteSettingsDoc as any).showMarketplace
     : true;

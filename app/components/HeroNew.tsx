@@ -17,11 +17,37 @@ export default function HeroNew({
   const heroRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [currentImage, setCurrentImage] = useState(0);
+  const [socialLinks, setSocialLinks] = useState({
+    instagram: "",
+    facebook: "",
+    tiktok: "",
+  });
+
+  useEffect(() => {
+    fetch("/api/settings/contact", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) =>
+        setSocialLinks({
+          instagram: d.instagram || "",
+          facebook: d.facebook || "",
+          tiktok: d.tiktok || "",
+        }),
+      )
+      .catch(() => {});
+  }, []);
 
   // Default fallback images
   const defaultImages = [
-    { src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921228/snapify/hero/1_hemmnu.jpg", title: "Urban Dreams", category: "Street" },
-    { src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921233/snapify/hero/2_ovaqo4.jpg", title: "Silent Moments", category: "Portrait" },
+    {
+      src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921228/snapify/hero/1_hemmnu.jpg",
+      title: "Urban Dreams",
+      category: "Street",
+    },
+    {
+      src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921233/snapify/hero/2_ovaqo4.jpg",
+      title: "Silent Moments",
+      category: "Portrait",
+    },
   ];
 
   // Only use defaultImages if heroImages is completely undefined,
@@ -233,30 +259,36 @@ export default function HeroNew({
       {/* Sidebar */}
       <div className="hero-sidebar fixed left-0 top-0 h-full w-20 hidden lg:flex flex-col items-center justify-center z-20">
         <div className="flex flex-col items-center gap-16">
-          <a
-            href="https://www.instagram.com/jagathkalupahana_photography?igsh=a2Q4ajBkdXVhb3k="
-            target="_blank"
-            rel="noopener noreferrer"
-            className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
-          >
-            Instagram
-          </a>
-          <a
-            href="https://www.facebook.com/share/1AaFHJ5cJj/?mibextid=wwXIfr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
-          >
-            Facebook
-          </a>
-          <a
-            href="https://www.tiktok.com/@j_kalupahana_photography?_r=1&_t=ZS-93vxK2Wtti9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
-          >
-            TikTok
-          </a>
+          {socialLinks.instagram && (
+            <a
+              href={socialLinks.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
+            >
+              Instagram
+            </a>
+          )}
+          {socialLinks.facebook && (
+            <a
+              href={socialLinks.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
+            >
+              Facebook
+            </a>
+          )}
+          {socialLinks.tiktok && (
+            <a
+              href={socialLinks.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sidebar-social-link text-white/60 hover:text-white transition-colors transform -rotate-90 whitespace-nowrap text-sm"
+            >
+              TikTok
+            </a>
+          )}
         </div>
       </div>
 

@@ -1,9 +1,12 @@
 "use client";
 
 import {
+    ChevronDown,
     FolderOpen,
+    Globe,
     Image,
     LayoutDashboard,
+    Lock,
     LogOut,
     Mail,
     Menu,
@@ -23,6 +26,12 @@ const Sidebar = () => {
   const { data: session } = useSession();
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Auto-expand settings sub-menu when on settings page
+  useEffect(() => {
+    if (pathname === "/admin/settings") setSettingsOpen(true);
+  }, [pathname]);
 
   useEffect(() => {
     // Close sidebar on route change (mobile)
@@ -59,7 +68,16 @@ const Sidebar = () => {
       icon: Mail,
       badge: unreadCount,
     },
-    { href: "/admin/settings", label: "Settings", icon: Settings },
+  ];
+
+  const settingsSubLinks = [
+    { href: "/admin/settings#account", label: "Account", icon: Lock },
+    {
+      href: "/admin/settings#features",
+      label: "Site Features",
+      icon: ShoppingBag,
+    },
+    { href: "/admin/settings#contact", label: "Contact & Social", icon: Globe },
   ];
 
   const sidebarContent = (
@@ -116,6 +134,75 @@ const Sidebar = () => {
             </Link>
           );
         })}
+
+        {/* Settings with sub-menu */}
+        <div>
+          <button
+            onClick={() => setSettingsOpen((v) => !v)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+              pathname === "/admin/settings"
+                ? "bg-purple-600 text-white shadow-lg shadow-purple-500/20"
+                : "text-zinc-400 hover:bg-white/5 hover:text-white"
+            }`}
+          >
+            <Settings
+              size={20}
+              className={`transition-colors ${pathname === "/admin/settings" ? "text-white" : "text-zinc-500 group-hover:text-purple-400"}`}
+            />
+            <span className="font-medium tracking-wide">Settings</span>
+            <ChevronDown
+              size={15}
+              className={`ml-auto transition-transform duration-300 ${settingsOpen ? "rotate-180" : ""} ${pathname === "/admin/settings" ? "text-white/70" : "text-zinc-600 group-hover:text-zinc-400"}`}
+            />
+          </button>
+
+          {/* Sub-menu */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ${
+              settingsOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
+            }`}
+          >
+            <div className="ml-4 pl-4 border-l border-white/10 space-y-1">
+              {settingsSubLinks.map((sub) => {
+                const SubIcon = sub.icon;
+                const isSubActive =
+                  typeof window !== "undefined"
+                    ? window.location.hash
+                      ? pathname + window.location.hash === sub.href
+                      : false
+                    : false;
+                return (
+                  <a
+                    key={sub.href}
+                    href={sub.href}
+                    onClick={(e) => {
+                      // smooth scroll to anchor on same page
+                      if (pathname === "/admin/settings") {
+                        e.preventDefault();
+                        const id = sub.href.split("#")[1];
+                        document
+                          .getElementById(id)
+                          ?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
+                      }
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-500 hover:bg-white/5 hover:text-white transition-all duration-200 group"
+                  >
+                    <SubIcon
+                      size={15}
+                      className="text-zinc-600 group-hover:text-purple-400 transition-colors"
+                    />
+                    <span className="text-sm font-medium tracking-wide">
+                      {sub.label}
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </nav>
 
       {/* User Section */}
