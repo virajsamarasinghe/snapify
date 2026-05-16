@@ -1,5 +1,6 @@
 "use client";
 
+import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
     ArrowLeft,
     Calendar,
