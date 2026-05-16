@@ -18,6 +18,7 @@ import {
     ToggleRight,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Msg = { type: "success" | "error"; text: string } | null;
@@ -130,6 +131,11 @@ function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
 
 export default function SettingsPage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const activeTab = (searchParams.get("tab") ?? "account") as
+    | "account"
+    | "features"
+    | "contact";
 
   // --- Change Email state ---
   const [emailForm, setEmailForm] = useState({
@@ -356,417 +362,460 @@ export default function SettingsPage() {
         onCancel={() => setConfirmMarketplace(false)}
       />
       <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header */}
-        <div id="account">
+        {/* Dynamic page header */}
+        <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
-              <Shield size={22} className="text-purple-400" />
+              {activeTab === "account" && (
+                <Shield size={22} className="text-purple-400" />
+              )}
+              {activeTab === "features" && (
+                <ShoppingBag size={22} className="text-purple-400" />
+              )}
+              {activeTab === "contact" && (
+                <Globe size={22} className="text-purple-400" />
+              )}
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">
-              Account Settings
+              {activeTab === "account" && "Account Settings"}
+              {activeTab === "features" && "Site Features"}
+              {activeTab === "contact" && "Contact & Social"}
             </h1>
           </div>
           <p className="text-zinc-500 text-sm ml-1">
-            Manage your admin credentials
+            {activeTab === "account" && "Manage your admin credentials"}
+            {activeTab === "features" && "Configure site-wide feature flags"}
+            {activeTab === "contact" && "Update contact info and social links"}
           </p>
         </div>
 
-        {/* Current account info */}
-        <div className="px-5 py-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-            {session?.user?.email?.[0].toUpperCase() || "A"}
-          </div>
-          <div>
-            <p className="text-white font-medium text-sm">
-              {session?.user?.email}
-            </p>
-            <p className="text-zinc-500 text-xs capitalize">
-              {session?.user?.role || "Administrator"}
-            </p>
-          </div>
-        </div>
+        {/* ── ACCOUNT TAB ── */}
+        {activeTab === "account" && (
+          <>
+            {/* Current account info */}
+            <div className="px-5 py-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                {session?.user?.email?.[0].toUpperCase() || "A"}
+              </div>
+              <div>
+                <p className="text-white font-medium text-sm">
+                  {session?.user?.email}
+                </p>
+                <p className="text-zinc-500 text-xs capitalize">
+                  {session?.user?.role || "Administrator"}
+                </p>
+              </div>
+            </div>
 
-        {/* ── Side-by-side cards ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-          {/* ── Change Email ── */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden flex flex-col">
+            {/* ── Side-by-side cards ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+              {/* ── Change Email ── */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden flex flex-col">
+                <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
+                  <Mail size={18} className="text-purple-400" />
+                  <h2 className="text-white font-semibold text-sm tracking-wide">
+                    Change Email
+                  </h2>
+                </div>
+                <form
+                  onSubmit={handleEmailChange}
+                  className="p-6 flex flex-col gap-4 flex-1"
+                >
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                      New Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail
+                        size={16}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+                      />
+                      <input
+                        type="email"
+                        value={emailForm.newEmail}
+                        onChange={(e) =>
+                          setEmailForm((f) => ({
+                            ...f,
+                            newEmail: e.target.value,
+                          }))
+                        }
+                        placeholder="Enter new email"
+                        required
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                      Confirm with Current Password
+                    </label>
+                    <PasswordInput
+                      value={emailForm.confirmPassword}
+                      onChange={(v) =>
+                        setEmailForm((f) => ({ ...f, confirmPassword: v }))
+                      }
+                      placeholder="Enter your current password"
+                      show={showEmailPw}
+                      onToggle={() => setShowEmailPw((v) => !v)}
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  <Feedback msg={emailMsg} />
+                  <div className="mt-auto">
+                    <SubmitButton loading={emailLoading} label="Update Email" />
+                  </div>
+                </form>
+              </div>
+
+              {/* ── Change Password ── */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden flex flex-col">
+                <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
+                  <Lock size={18} className="text-purple-400" />
+                  <h2 className="text-white font-semibold text-sm tracking-wide">
+                    Change Password
+                  </h2>
+                </div>
+                <form
+                  onSubmit={handlePasswordChange}
+                  className="p-6 flex flex-col gap-4 flex-1"
+                >
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                      Current Password
+                    </label>
+                    <PasswordInput
+                      value={pwForm.oldPassword}
+                      onChange={(v) =>
+                        setPwForm((f) => ({ ...f, oldPassword: v }))
+                      }
+                      placeholder="Enter current password"
+                      show={showOld}
+                      onToggle={() => setShowOld((v) => !v)}
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                      New Password
+                    </label>
+                    <PasswordInput
+                      value={pwForm.newPassword}
+                      onChange={(v) =>
+                        setPwForm((f) => ({ ...f, newPassword: v }))
+                      }
+                      placeholder="Min. 8 characters"
+                      show={showNew}
+                      onToggle={() => setShowNew((v) => !v)}
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
+                      Confirm New Password
+                    </label>
+                    <PasswordInput
+                      value={pwForm.confirmPassword}
+                      onChange={(v) =>
+                        setPwForm((f) => ({ ...f, confirmPassword: v }))
+                      }
+                      placeholder="Re-enter new password"
+                      show={showConfirm}
+                      onToggle={() => setShowConfirm((v) => !v)}
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  <Feedback msg={pwMsg} />
+                  <div className="mt-auto">
+                    <SubmitButton loading={pwLoading} label="Update Password" />
+                  </div>
+                </form>
+              </div>
+            </div>
+            {/* end grid */}
+          </>
+        )}
+
+        {/* ── FEATURES TAB ── */}
+        {activeTab === "features" && (
+          <div
+            id="features"
+            className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
-              <Mail size={18} className="text-purple-400" />
+              <ShoppingBag size={18} className="text-purple-400" />
               <h2 className="text-white font-semibold text-sm tracking-wide">
-                Change Email
+                Site Features
               </h2>
             </div>
-            <form
-              onSubmit={handleEmailChange}
-              className="p-6 flex flex-col gap-4 flex-1"
-            >
+            <div className="p-6 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-white text-sm font-medium">Marketplace</p>
+                  <p className="text-zinc-500 text-xs mt-0.5">
+                    Show or hide the Marketplace link in the site navigation and
+                    all related buttons.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setConfirmMarketplace(true)}
+                  disabled={marketplaceLoading || showMarketplace === null}
+                  className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-sm font-medium disabled:opacity-50 ${
+                    showMarketplace
+                      ? "border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500/20"
+                      : "border-zinc-600/40 bg-white/5 text-zinc-400 hover:bg-white/10"
+                  }`}
+                >
+                  {marketplaceLoading ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+                  ) : showMarketplace ? (
+                    <ToggleRight size={20} />
+                  ) : (
+                    <ToggleLeft size={20} />
+                  )}
+                  {showMarketplace ? "Visible" : "Hidden"}
+                </button>
+              </div>
+              <Feedback msg={marketplaceMsg} />
+            </div>
+          </div>
+        )}
+
+        {/* ── CONTACT TAB ── */}
+        {activeTab === "contact" && (
+          <div
+            id="contact"
+            className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
+          >
+            <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
+              <Globe size={18} className="text-purple-400" />
+              <h2 className="text-white font-semibold text-sm tracking-wide">
+                Contact & Social Media
+              </h2>
+            </div>
+            <form onSubmit={handleContactSave} className="p-6 space-y-6">
+              {/* Contact Info */}
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
-                  New Email Address
-                </label>
-                <div className="relative">
-                  <Mail
-                    size={16}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
-                  />
-                  <input
-                    type="email"
-                    value={emailForm.newEmail}
-                    onChange={(e) =>
-                      setEmailForm((f) => ({ ...f, newEmail: e.target.value }))
-                    }
-                    placeholder="Enter new email"
-                    required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                  />
+                <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                  <Mail size={13} className="text-purple-400" /> Email Addresses
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {(["email1", "email2"] as const).map((k, i) => (
+                    <input
+                      key={k}
+                      type="email"
+                      value={contact[k]}
+                      onChange={(e) =>
+                        setContact((p) => ({ ...p, [k]: e.target.value }))
+                      }
+                      placeholder={`Email ${i + 1}`}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                    />
+                  ))}
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
-                  Confirm with Current Password
-                </label>
-                <PasswordInput
-                  value={emailForm.confirmPassword}
-                  onChange={(v) =>
-                    setEmailForm((f) => ({ ...f, confirmPassword: v }))
-                  }
-                  placeholder="Enter your current password"
-                  show={showEmailPw}
-                  onToggle={() => setShowEmailPw((v) => !v)}
-                  autoComplete="current-password"
-                />
-              </div>
-              <Feedback msg={emailMsg} />
-              <div className="mt-auto">
-                <SubmitButton loading={emailLoading} label="Update Email" />
-              </div>
-            </form>
-          </div>
-
-          {/* ── Change Password ── */}
-          <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
-              <Lock size={18} className="text-purple-400" />
-              <h2 className="text-white font-semibold text-sm tracking-wide">
-                Change Password
-              </h2>
-            </div>
-            <form
-              onSubmit={handlePasswordChange}
-              className="p-6 flex flex-col gap-4 flex-1"
-            >
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
-                  Current Password
-                </label>
-                <PasswordInput
-                  value={pwForm.oldPassword}
-                  onChange={(v) => setPwForm((f) => ({ ...f, oldPassword: v }))}
-                  placeholder="Enter current password"
-                  show={showOld}
-                  onToggle={() => setShowOld((v) => !v)}
-                  autoComplete="current-password"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
-                  New Password
-                </label>
-                <PasswordInput
-                  value={pwForm.newPassword}
-                  onChange={(v) => setPwForm((f) => ({ ...f, newPassword: v }))}
-                  placeholder="Min. 8 characters"
-                  show={showNew}
-                  onToggle={() => setShowNew((v) => !v)}
-                  autoComplete="new-password"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
-                  Confirm New Password
-                </label>
-                <PasswordInput
-                  value={pwForm.confirmPassword}
-                  onChange={(v) =>
-                    setPwForm((f) => ({ ...f, confirmPassword: v }))
-                  }
-                  placeholder="Re-enter new password"
-                  show={showConfirm}
-                  onToggle={() => setShowConfirm((v) => !v)}
-                  autoComplete="new-password"
-                />
-              </div>
-              <Feedback msg={pwMsg} />
-              <div className="mt-auto">
-                <SubmitButton loading={pwLoading} label="Update Password" />
-              </div>
-            </form>
-          </div>
-        </div>
-        {/* end grid */}
-
-        {/* Marketplace visibility */}
-        <div
-          id="features"
-          className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
-        >
-          <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
-            <ShoppingBag size={18} className="text-purple-400" />
-            <h2 className="text-white font-semibold text-sm tracking-wide">
-              Site Features
-            </h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-white text-sm font-medium">Marketplace</p>
-                <p className="text-zinc-500 text-xs mt-0.5">
-                  Show or hide the Marketplace link in the site navigation and
-                  all related buttons.
+                <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                  <Phone size={13} className="text-purple-400" /> Phone Numbers
                 </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {(["phone1", "phone2"] as const).map((k, i) => (
+                    <input
+                      key={k}
+                      type="text"
+                      value={contact[k]}
+                      onChange={(e) =>
+                        setContact((p) => ({ ...p, [k]: e.target.value }))
+                      }
+                      placeholder={`Phone ${i + 1}`}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                    />
+                  ))}
+                </div>
               </div>
-              <button
-                onClick={() => setConfirmMarketplace(true)}
-                disabled={marketplaceLoading || showMarketplace === null}
-                className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-sm font-medium disabled:opacity-50 ${
-                  showMarketplace
-                    ? "border-green-500/30 bg-green-500/10 text-green-400 hover:bg-green-500/20"
-                    : "border-zinc-600/40 bg-white/5 text-zinc-400 hover:bg-white/10"
-                }`}
-              >
-                {marketplaceLoading ? (
-                  <span className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
-                ) : showMarketplace ? (
-                  <ToggleRight size={20} />
-                ) : (
-                  <ToggleLeft size={20} />
-                )}
-                {showMarketplace ? "Visible" : "Hidden"}
-              </button>
-            </div>
-            <Feedback msg={marketplaceMsg} />
-          </div>
-        </div>
-
-        {/* Contact & Social Settings */}
-        <div
-          id="contact"
-          className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
-        >
-          <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
-            <Globe size={18} className="text-purple-400" />
-            <h2 className="text-white font-semibold text-sm tracking-wide">
-              Contact & Social Media
-            </h2>
-          </div>
-          <form onSubmit={handleContactSave} className="p-6 space-y-6">
-            {/* Contact Info */}
-            <div>
-              <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                <Mail size={13} className="text-purple-400" /> Email Addresses
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {(["email1", "email2"] as const).map((k, i) => (
+              <div>
+                <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                  <MapPin size={13} className="text-purple-400" /> Studio
+                  Address
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <input
-                    key={k}
-                    type="email"
-                    value={contact[k]}
-                    onChange={(e) =>
-                      setContact((p) => ({ ...p, [k]: e.target.value }))
-                    }
-                    placeholder={`Email ${i + 1}`}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                  />
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                <Phone size={13} className="text-purple-400" /> Phone Numbers
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {(["phone1", "phone2"] as const).map((k, i) => (
-                  <input
-                    key={k}
                     type="text"
-                    value={contact[k]}
+                    value={contact.studioAddress}
                     onChange={(e) =>
-                      setContact((p) => ({ ...p, [k]: e.target.value }))
+                      setContact((p) => ({
+                        ...p,
+                        studioAddress: e.target.value,
+                      }))
                     }
-                    placeholder={`Phone ${i + 1}`}
+                    placeholder="Street address"
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
                   />
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                <MapPin size={13} className="text-purple-400" /> Studio Address
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  value={contact.studioAddress}
-                  onChange={(e) =>
-                    setContact((p) => ({ ...p, studioAddress: e.target.value }))
-                  }
-                  placeholder="Street address"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                />
-                <input
-                  type="text"
-                  value={contact.studioCity}
-                  onChange={(e) =>
-                    setContact((p) => ({ ...p, studioCity: e.target.value }))
-                  }
-                  placeholder="City, Country"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div>
-              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                Social Media URLs
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {(
-                  [
-                    { key: "instagram", label: "Instagram URL" },
-                    { key: "facebook", label: "Facebook URL" },
-                    { key: "tiktok", label: "TikTok URL" },
-                    { key: "youtube", label: "YouTube URL" },
-                    { key: "twitter", label: "Twitter / X URL" },
-                    { key: "linkedin", label: "LinkedIn URL" },
-                  ] as { key: keyof typeof contact; label: string }[]
-                ).map(({ key, label }) => (
                   <input
-                    key={key}
-                    type="url"
-                    value={contact[key]}
+                    type="text"
+                    value={contact.studioCity}
                     onChange={(e) =>
-                      setContact((p) => ({ ...p, [key]: e.target.value }))
+                      setContact((p) => ({ ...p, studioCity: e.target.value }))
                     }
-                    placeholder={label}
+                    placeholder="City, Country"
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
                   />
-                ))}
+                </div>
               </div>
-            </div>
 
-            {/* WhatsApp — Marketplace only */}
-            <div>
-              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
-                WhatsApp Number
-              </p>
-              <p className="text-xs text-zinc-600 mb-3">
-                Used for the &ldquo;Inquire on WhatsApp&rdquo; button in the
-                Marketplace. Enter digits only (e.g. 94777901129).
-              </p>
-              <input
-                type="text"
-                value={contact.whatsapp}
-                onChange={(e) =>
-                  setContact((p) => ({ ...p, whatsapp: e.target.value }))
-                }
-                placeholder="e.g. 94777901129"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-green-500/60 transition-all"
+              {/* Social Links */}
+              <div>
+                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                  Social Media URLs
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {(
+                    [
+                      { key: "instagram", label: "Instagram URL" },
+                      { key: "facebook", label: "Facebook URL" },
+                      { key: "tiktok", label: "TikTok URL" },
+                      { key: "youtube", label: "YouTube URL" },
+                      { key: "twitter", label: "Twitter / X URL" },
+                      { key: "linkedin", label: "LinkedIn URL" },
+                    ] as { key: keyof typeof contact; label: string }[]
+                  ).map(({ key, label }) => (
+                    <input
+                      key={key}
+                      type="url"
+                      value={contact[key]}
+                      onChange={(e) =>
+                        setContact((p) => ({ ...p, [key]: e.target.value }))
+                      }
+                      placeholder={label}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* WhatsApp — Marketplace only */}
+              <div>
+                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
+                  WhatsApp Number
+                </p>
+                <p className="text-xs text-zinc-600 mb-3">
+                  Used for the &ldquo;Inquire on WhatsApp&rdquo; button in the
+                  Marketplace. Enter digits only (e.g. 94777901129).
+                </p>
+                <input
+                  type="text"
+                  value={contact.whatsapp}
+                  onChange={(e) =>
+                    setContact((p) => ({ ...p, whatsapp: e.target.value }))
+                  }
+                  placeholder="e.g. 94777901129"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-green-500/60 transition-all"
+                />
+              </div>
+
+              {/* Footer text */}
+              <div>
+                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+                  Footer Text
+                </p>
+                <div className="space-y-3">
+                  <textarea
+                    value={contact.footerTagline}
+                    onChange={(e) =>
+                      setContact((p) => ({
+                        ...p,
+                        footerTagline: e.target.value,
+                      }))
+                    }
+                    placeholder="Footer tagline / description"
+                    rows={2}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
+                  />
+                  <input
+                    type="text"
+                    value={contact.copyrightName}
+                    onChange={(e) =>
+                      setContact((p) => ({
+                        ...p,
+                        copyrightName: e.target.value,
+                      }))
+                    }
+                    placeholder="Copyright name (e.g. Studio Nethma)"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Gallery Quote */}
+              <div>
+                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
+                  Gallery Section Quote
+                </p>
+                <p className="text-xs text-zinc-600 mb-3">
+                  Displayed in the scrolling gallery section on the home page.
+                </p>
+                <div className="space-y-3">
+                  <textarea
+                    value={contact.galleryQuote}
+                    onChange={(e) =>
+                      setContact((p) => ({
+                        ...p,
+                        galleryQuote: e.target.value,
+                      }))
+                    }
+                    placeholder="e.g. Photography is the story I fail to put into words."
+                    rows={2}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
+                  />
+                  <input
+                    type="text"
+                    value={contact.galleryQuoteAuthor}
+                    onChange={(e) =>
+                      setContact((p) => ({
+                        ...p,
+                        galleryQuoteAuthor: e.target.value,
+                      }))
+                    }
+                    placeholder="Quote author (e.g. Destin Sparks)"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                  />
+                </div>
+              </div>
+
+              <Feedback msg={contactMsg} />
+              <SubmitButton
+                loading={contactLoading}
+                label="Save Contact & Social"
               />
-            </div>
+            </form>
+          </div>
+        )}
 
-            {/* Footer text */}
-            <div>
-              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                Footer Text
-              </p>
-              <div className="space-y-3">
-                <textarea
-                  value={contact.footerTagline}
-                  onChange={(e) =>
-                    setContact((p) => ({ ...p, footerTagline: e.target.value }))
-                  }
-                  placeholder="Footer tagline / description"
-                  rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
-                />
-                <input
-                  type="text"
-                  value={contact.copyrightName}
-                  onChange={(e) =>
-                    setContact((p) => ({ ...p, copyrightName: e.target.value }))
-                  }
-                  placeholder="Copyright name (e.g. Studio Nethma)"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Gallery Quote */}
-            <div>
-              <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
-                Gallery Section Quote
-              </p>
-              <p className="text-xs text-zinc-600 mb-3">
-                Displayed in the scrolling gallery section on the home page.
-              </p>
-              <div className="space-y-3">
-                <textarea
-                  value={contact.galleryQuote}
-                  onChange={(e) =>
-                    setContact((p) => ({ ...p, galleryQuote: e.target.value }))
-                  }
-                  placeholder="e.g. Photography is the story I fail to put into words."
-                  rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
-                />
-                <input
-                  type="text"
-                  value={contact.galleryQuoteAuthor}
-                  onChange={(e) =>
-                    setContact((p) => ({
-                      ...p,
-                      galleryQuoteAuthor: e.target.value,
-                    }))
-                  }
-                  placeholder="Quote author (e.g. Destin Sparks)"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                />
-              </div>
-            </div>
-
-            <Feedback msg={contactMsg} />
-            <SubmitButton
-              loading={contactLoading}
-              label="Save Contact & Social"
-            />
-          </form>
-        </div>
-
-        {/* Security note */}
-        <div className="px-5 py-4 rounded-2xl bg-white/3 border border-white/8">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-            Security
-          </p>
-          <ul className="space-y-2 text-xs text-zinc-500">
-            <li className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✓</span>
-              Passwords are hashed with{" "}
-              <strong className="text-zinc-400">bcrypt (cost 12)</strong> —
-              plain text is never stored.
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✓</span>
-              Your current password must be verified before any change is
-              applied.
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✓</span>
-              After saving, you are signed out so the new credentials take
-              effect immediately.
-            </li>
-          </ul>
-        </div>
+        {/* Security note — only on account tab */}
+        {activeTab === "account" && (
+          <div className="px-5 py-4 rounded-2xl bg-white/3 border border-white/8">
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+              Security
+            </p>
+            <ul className="space-y-2 text-xs text-zinc-500">
+              <li className="flex items-start gap-2">
+                <span className="text-green-400 mt-0.5">✓</span>
+                Passwords are hashed with{" "}
+                <strong className="text-zinc-400">bcrypt (cost 12)</strong> —
+                plain text is never stored.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-400 mt-0.5">✓</span>
+                Your current password must be verified before any change is
+                applied.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-400 mt-0.5">✓</span>
+                After saving, you are signed out so the new credentials take
+                effect immediately.
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

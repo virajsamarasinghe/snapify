@@ -18,11 +18,12 @@ import {
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -71,13 +72,24 @@ const Sidebar = () => {
   ];
 
   const settingsSubLinks = [
-    { href: "/admin/settings#account", label: "Account", icon: Lock },
     {
-      href: "/admin/settings#features",
+      href: "/admin/settings?tab=account",
+      tab: "account",
+      label: "Account",
+      icon: Lock,
+    },
+    {
+      href: "/admin/settings?tab=features",
+      tab: "features",
       label: "Site Features",
       icon: ShoppingBag,
     },
-    { href: "/admin/settings#contact", label: "Contact & Social", icon: Globe },
+    {
+      href: "/admin/settings?tab=contact",
+      tab: "contact",
+      label: "Contact & Social",
+      icon: Globe,
+    },
   ];
 
   const sidebarContent = (
@@ -166,38 +178,26 @@ const Sidebar = () => {
               {settingsSubLinks.map((sub) => {
                 const SubIcon = sub.icon;
                 const isSubActive =
-                  typeof window !== "undefined"
-                    ? window.location.hash
-                      ? pathname + window.location.hash === sub.href
-                      : false
-                    : false;
+                  pathname === "/admin/settings" &&
+                  (searchParams.get("tab") ?? "account") === sub.tab;
                 return (
-                  <a
+                  <Link
                     key={sub.href}
                     href={sub.href}
-                    onClick={(e) => {
-                      // smooth scroll to anchor on same page
-                      if (pathname === "/admin/settings") {
-                        e.preventDefault();
-                        const id = sub.href.split("#")[1];
-                        document
-                          .getElementById(id)
-                          ?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start",
-                          });
-                      }
-                    }}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-500 hover:bg-white/5 hover:text-white transition-all duration-200 group"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                      isSubActive
+                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/20"
+                        : "text-zinc-500 hover:bg-white/5 hover:text-white"
+                    }`}
                   >
                     <SubIcon
                       size={15}
-                      className="text-zinc-600 group-hover:text-purple-400 transition-colors"
+                      className={`transition-colors ${isSubActive ? "text-purple-400" : "text-zinc-600 group-hover:text-purple-400"}`}
                     />
                     <span className="text-sm font-medium tracking-wide">
                       {sub.label}
                     </span>
-                  </a>
+                  </Link>
                 );
               })}
             </div>
