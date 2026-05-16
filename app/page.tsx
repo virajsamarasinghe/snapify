@@ -43,7 +43,6 @@ export default async function Home() {
   const [
     hiddenHeroes,
     cloudinaryHeroResult,
-    cloudinaryAboutResult,
     categoriesDocs,
     recognitionDocs,
     aboutDoc,
@@ -58,14 +57,6 @@ export default async function Home() {
         type: "upload",
         prefix: "snapify/hero/",
         max_results: 10,
-        resource_type: "image",
-      })
-      .catch(() => ({ resources: [] })),
-    (cloudinary.api as any)
-      .resources({
-        type: "upload",
-        prefix: "snapify/about/",
-        max_results: 20,
         resource_type: "image",
       })
       .catch(() => ({ resources: [] })),
@@ -129,17 +120,10 @@ export default async function Home() {
 
   const aboutSettings = (() => {
     const doc = aboutDoc ? JSON.parse(JSON.stringify(aboutDoc)) : {};
-    const storedPhotos: string[] = Array.isArray(doc.photos) ? doc.photos : [];
-    const hasLocalPaths =
-      storedPhotos.length === 0 ||
-      storedPhotos.some((p: string) => !p.startsWith("http"));
-    if (hasLocalPaths) {
-      const cloudinaryAboutPhotos = (
-        (cloudinaryAboutResult as any).resources as any[]
-      ).map((r: any) => r.secure_url as string);
-      doc.photos =
-        cloudinaryAboutPhotos.length > 0 ? cloudinaryAboutPhotos : [];
-    }
+    // Photos are Cloudinary URLs stored directly in MongoDB (same as products/categories)
+    if (!Array.isArray(doc.photos)) doc.photos = [];
+    // Filter out any stale local paths in case of old data
+    doc.photos = (doc.photos as string[]).filter((p) => p.startsWith("http"));
     return doc;
   })();
   const showMarketplace = siteSettingsDoc

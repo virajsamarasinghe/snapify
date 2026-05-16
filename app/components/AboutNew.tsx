@@ -10,11 +10,10 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// Photo list for carousel
+// Photo list for carousel — Cloudinary URLs used as fallback
 const DEFAULT_PHOTOS = [
-  "/about/man.jpeg",
-  "/about/man2.jpeg",
-  "/about/man3.jpeg",
+  "https://res.cloudinary.com/deu8faspx/image/upload/v1778921228/snapify/hero/1_hemmnu.jpg",
+  "https://res.cloudinary.com/deu8faspx/image/upload/v1778921233/snapify/hero/2_ovaqo4.jpg",
 ];
 
 interface AboutProps {

@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
+import dbConnect from "@/lib/db";
+import AboutSettings from "@/models/AboutSettings";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -63,6 +65,20 @@ export async function POST(req: NextRequest) {
     overwrite: false,
   });
 
+  // Persist URL to MongoDB immediately (same as products/categories)
+  await dbConnect();
+  let settings = await AboutSettings.findOne();
+  if (!settings) {
+    settings = new AboutSettings({ photos: [result.secure_url] });
+  } else {
+    // Only add if not already present, and remove any local-path entries
+    const cleaned = (settings.photos || []).filter(
+      (p: string) => p.startsWith("http") && p !== result.secure_url,
+    );
+    settings.photos = [...cleaned, result.secure_url];
+  }
+  await settings.save();
+
   return NextResponse.json({
     url: result.secure_url,
     publicId: result.public_id,
@@ -84,6 +100,19 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
+  // Delete from Cloudinary
   await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+
+  // Remove URL from MongoDB — derive the secure_url pattern to match
+  await dbConnect();
+  const settings = await AboutSettings.findOne();
+  if (settings) {
+    // Remove any URL that contains the publicId
+    settings.photos = (settings.photos || []).filter(
+      (p: string) => !p.includes(publicId),
+    );
+    await settings.save();
+  }
+
   return NextResponse.json({ success: true });
 }
