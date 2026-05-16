@@ -41,7 +41,7 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
           Dashboard
         </h1>
         <p className="text-zinc-500 font-mono text-sm">Overview</p>

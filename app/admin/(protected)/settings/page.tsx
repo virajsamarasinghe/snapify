@@ -13,7 +13,7 @@ import {
     Shield,
     ShoppingBag,
     ToggleLeft,
-    ToggleRight
+    ToggleRight,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -374,7 +374,7 @@ export default function SettingsPage() {
                 <Globe size={22} className="text-purple-400" />
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
               {activeTab === "account" && "Account Settings"}
               {activeTab === "features" && "Site Features"}
               {activeTab === "contact" && "Contact & Social"}

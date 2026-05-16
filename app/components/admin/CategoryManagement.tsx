@@ -219,7 +219,7 @@ export default function CategoryManagement({
 
       <div className="flex flex-wrap gap-3 justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
             Categories
           </h1>
           <p className="text-zinc-400 text-sm mt-1">

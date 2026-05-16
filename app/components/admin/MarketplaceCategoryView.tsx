@@ -20,7 +20,7 @@ export default function MarketplaceCategoryView({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-white tracking-tight">
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
           Marketplace Products
         </h1>
         <p className="text-zinc-400 text-sm mt-1">

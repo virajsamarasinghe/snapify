@@ -217,7 +217,7 @@ export default function AlbumManagement({
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
               {categoryName}
             </h1>
             <p className="text-zinc-400 text-sm mt-1">

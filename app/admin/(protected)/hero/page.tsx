@@ -199,7 +199,7 @@ export default function ManageHero() {
         onCancel={() => setConfirmDeleteFile(null)}
       />
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
           Manage Hero Images
         </h1>
       </div>

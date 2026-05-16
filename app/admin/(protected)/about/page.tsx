@@ -254,7 +254,7 @@ export default function AboutAdminPage() {
               <User size={22} className="text-purple-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">
+              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
                 About Section
               </h1>
               <p className="text-zinc-500 text-sm">
