@@ -117,7 +117,6 @@ export default async function Home() {
     order: doc.order,
   }));
 
-  // Serialize to plain object — ObjectId/_id must be stripped before passing to Client Components
   const aboutSettings = aboutDoc ? JSON.parse(JSON.stringify(aboutDoc)) : {};
   const showMarketplace = siteSettingsDoc
     ? (siteSettingsDoc as any).showMarketplace
