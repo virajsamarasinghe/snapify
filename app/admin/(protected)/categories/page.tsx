@@ -30,6 +30,7 @@ export default async function CategoriesPage() {
     name: doc.name,
     image: doc.image || null,
     showInMarketplace: doc.showInMarketplace ?? false,
+    showInGallery: doc.showInGallery ?? true,
     _count: { products: 0 }, // Placeholder or implement count logic
   }));
 
