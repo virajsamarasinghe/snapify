@@ -69,6 +69,23 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
 
   // Animation for category change
   useEffect(() => {
+    // Animate title characters
+    const titleChars = gsap.utils.toArray(".hero-text-char");
+    if (titleChars.length) {
+      gsap.fromTo(
+        titleChars,
+        { y: 120, opacity: 0, rotationX: -80, transformOrigin: "50% 50%" },
+        {
+          y: 0,
+          opacity: 1,
+          rotationX: 0,
+          duration: 1.4,
+          stagger: { each: 0.03, from: "start" },
+          ease: "expo.out",
+        },
+      );
+    }
+
     if (!gridRef.current) return;
     const ctx = gsap.context(() => {
       const items = gsap.utils.toArray(".gallery-item");
@@ -84,25 +101,10 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
     return () => ctx.revert();
   }, [selectedCategory]);
 
-  // Initial Page Animation
+  // Initial Page Animation (subtitle + back button only — title is handled by category change effect)
   useEffect(() => {
     if (!galleryRef.current) return;
     const ctx = gsap.context(() => {
-      const titleChars = gsap.utils.toArray(".hero-text-char");
-      gsap.set(titleChars, {
-        y: 200,
-        opacity: 0,
-        rotationX: -90,
-        transformOrigin: "50% 50%",
-      });
-      gsap.to(titleChars, {
-        y: 0,
-        opacity: 1,
-        rotationX: 0,
-        duration: 1.8,
-        stagger: { each: 0.04, from: "start" },
-        ease: "expo.out",
-      });
       gsap.fromTo(
         ".gallery-subtitle",
         { opacity: 0, y: 40 },
