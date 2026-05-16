@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
+import dbConnect from "@/lib/db";
+import Hero from "@/models/Hero";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -26,6 +28,11 @@ export async function DELETE(
     }
 
     await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+
+    // Also remove from MongoDB
+    await dbConnect();
+    await Hero.deleteOne({ src: { $regex: publicId } });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Hero delete error:", error);

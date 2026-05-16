@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
+import dbConnect from "@/lib/db";
+import Hero from "@/models/Hero";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -47,6 +49,14 @@ export async function POST(request: NextRequest) {
       quality: "auto:good",
       overwrite: false,
     });
+
+    // Save URL to MongoDB so Admin API is never needed
+    await dbConnect();
+    await Hero.findOneAndUpdate(
+      { src: result.secure_url },
+      { src: result.secure_url, isHidden: false },
+      { upsert: true, new: true },
+    );
 
     return NextResponse.json({
       filename: result.public_id.split("/").pop() + "." + result.format,

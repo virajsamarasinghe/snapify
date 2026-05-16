@@ -16,16 +16,16 @@ const ALLOWED_TYPES = [
 ];
 const MAX_SIZE_BYTES = 15 * 1024 * 1024;
 
-// GET — list existing about photos from Cloudinary
+// GET — list existing about photos from MongoDB
 export async function GET() {
   try {
-    const result = await (cloudinary.api as any).resources({
-      type: "upload",
-      prefix: "snapify/about/",
-      max_results: 50,
-      resource_type: "image",
-    });
-    const photos = (result.resources as any[]).map((r) => r.secure_url);
+    await dbConnect();
+    const settings = (await AboutSettings.findOne().lean()) as any;
+    const photos: string[] = Array.isArray(settings?.photos)
+      ? (settings.photos as string[]).filter((p: string) =>
+          p.startsWith("http"),
+        )
+      : [];
     return NextResponse.json(photos);
   } catch {
     return NextResponse.json([]);

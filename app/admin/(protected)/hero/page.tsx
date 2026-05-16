@@ -39,28 +39,25 @@ export default function ManageHero() {
     setLoading(true);
     setFetchError(null);
     try {
-      // Fetch local files from public/hero
       const filesRes = await fetch("/api/hero/files");
       const filesData = await filesRes.json();
 
-      // Fetch hidden list from DB
-      const hiddenRes = await fetch("/api/hero/toggle-visibility");
-      const hiddenData = await hiddenRes.json();
-      const hiddenSrcs = hiddenData.hiddenSrcs || [];
-
       if (!filesData.files) {
-        setFetchError(
-          filesData.error || "Failed to load images from Cloudinary",
-        );
+        setFetchError(filesData.error || "Failed to load images");
         return;
       }
 
       const mergedFiles = filesData.files.map(
-        (f: { filename: string; url: string; publicId: string }) => ({
+        (f: {
+          filename: string;
+          url: string;
+          publicId: string;
+          isHidden: boolean;
+        }) => ({
           filename: f.filename,
           url: f.url,
           publicId: f.publicId,
-          isHidden: hiddenSrcs.includes(f.url),
+          isHidden: f.isHidden,
         }),
       );
 

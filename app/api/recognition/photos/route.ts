@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
+import dbConnect from "@/lib/db";
+import Recognition from "@/models/Recognition";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,16 +16,20 @@ const ALLOWED_TYPES = [
 ];
 const MAX_SIZE_BYTES = 15 * 1024 * 1024;
 
-// GET — list existing recognition photos from Cloudinary
+// GET — list recognition photos already stored in MongoDB
 export async function GET() {
   try {
-    const result = await (cloudinary.api as any).resources({
-      type: "upload",
-      prefix: "snapify/recognition/",
-      max_results: 50,
-      resource_type: "image",
-    });
-    const photos = (result.resources as any[]).map((r) => r.secure_url);
+    await dbConnect();
+    const items = await Recognition.find({ image: { $nin: ["", null] } })
+      .select("image")
+      .lean();
+    const photos = [
+      ...new Set(
+        (items as any[])
+          .map((i) => i.image as string)
+          .filter((u) => u.startsWith("http")),
+      ),
+    ];
     return NextResponse.json(photos);
   } catch {
     return NextResponse.json([]);

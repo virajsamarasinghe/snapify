@@ -1,6 +1,8 @@
+import { authOptions } from "@/lib/auth";
 import cloudinary, { extractPublicId } from "@/lib/cloudinary";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
@@ -8,6 +10,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || (session.user as any)?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
     const body = await req.json();
     await dbConnect();
@@ -57,6 +63,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || (session.user as any)?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
     await dbConnect();
 

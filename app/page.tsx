@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import cloudinary from "@/lib/cloudinary";
 import dbConnect from "@/lib/db";
 import AboutSettings from "@/models/AboutSettings";
 import Category from "@/models/Category";
@@ -39,27 +38,18 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   await dbConnect();
 
-  // Run all DB queries + Cloudinary list in parallel
+  // Run all DB queries in parallel — no Cloudinary Admin API needed
   const [
-    hiddenHeroes,
-    cloudinaryHeroResult,
+    visibleHeroes,
     categoriesDocs,
     recognitionDocs,
     aboutDoc,
     siteSettingsDoc,
   ] = await Promise.all([
-    Hero.find({ isHidden: true })
-      .select("src")
+    Hero.find({ isHidden: { $ne: true } })
+      .sort({ createdAt: -1 })
       .lean()
       .catch(() => []),
-    (cloudinary.api as any)
-      .resources({
-        type: "upload",
-        prefix: "snapify/hero/",
-        max_results: 10,
-        resource_type: "image",
-      })
-      .catch(() => ({ resources: [] })),
     Category.find()
       .sort({ name: 1 })
       .populate({ path: "products", select: "images", options: { limit: 5 } })
@@ -78,11 +68,10 @@ export default async function Home() {
       .catch(() => null),
   ]);
 
-  // Build hero images list from Cloudinary
-  const hiddenSrcs = (hiddenHeroes as any[]).map((h: any) => h.src);
-  const heroImages = ((cloudinaryHeroResult as any).resources as any[])
-    .map((r: any) => ({ src: r.secure_url as string }))
-    .filter((img) => !hiddenSrcs.includes(img.src));
+  // Build hero images list directly from MongoDB
+  const heroImages = (visibleHeroes as any[]).map((h: any) => ({
+    src: h.src as string,
+  }));
 
   const categories = (categoriesDocs as any[])
     .map((doc: any) => {
