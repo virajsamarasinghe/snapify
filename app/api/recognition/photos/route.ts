@@ -14,7 +14,7 @@ const ALLOWED_TYPES = [
   "image/webp",
   "image/gif",
 ];
-const MAX_SIZE_BYTES = 15 * 1024 * 1024;
+const MAX_SIZE_BYTES = 4 * 1024 * 1024; // 4 MB (Vercel 4.5 MB payload limit)
 
 // GET — list recognition photos already stored in MongoDB
 export async function GET() {
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   }
   if (file.size > MAX_SIZE_BYTES) {
     return NextResponse.json(
-      { error: "File too large. Max 15 MB." },
+      { error: "File too large. Maximum 4 MB per image." },
       { status: 400 },
     );
   }

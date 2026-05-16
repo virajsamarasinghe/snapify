@@ -79,7 +79,7 @@ export default function ManageHero() {
       const uploadData = new FormData();
       uploadData.append("file", file);
 
-      const uploadRes = await fetch("/api/hero/upload", {
+      const uploadRes = await fetch("/api/hero/add", {
         method: "POST",
         body: uploadData,
       });
