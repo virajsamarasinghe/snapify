@@ -24,7 +24,7 @@ export default function HeroNew({
   });
 
   useEffect(() => {
-    fetch("/api/settings/contact", { cache: "no-store" })
+    fetch("/api/settings/public", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) =>
         setSocialLinks({

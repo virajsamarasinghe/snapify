@@ -48,7 +48,7 @@ export default function MarketplaceClient({
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/settings/contact", { cache: "no-store" })
+    fetch("/api/settings/public", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         if (d.whatsapp) setWhatsappNumber(d.whatsapp);

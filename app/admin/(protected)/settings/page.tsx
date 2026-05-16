@@ -186,7 +186,7 @@ export default function SettingsPage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/settings/contact", { cache: "no-store" })
+    fetch("/api/settings/public", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setContact((prev) => ({ ...prev, ...d })))
       .catch(() => {});
@@ -314,7 +314,7 @@ export default function SettingsPage() {
     setContactLoading(true);
     setContactMsg(null);
     try {
-      const res = await fetch("/api/settings/contact", {
+      const res = await fetch("/api/settings/public", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(contact),

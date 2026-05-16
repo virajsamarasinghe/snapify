@@ -40,7 +40,7 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
   const [contactInfo, setContactInfo] = useState<ContactInfo>(CONTACT_DEFAULTS);
 
   useEffect(() => {
-    fetch("/api/settings/contact", { cache: "no-store" })
+    fetch("/api/settings/public", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setContactInfo((prev) => ({ ...prev, ...d })))
       .catch(() => {});
