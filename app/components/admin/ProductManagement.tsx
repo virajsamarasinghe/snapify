@@ -237,209 +237,224 @@ export default function ProductManagement({
           </p>
         </div>
         <button
-          onClick={() => (isCreating ? cancelEdit() : setIsCreating(true))}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ${
-            isCreating
-              ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-              : "bg-white text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105"
-          }`}
+          onClick={() => setIsCreating(true)}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 bg-white text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105"
         >
-          {isCreating ? (
-            <>
-              <X size={18} /> Cancel
-            </>
-          ) : (
-            <>
-              <Plus size={18} /> Add Product
-            </>
-          )}
+          <Plus size={18} /> Add Entry
         </button>
       </div>
 
       {isCreating && (
-        <div className="bg-zinc-900/50 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl animate-in fade-in slide-in-from-top-4">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            {editingProduct ? (
-              <Edit2 size={20} className="text-pink-400" />
-            ) : (
-              <Plus size={20} className="text-pink-400" />
-            )}
-            {editingProduct ? "Edit Product" : "Add New Product"}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-zinc-600"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
-                  Price ($)
-                </label>
-                <div className="relative">
-                  <DollarSign
-                    size={16}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-zinc-600"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
-                  Category
-                </label>
-                <div className="relative">
-                  <Tag
-                    size={16}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
-                  />
-                  <select
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all appearance-none cursor-pointer"
-                    required
-                  >
-                    <option value="" className="bg-zinc-900 text-zinc-500">
-                      Select a Category
-                    </option>
-                    {categories.map((cat) => (
-                      <option
-                        key={cat.id}
-                        value={cat.id}
-                        className="bg-zinc-900"
-                      >
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
-                  Status
-                </label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as ProductStatus)}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all appearance-none cursor-pointer"
-                  required
-                >
-                  <option value="available" className="bg-zinc-900">
-                    Available
-                  </option>
-                  <option value="coming_soon" className="bg-zinc-900">
-                    Coming Soon
-                  </option>
-                  <option value="sold" className="bg-zinc-900">
-                    Sold
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-zinc-600 h-32 resize-none"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
-                Images {editingProduct && "(Upload to add more)"}
-              </label>
-
-              {/* Existing images with remove buttons */}
-              {existingImages.length > 0 && (
-                <div className="flex flex-wrap gap-3 mb-3">
-                  {existingImages.map((url, i) => (
-                    <div key={i} className="relative group w-20 h-20">
-                      <Image
-                        src={url}
-                        alt={`Image ${i + 1}`}
-                        fill
-                        className="object-cover rounded-lg border border-white/10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExistingImages((imgs) =>
-                            imgs.filter((_, idx) => idx !== i),
-                          )
-                        }
-                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Remove image"
-                      >
-                        <X size={10} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="relative group">
-                <input
-                  type="file"
-                  multiple
-                  onChange={(e) => setImageFiles(e.target.files)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  accept="image/*"
-                />
-                <div className="w-full bg-black/50 border border-white/10 border-dashed rounded-xl px-4 py-8 flex flex-col items-center justify-center gap-2 group-hover:border-pink-500/50 transition-colors">
-                  <Upload
-                    size={24}
-                    className="text-zinc-500 group-hover:text-pink-400 transition-colors"
-                  />
-                  <span className="text-zinc-500 text-sm group-hover:text-zinc-300">
-                    {imageFiles && imageFiles.length > 0
-                      ? `${imageFiles.length} files selected`
-                      : "Drag images or click to upload"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={uploading}
-                className="flex items-center gap-2 bg-linear-to-r from-pink-600 to-purple-600 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-pink-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {uploading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) cancelEdit();
+          }}
+        >
+          <div className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/10">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                {editingProduct ? (
+                  <Edit2 size={20} className="text-pink-400" />
                 ) : (
-                  <ShoppingBag size={18} />
+                  <Plus size={20} className="text-pink-400" />
                 )}
-                {uploading
-                  ? "Processing..."
-                  : editingProduct
-                    ? "Update Product"
-                    : "Create Product"}
+                {editingProduct ? "Edit Product" : "Add New Entry"}
+              </h2>
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X size={20} />
               </button>
             </div>
-          </form>
+            <div className="px-8 py-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-zinc-600"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                      Price ($)
+                    </label>
+                    <div className="relative">
+                      <DollarSign
+                        size={16}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+                      />
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-zinc-600"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                      Category
+                    </label>
+                    <div className="relative">
+                      <Tag
+                        size={16}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
+                      />
+                      <select
+                        value={categoryId}
+                        onChange={(e) => setCategoryId(e.target.value)}
+                        className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all appearance-none cursor-pointer"
+                        required
+                      >
+                        <option value="" className="bg-zinc-900 text-zinc-500">
+                          Select a Category
+                        </option>
+                        {categories.map((cat) => (
+                          <option
+                            key={cat.id}
+                            value={cat.id}
+                            className="bg-zinc-900"
+                          >
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={status}
+                      onChange={(e) =>
+                        setStatus(e.target.value as ProductStatus)
+                      }
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="available" className="bg-zinc-900">
+                        Available
+                      </option>
+                      <option value="coming_soon" className="bg-zinc-900">
+                        Coming Soon
+                      </option>
+                      <option value="sold" className="bg-zinc-900">
+                        Sold
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all placeholder:text-zinc-600 h-32 resize-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Images {editingProduct && "(Upload to add more)"}
+                  </label>
+
+                  {/* Existing images with remove buttons */}
+                  {existingImages.length > 0 && (
+                    <div className="flex flex-wrap gap-3 mb-3">
+                      {existingImages.map((url, i) => (
+                        <div key={i} className="relative group w-20 h-20">
+                          <Image
+                            src={url}
+                            alt={`Image ${i + 1}`}
+                            fill
+                            className="object-cover rounded-lg border border-white/10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExistingImages((imgs) =>
+                                imgs.filter((_, idx) => idx !== i),
+                              )
+                            }
+                            className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove image"
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="relative group">
+                    <input
+                      type="file"
+                      multiple
+                      onChange={(e) => setImageFiles(e.target.files)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      accept="image/*"
+                    />
+                    <div className="w-full bg-black/50 border border-white/10 border-dashed rounded-xl px-4 py-8 flex flex-col items-center justify-center gap-2 group-hover:border-pink-500/50 transition-colors">
+                      <Upload
+                        size={24}
+                        className="text-zinc-500 group-hover:text-pink-400 transition-colors"
+                      />
+                      <span className="text-zinc-500 text-sm group-hover:text-zinc-300">
+                        {imageFiles && imageFiles.length > 0
+                          ? `${imageFiles.length} files selected`
+                          : "Drag images or click to upload"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    disabled={uploading}
+                    className="flex items-center gap-2 bg-linear-to-r from-pink-600 to-purple-600 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-pink-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <ShoppingBag size={18} />
+                    )}
+                    {uploading
+                      ? "Processing..."
+                      : editingProduct
+                        ? "Update Product"
+                        : "Create Entry"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
 

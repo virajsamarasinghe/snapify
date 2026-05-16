@@ -212,162 +212,179 @@ export default function CategoryManagement({
           </p>
         </div>
         <button
-          onClick={() => (isCreating ? cancelEdit() : setIsCreating(true))}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ${
-            isCreating
-              ? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-              : "bg-white text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105"
-          }`}
+          onClick={() => setIsCreating(true)}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 bg-white text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105"
         >
-          {isCreating ? (
-            <>
-              <X size={18} /> Cancel
-            </>
-          ) : (
-            <>
-              <Plus size={18} /> Add Category
-            </>
-          )}
+          <Plus size={18} /> Add Category
         </button>
       </div>
 
       {isCreating && (
-        <div className="bg-zinc-900/50 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl animate-in fade-in slide-in-from-top-4">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            {editingCategory ? (
-              <Edit2 size={20} className="text-purple-400" />
-            ) : (
-              <Plus size={20} className="text-purple-400" />
-            )}
-            {editingCategory ? "Edit Category" : "Add New Category"}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-            <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
-                Name
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-zinc-600"
-                placeholder="e.g. Landscapes"
-                required
-              />
-            </div>
-
-            {/* Marketplace toggle */}
-            <div className="flex items-center justify-between bg-black/30 border border-white/10 rounded-xl px-5 py-4">
-              <div>
-                <p className="text-sm font-medium text-white">
-                  Show in Marketplace
-                </p>
-                <p className="text-xs text-zinc-500 mt-0.5">
-                  All categories appear in Gallery. Enable this to also list in
-                  Marketplace.
-                </p>
-              </div>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) cancelEdit();
+          }}
+        >
+          <div className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/10">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                {editingCategory ? (
+                  <Edit2 size={20} className="text-purple-400" />
+                ) : (
+                  <Plus size={20} className="text-purple-400" />
+                )}
+                {editingCategory ? "Edit Category" : "Add New Category"}
+              </h2>
               <button
                 type="button"
-                onClick={() => setShowInMarketplace((v) => !v)}
-                className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
-                  showInMarketplace ? "bg-purple-600" : "bg-zinc-700"
-                }`}
+                onClick={cancelEdit}
+                className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
               >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
-                    showInMarketplace ? "translate-x-5" : "translate-x-0"
-                  }`}
-                />
+                <X size={20} />
               </button>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
-                Cover Image
-              </label>
-
-              {/* Preview: newly selected file OR existing saved image (edit mode) */}
-              {(imagePreview ||
-                (editingCategory?.image && !removeImage && !imagePreview)) && (
-                <div className="relative w-full h-48 rounded-xl overflow-hidden border border-white/10 mb-3 group/preview">
-                  <Image
-                    src={imagePreview ?? editingCategory!.image!}
-                    alt="Cover preview"
-                    fill
-                    className="object-cover"
+            <div className="px-8 py-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-zinc-600"
+                    placeholder="e.g. Landscapes"
+                    required
                   />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="flex items-center gap-1.5 bg-red-600/90 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition-colors"
-                    >
-                      <Trash2 size={14} /> Remove Image
-                    </button>
-                  </div>
                 </div>
-              )}
 
-              {/* Warning shown when user clicked Remove */}
-              {removeImage && (
-                <div className="flex items-center gap-2 text-sm text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2 mb-3">
-                  <X size={14} />
-                  Image will be removed on save.
+                {/* Marketplace toggle */}
+                <div className="flex items-center justify-between bg-black/30 border border-white/10 rounded-xl px-5 py-4">
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      Show in Marketplace
+                    </p>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      All categories appear in Gallery. Enable this to also list
+                      in Marketplace.
+                    </p>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setRemoveImage(false)}
-                    className="ml-auto underline hover:no-underline"
+                    onClick={() => setShowInMarketplace((v) => !v)}
+                    className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
+                      showInMarketplace ? "bg-purple-600" : "bg-zinc-700"
+                    }`}
                   >
-                    Undo
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
+                        showInMarketplace ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
                   </button>
                 </div>
-              )}
 
-              <div className="relative group">
-                <input
-                  type="file"
-                  onChange={(e) =>
-                    handleImageChange(e.target.files ? e.target.files[0] : null)
-                  }
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  accept="image/*"
-                />
-                <div className="w-full bg-black/50 border border-white/10 border-dashed rounded-xl px-4 py-6 flex flex-col items-center justify-center gap-2 group-hover:border-purple-500/50 transition-colors">
-                  <Upload
-                    size={24}
-                    className="text-zinc-500 group-hover:text-purple-400 transition-colors"
-                  />
-                  <span className="text-zinc-500 text-sm group-hover:text-zinc-300">
-                    {imageFile
-                      ? imageFile.name
-                      : editingCategory?.image && !removeImage
-                        ? "Click to replace image"
-                        : "Click to upload an image"}
-                  </span>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Cover Image
+                  </label>
+
+                  {/* Preview: newly selected file OR existing saved image (edit mode) */}
+                  {(imagePreview ||
+                    (editingCategory?.image &&
+                      !removeImage &&
+                      !imagePreview)) && (
+                    <div className="relative w-full h-48 rounded-xl overflow-hidden border border-white/10 mb-3 group/preview">
+                      <Image
+                        src={imagePreview ?? editingCategory!.image!}
+                        alt="Cover preview"
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="flex items-center gap-1.5 bg-red-600/90 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+                        >
+                          <Trash2 size={14} /> Remove Image
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Warning shown when user clicked Remove */}
+                  {removeImage && (
+                    <div className="flex items-center gap-2 text-sm text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2 mb-3">
+                      <X size={14} />
+                      Image will be removed on save.
+                      <button
+                        type="button"
+                        onClick={() => setRemoveImage(false)}
+                        className="ml-auto underline hover:no-underline"
+                      >
+                        Undo
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="relative group">
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        handleImageChange(
+                          e.target.files ? e.target.files[0] : null,
+                        )
+                      }
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      accept="image/*"
+                    />
+                    <div className="w-full bg-black/50 border border-white/10 border-dashed rounded-xl px-4 py-6 flex flex-col items-center justify-center gap-2 group-hover:border-purple-500/50 transition-colors">
+                      <Upload
+                        size={24}
+                        className="text-zinc-500 group-hover:text-purple-400 transition-colors"
+                      />
+                      <span className="text-zinc-500 text-sm group-hover:text-zinc-300">
+                        {imageFile
+                          ? imageFile.name
+                          : editingCategory?.image && !removeImage
+                            ? "Click to replace image"
+                            : "Click to upload an image"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="flex gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={uploading}
-                className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {uploading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <FolderOpen size={18} />
-                )}
-                {uploading
-                  ? "Processing..."
-                  : editingCategory
-                    ? "Update Category"
-                    : "Create Category"}
-              </button>
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    disabled={uploading}
+                    className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <FolderOpen size={18} />
+                    )}
+                    {uploading
+                      ? "Processing..."
+                      : editingCategory
+                        ? "Update Category"
+                        : "Create Category"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
       )}
 
