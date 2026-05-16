@@ -26,7 +26,10 @@ export default function ManageHero() {
 
   // Upload state
   const [uploading, setUploading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<FileList | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<
+    { name: string; status: "pending" | "done" | "error" }[]
+  >([]);
   const [confirmDeleteFile, setConfirmDeleteFile] = useState<string | null>(
     null,
   );
@@ -72,36 +75,52 @@ export default function ManageHero() {
 
   const handleUploadFile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return alert("Please select an image");
+    if (!files || files.length === 0)
+      return alert("Please select at least one image");
 
+    const fileArray = Array.from(files);
+    setUploadProgress(
+      fileArray.map((f) => ({ name: f.name, status: "pending" })),
+    );
     setUploading(true);
-    try {
-      const uploadData = new FormData();
-      uploadData.append("file", file);
 
-      const uploadRes = await fetch("/api/hero/add", {
-        method: "POST",
-        body: uploadData,
-      });
-      const uploadResult = await uploadRes.json();
+    let anyError = false;
+    for (let i = 0; i < fileArray.length; i++) {
+      try {
+        const uploadData = new FormData();
+        uploadData.append("file", fileArray[i]);
 
-      if (!uploadResult.success) {
-        throw new Error(uploadResult.error || "Upload failed");
+        const uploadRes = await fetch("/api/hero/add", {
+          method: "POST",
+          body: uploadData,
+        });
+        const uploadResult = await uploadRes.json();
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || "Upload failed");
+        }
+
+        setUploadProgress((prev) =>
+          prev.map((p, idx) => (idx === i ? { ...p, status: "done" } : p)),
+        );
+      } catch (error: any) {
+        anyError = true;
+        setUploadProgress((prev) =>
+          prev.map((p, idx) => (idx === i ? { ...p, status: "error" } : p)),
+        );
       }
-
-      setFile(null);
-      const fileInput = document.getElementById(
-        "file-upload",
-      ) as HTMLInputElement;
-      if (fileInput) fileInput.value = "";
-
-      // Refresh to show the new file
-      fetchData();
-    } catch (error: any) {
-      alert(error.message || "Something went wrong during upload");
-    } finally {
-      setUploading(false);
     }
+
+    setFiles(null);
+    const fileInput = document.getElementById(
+      "file-upload",
+    ) as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
+
+    setUploading(false);
+    if (anyError) alert("Some images failed to upload. Check the list above.");
+    fetchData();
+    setTimeout(() => setUploadProgress([]), 3000);
   };
 
   const handleDelete = async (publicId: string) => {
@@ -191,23 +210,74 @@ export default function ManageHero() {
           onSubmit={handleUploadFile}
           className="flex gap-4 items-end flex-wrap sm:flex-nowrap"
         >
-          <div className="flex-1 w-full">
+          <div className="flex-1 w-full space-y-3">
             <input
               id="file-upload"
               type="file"
               accept="image/*"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              multiple
+              onChange={(e) => {
+                setFiles(e.target.files);
+                setUploadProgress([]);
+              }}
               className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30"
               required
             />
+            {files && files.length > 0 && (
+              <p className="text-zinc-500 text-xs">
+                {files.length} file{files.length > 1 ? "s" : ""} selected
+              </p>
+            )}
+            {uploadProgress.length > 0 && (
+              <ul className="space-y-1">
+                {uploadProgress.map((p, i) => (
+                  <li key={i} className="flex items-center gap-2 text-xs">
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 ${
+                        p.status === "done"
+                          ? "bg-green-400"
+                          : p.status === "error"
+                            ? "bg-red-400"
+                            : "bg-zinc-500 animate-pulse"
+                      }`}
+                    />
+                    <span className="text-zinc-400 truncate max-w-60">
+                      {p.name}
+                    </span>
+                    <span
+                      className={
+                        p.status === "done"
+                          ? "text-green-400"
+                          : p.status === "error"
+                            ? "text-red-400"
+                            : "text-zinc-500"
+                      }
+                    >
+                      {p.status === "done"
+                        ? "Done"
+                        : p.status === "error"
+                          ? "Failed"
+                          : "Uploading..."}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <button
             type="submit"
-            disabled={uploading || !file}
+            disabled={uploading || !files || files.length === 0}
             className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-6 py-3 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {uploading ? (
-              <Loader2 className="animate-spin" size={20} />
+              <>
+                <Loader2 className="animate-spin" size={20} />
+                <span>
+                  Uploading{" "}
+                  {uploadProgress.filter((p) => p.status === "done").length}/
+                  {uploadProgress.length}
+                </span>
+              </>
             ) : (
               "Upload"
             )}
