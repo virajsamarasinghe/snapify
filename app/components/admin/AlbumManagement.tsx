@@ -10,6 +10,7 @@ import {
     MapPin,
     Plus,
     Trash2,
+    Upload,
     X,
 } from "lucide-react";
 import Image from "next/image";
