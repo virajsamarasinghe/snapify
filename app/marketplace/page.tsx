@@ -11,21 +11,31 @@ import "@/models/Product";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Photography Print Marketplace",
+  title: "Buy Fine-Art Photography Prints \u2014 Limited Edition",
   description:
-    "Purchase fine-art photography prints by Jagath Kalupahana. Limited edition prints from weddings, wildlife, events and portrait collections. Worldwide shipping.",
+    "Purchase limited edition fine-art photography prints by award-winning photographer Jagath Kalupahana. Collections include weddings, wildlife, events and portraits. High-quality prints with worldwide shipping.",
+  keywords: [
+    "buy photography prints",
+    "fine art photography prints",
+    "limited edition prints Sri Lanka",
+    "Jagath Kalupahana prints",
+    "wedding photography prints",
+    "wildlife photography prints",
+    "photography marketplace",
+  ],
   alternates: { canonical: "https://snapify-sooty.vercel.app/marketplace" },
   openGraph: {
-    title: "Photography Print Marketplace | Jagath Kalupahana",
+    type: "website",
+    title: "Buy Fine-Art Photography Prints | Jagath Kalupahana Marketplace",
     description:
-      "Buy limited edition fine-art photography prints. Weddings, wildlife, portraits and more. Worldwide shipping.",
+      "Limited edition fine-art photography prints. Weddings, wildlife, events, portraits. Worldwide shipping. By award-winning Sri Lankan photographer Jagath Kalupahana.",
     url: "https://snapify-sooty.vercel.app/marketplace",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Photography Prints Marketplace",
+        alt: "Fine-Art Photography Prints Marketplace",
       },
     ],
   },
@@ -76,10 +86,85 @@ export default async function MarketplacePage() {
     count: categoryCounts[doc._id.toString()] || 0,
   }));
 
+  const SITE_URL = "https://snapify-sooty.vercel.app";
+
+  const storeSchema = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    name: "JK Photography Print Store",
+    description:
+      "Limited edition fine-art photography prints by Jagath Kalupahana. Worldwide shipping.",
+    url: `${SITE_URL}/marketplace`,
+    image: `${SITE_URL}/og-image.jpg`,
+    priceRange: "$$",
+    currenciesAccepted: "LKR, USD",
+    paymentAccepted: "Credit Card, Bank Transfer",
+    address: { "@type": "PostalAddress", addressCountry: "LK" },
+    seller: {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
+      name: "Jagath Kalupahana",
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Marketplace",
+          item: `${SITE_URL}/marketplace`,
+        },
+      ],
+    },
+  };
+
+  const itemListSchema =
+    products.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Fine-Art Photography Prints",
+          url: `${SITE_URL}/marketplace`,
+          numberOfItems: products.length,
+          itemListElement: products.slice(0, 10).map((p, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            item: {
+              "@type": "Product",
+              name: p.title,
+              description: p.description,
+              image: p.images[0]
+                ? `${SITE_URL}${p.images[0]}`
+                : `${SITE_URL}/og-image.jpg`,
+              offers: {
+                "@type": "Offer",
+                priceCurrency: "LKR",
+                price: p.price,
+                availability: "https://schema.org/InStock",
+                seller: { "@type": "Person", name: "Jagath Kalupahana" },
+              },
+            },
+          })),
+        }
+      : null;
+
   return (
-    <MarketplaceClient
-      initialProducts={products}
-      initialCategories={categories}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(storeSchema) }}
+      />
+      {itemListSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        />
+      )}
+      <MarketplaceClient
+        initialProducts={products}
+        initialCategories={categories}
+      />
+    </>
   );
 }

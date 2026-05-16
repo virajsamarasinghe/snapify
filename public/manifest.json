@@ -1,0 +1,20 @@
+{
+  "name": "JK Photography — Jagath Kalupahana",
+  "short_name": "JK Photography",
+  "description": "Award-winning professional photographer. Weddings, wildlife, events, portraits and fine-art prints.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait-primary",
+  "lang": "en-US",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/og-image.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg"
+    }
+  ],
+  "categories": ["photography", "art", "shopping"]
+}
