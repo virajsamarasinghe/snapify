@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import dbConnect from "@/lib/db";
 import AboutSettings from "@/models/AboutSettings";
+import Album from "@/models/Album";
 import Category from "@/models/Category";
 import Hero from "@/models/Hero";
 import Recognition from "@/models/Recognition";
@@ -50,9 +51,10 @@ export default async function Home() {
       .sort({ createdAt: -1 })
       .lean()
       .catch(() => []),
-    Category.find()
+    // Only gallery categories (not marketplace-only)
+    Category.find({ showInMarketplace: { $ne: true } })
       .sort({ name: 1 })
-      .populate({ path: "products", select: "images", options: { limit: 5 } })
+      .populate({ path: "products", select: "images" })
       .lean()
       .catch(() => []),
     Recognition.find()
@@ -73,6 +75,18 @@ export default async function Home() {
     src: h.src as string,
   }));
 
+  // Fetch all albums for the gallery categories
+  const galleryCategoryIds = (categoriesDocs as any[]).map((doc: any) =>
+    doc._id.toString(),
+  );
+  const albumsDocs =
+    galleryCategoryIds.length > 0
+      ? await Album.find({ category: { $in: galleryCategoryIds } })
+          .sort({ conductDate: -1, createdAt: -1 })
+          .lean()
+          .catch(() => [])
+      : [];
+
   const categories = (categoriesDocs as any[])
     .map((doc: any) => {
       const sizes: ("small" | "medium" | "large")[] = [
@@ -85,13 +99,34 @@ export default async function Home() {
       const productImages = doc.products
         ? doc.products.flatMap((p: any) => p.images || [])
         : [];
-      const images = [doc.image, ...productImages].filter(Boolean);
+
+      // Get albums for this category
+      const categoryAlbums = (albumsDocs as any[])
+        .filter((a: any) => a.category.toString() === doc._id.toString())
+        .map((a: any) => ({
+          id: a._id.toString(),
+          name: a.name,
+          photos: [
+            ...(a.coverPhoto ? [a.coverPhoto] : []),
+            ...(a.photos || []),
+          ].filter(Boolean) as string[],
+        }));
+
+      // All album photos
+      const albumPhotos = categoryAlbums.flatMap((a: any) => a.photos);
+
+      // Combine: category cover + product images + album photos (all)
+      const images = [doc.image, ...productImages, ...albumPhotos].filter(
+        Boolean,
+      ) as string[];
+
       return {
         id: doc._id.toString(),
         title: doc.name,
         images: images.length > 0 ? images : [],
         description: `Explore our ${doc.name} collection.`,
         size,
+        albums: categoryAlbums,
       };
     })
     .filter((cat: any) => cat.images.length > 0);

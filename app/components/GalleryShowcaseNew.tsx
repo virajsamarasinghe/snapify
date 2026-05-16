@@ -12,12 +12,19 @@ if (typeof window !== "undefined") {
 }
 
 // Interface from DB
+export interface GalleryAlbum {
+  id: string;
+  name: string;
+  photos: string[];
+}
+
 export interface GalleryCategory {
   id: string;
   title: string;
   images: string[]; // We will pass populated product images here
   description: string;
   size: "small" | "medium" | "large";
+  albums?: GalleryAlbum[];
 }
 
 interface GalleryShowcaseNewProps {
@@ -33,9 +40,8 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
   );
   const [activeColorCard, setActiveColorCard] = useState<string | null>(null);
   const colorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Use passed categories or fallback (empty)
-  // Logic: We rely on the parent to pass valid data.
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedAlbum, setSelectedAlbum] = useState<string>("all");
 
   // Initialize current image index for each category
   useEffect(() => {
@@ -219,6 +225,34 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
     return "lg:col-span-1 lg:row-span-1";
   };
 
+  // Derived filter data
+  const activeCategoryData =
+    selectedCategory === "all"
+      ? null
+      : (categories.find((c) => c.id === selectedCategory) ?? null);
+
+  const albumsForFilter = activeCategoryData?.albums ?? [];
+
+  // When a category + album is selected, show individual album images in a flat grid
+  const activeAlbumImages: string[] = (() => {
+    if (selectedCategory === "all") return [];
+    if (!activeCategoryData) return [];
+    if (selectedAlbum === "all") {
+      // All images across all albums in this category
+      return (activeCategoryData.albums ?? []).flatMap((a) => a.photos);
+    }
+    const album = (activeCategoryData.albums ?? []).find(
+      (a) => a.id === selectedAlbum,
+    );
+    return album ? album.photos : [];
+  })();
+
+  // Which categories to display as bento cards (all when no category selected)
+  const displayCategories =
+    selectedCategory === "all"
+      ? categories
+      : categories.filter((c) => c.id === selectedCategory);
+
   return (
     <section
       id="gallery"
@@ -268,12 +302,102 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           </p>
         </div>
 
-        {/* Categories Grid */}
+        {/* Category Filter Tabs */}
+        <div className="gallery-subtitle flex flex-wrap justify-center gap-2 sm:gap-3 mb-8">
+          <button
+            onClick={() => {
+              setSelectedCategory("all");
+              setSelectedAlbum("all");
+            }}
+            className={`px-4 py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-300 border ${
+              selectedCategory === "all"
+                ? "bg-white text-black border-white"
+                : "bg-transparent text-white/70 border-white/20 hover:border-white/50 hover:text-white"
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                setSelectedAlbum("all");
+              }}
+              className={`px-4 py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-300 border ${
+                selectedCategory === cat.id
+                  ? "bg-white text-black border-white"
+                  : "bg-transparent text-white/70 border-white/20 hover:border-white/50 hover:text-white"
+              }`}
+            >
+              {cat.title}
+            </button>
+          ))}
+        </div>
+
+        {/* Album Filter Tabs (visible only when a category is selected and it has albums) */}
+        {selectedCategory !== "all" && albumsForFilter.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            <button
+              onClick={() => setSelectedAlbum("all")}
+              className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 border ${
+                selectedAlbum === "all"
+                  ? "bg-purple-500 text-white border-purple-500"
+                  : "bg-transparent text-white/60 border-white/15 hover:border-purple-400 hover:text-white"
+              }`}
+            >
+              All Albums
+            </button>
+            {albumsForFilter.map((album) => (
+              <button
+                key={album.id}
+                onClick={() => setSelectedAlbum(album.id)}
+                className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 border ${
+                  selectedAlbum === album.id
+                    ? "bg-purple-500 text-white border-purple-500"
+                    : "bg-transparent text-white/60 border-white/15 hover:border-purple-400 hover:text-white"
+                }`}
+              >
+                {album.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Album Images Grid — shown when a category (and optional album) is selected */}
+        {selectedCategory !== "all" && activeAlbumImages.length > 0 && (
+          <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 sm:gap-4 mb-16 sm:mb-20 space-y-3 sm:space-y-4">
+            {activeAlbumImages.map((img, idx) => (
+              <div
+                key={idx}
+                className="break-inside-avoid rounded-xl overflow-hidden relative group"
+              >
+                <Image
+                  src={img}
+                  alt={`${activeCategoryData?.title ?? ""} photo ${idx + 1}`}
+                  width={600}
+                  height={400}
+                  className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* No images fallback */}
+        {selectedCategory !== "all" && activeAlbumImages.length === 0 && (
+          <div className="text-center text-white/40 py-20 mb-16 sm:mb-20">
+            No images found for this selection.
+          </div>
+        )}
+
+        {/* Categories Bento Grid — always shown */}
         <div
           ref={galleryRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20 auto-rows-[250px] sm:auto-rows-[300px] grid-flow-dense"
         >
-          {categories.map((item, index) => (
+          {displayCategories.map((item, index) => (
             <TransitionLink
               key={item.id}
               href={`/gallery?category=${encodeURIComponent(item.title)}`}
