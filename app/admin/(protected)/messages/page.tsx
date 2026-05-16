@@ -78,14 +78,13 @@ export default function MessagesPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
-              <Mail size={22} className="text-purple-400" />
-            </div>
             <div>
               <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
                 Messages
               </h1>
-              <p className="text-zinc-500 text-sm">Contact form submissions</p>
+              <p className="text-zinc-500 text-sm mt-1">
+                Contact form submissions
+              </p>
             </div>
             {unreadCount > 0 && (
               <span className="ml-2 px-2.5 py-0.5 rounded-full bg-purple-600 text-white text-xs font-bold">

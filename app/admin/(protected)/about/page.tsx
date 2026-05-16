@@ -9,7 +9,6 @@ import {
     Loader2,
     Save,
     Trash2,
-    User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -249,18 +248,13 @@ export default function AboutAdminPage() {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-wrap gap-3 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
-              <User size={22} className="text-purple-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
-                About Section
-              </h1>
-              <p className="text-zinc-500 text-sm">
-                Edit your bio, stats and photos
-              </p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
+              About Section
+            </h1>
+            <p className="text-zinc-500 text-sm mt-1">
+              Edit your bio, stats and photos
+            </p>
           </div>
           {isDirty && (
             <span className="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-semibold">

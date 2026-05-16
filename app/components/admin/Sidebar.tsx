@@ -119,7 +119,7 @@ const Sidebar = () => {
       {/* Brand */}
       <div className="p-6 md:p-8 border-b border-white/10 flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600">
-          SNAPIFY
+          STUDIO NETHMA
           <span className="text-xs ml-2 text-zinc-500 font-mono tracking-widest uppercase">
             Admin
           </span>
@@ -340,7 +340,8 @@ const Sidebar = () => {
           <Menu size={22} />
         </button>
         <h1 className="text-lg font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600">
-          SNAPIFY <span className="text-zinc-500 text-xs font-mono">Admin</span>
+          STUDIO NETHMA{" "}
+          <span className="text-zinc-500 text-xs font-mono">Admin</span>
         </h1>
         {unreadCount > 0 && (
           <span className="px-2 py-0.5 rounded-full bg-purple-600 text-white text-xs font-bold">

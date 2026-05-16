@@ -10,7 +10,6 @@ import {
     Lock,
     Mail,
     Save,
-    Shield,
     ShoppingBag,
     ToggleLeft,
     ToggleRight,
@@ -362,25 +361,12 @@ export default function SettingsPage() {
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Dynamic page header */}
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-xl bg-purple-500/20 border border-purple-500/30">
-              {activeTab === "account" && (
-                <Shield size={22} className="text-purple-400" />
-              )}
-              {activeTab === "features" && (
-                <ShoppingBag size={22} className="text-purple-400" />
-              )}
-              {activeTab === "contact" && (
-                <Globe size={22} className="text-purple-400" />
-              )}
-            </div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
-              {activeTab === "account" && "Account Settings"}
-              {activeTab === "features" && "Site Features"}
-              {activeTab === "contact" && "Contact & Social"}
-            </h1>
-          </div>
-          <p className="text-zinc-500 text-sm ml-1">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
+            {activeTab === "account" && "Account Settings"}
+            {activeTab === "features" && "Site Features"}
+            {activeTab === "contact" && "Contact & Social"}
+          </h1>
+          <p className="text-zinc-500 text-sm mt-1">
             {activeTab === "account" && "Manage your admin credentials"}
             {activeTab === "features" && "Configure site-wide feature flags"}
             {activeTab === "contact" && "Update contact info and social links"}

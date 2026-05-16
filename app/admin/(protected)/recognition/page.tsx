@@ -352,18 +352,13 @@ export default function RecognitionAdminPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-wrap gap-3 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-yellow-500/20 border border-yellow-500/30">
-              <Award size={22} className="text-yellow-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
-                Recognition
-              </h1>
-              <p className="text-zinc-500 text-sm">
-                Manage awards, exhibitions &amp; features
-              </p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">
+              Recognition
+            </h1>
+            <p className="text-zinc-500 text-sm mt-1">
+              Manage awards, exhibitions &amp; features
+            </p>
           </div>
           <button
             onClick={openAdd}
