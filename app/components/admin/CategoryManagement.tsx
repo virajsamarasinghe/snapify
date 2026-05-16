@@ -38,6 +38,7 @@ export default function CategoryManagement({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // Initialize Edit Mode
@@ -82,6 +83,7 @@ export default function CategoryManagement({
     if (!name) return;
 
     setUploading(true);
+    setError(null);
     let imageUrl = removeImage ? "" : editingCategory?.image || "";
 
     try {
@@ -107,14 +109,18 @@ export default function CategoryManagement({
 
         if (res.ok) {
           const updatedCategory = await res.json();
+          const id = updatedCategory._id || updatedCategory.id;
           setCategories(
             categories.map((cat) =>
-              cat.id === updatedCategory._id
-                ? { ...cat, ...updatedCategory, id: updatedCategory._id }
-                : cat,
+              cat.id === id ? { ...cat, ...updatedCategory, id } : cat,
             ),
           );
           cancelEdit();
+        } else {
+          const data = await res.json().catch(() => ({}));
+          setError(
+            data.error || "Failed to update category. Please try again.",
+          );
         }
       } else {
         // CREATE
@@ -132,10 +138,16 @@ export default function CategoryManagement({
           };
           setCategories([formattedCat, ...categories]);
           cancelEdit();
+        } else {
+          const data = await res.json().catch(() => ({}));
+          setError(
+            data.error || "Failed to create category. Please try again.",
+          );
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -150,10 +162,12 @@ export default function CategoryManagement({
       if (res.ok) {
         setCategories(categories.filter((cat) => cat.id !== id));
       } else {
-        alert("Failed to delete category");
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Failed to delete category. Please try again.");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setConfirmDeleteId(null);
     }
@@ -169,6 +183,21 @@ export default function CategoryManagement({
         onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}
         onCancel={() => setConfirmDeleteId(null)}
       />
+
+      {/* Global error banner */}
+      {error && (
+        <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 text-sm">
+          <X size={16} className="shrink-0" />
+          <span className="flex-1">{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="shrink-0 hover:text-red-300 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-3 justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">

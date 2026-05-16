@@ -18,14 +18,9 @@ export async function PUT(
     const body = await req.json();
     await dbConnect();
 
-    // Delete old Cloudinary image if being replaced
+    // Delete old Cloudinary image if it is being replaced or removed
     const oldCategory = await Category.findById(id);
-    if (
-      oldCategory &&
-      body.image &&
-      body.image !== oldCategory.image &&
-      oldCategory.image
-    ) {
+    if (oldCategory && oldCategory.image && body.image !== oldCategory.image) {
       const pid = extractPublicId(oldCategory.image);
       if (pid) {
         try {
