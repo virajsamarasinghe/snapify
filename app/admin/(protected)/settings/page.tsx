@@ -28,12 +28,14 @@ function PasswordInput({
   placeholder,
   show,
   onToggle,
+  autoComplete = "current-password",
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
   show: boolean;
   onToggle: () => void;
+  autoComplete?: string;
 }) {
   return (
     <div className="relative">
@@ -47,6 +49,7 @@ function PasswordInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required
+        autoComplete={autoComplete}
         className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-12 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
       />
       <button
@@ -430,6 +433,7 @@ export default function SettingsPage() {
                   placeholder="Enter your current password"
                   show={showEmailPw}
                   onToggle={() => setShowEmailPw((v) => !v)}
+                  autoComplete="current-password"
                 />
               </div>
               <Feedback msg={emailMsg} />
@@ -461,6 +465,7 @@ export default function SettingsPage() {
                   placeholder="Enter current password"
                   show={showOld}
                   onToggle={() => setShowOld((v) => !v)}
+                  autoComplete="current-password"
                 />
               </div>
               <div>
@@ -473,6 +478,7 @@ export default function SettingsPage() {
                   placeholder="Min. 8 characters"
                   show={showNew}
                   onToggle={() => setShowNew((v) => !v)}
+                  autoComplete="new-password"
                 />
               </div>
               <div>
@@ -487,6 +493,7 @@ export default function SettingsPage() {
                   placeholder="Re-enter new password"
                   show={showConfirm}
                   onToggle={() => setShowConfirm((v) => !v)}
+                  autoComplete="new-password"
                 />
               </div>
               <Feedback msg={pwMsg} />
