@@ -35,6 +35,8 @@ export default function CategoryManagement({
   // Form states
   const [name, setName] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
@@ -42,6 +44,9 @@ export default function CategoryManagement({
   const startEdit = (category: Category) => {
     setEditingCategory(category);
     setName(category.name);
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(false);
     setIsCreating(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -50,7 +55,26 @@ export default function CategoryManagement({
     setEditingCategory(null);
     setName("");
     setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(false);
     setIsCreating(false);
+  };
+
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    setRemoveImage(false);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setImagePreview(url);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(true);
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -58,7 +82,7 @@ export default function CategoryManagement({
     if (!name) return;
 
     setUploading(true);
-    let imageUrl = editingCategory?.image || "";
+    let imageUrl = removeImage ? "" : editingCategory?.image || "";
 
     try {
       // 1. Upload Image if exists
@@ -201,25 +225,66 @@ export default function CategoryManagement({
 
             <div>
               <label className="block text-sm font-medium text-zinc-400 mb-2">
-                Cover Image{" "}
-                {editingCategory && "(Leave empty to keep existing)"}
+                Cover Image
               </label>
+
+              {/* Preview: newly selected file OR existing saved image (edit mode) */}
+              {(imagePreview ||
+                (editingCategory?.image && !removeImage && !imagePreview)) && (
+                <div className="relative w-full h-48 rounded-xl overflow-hidden border border-white/10 mb-3 group/preview">
+                  <Image
+                    src={imagePreview ?? editingCategory!.image!}
+                    alt="Cover preview"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="flex items-center gap-1.5 bg-red-600/90 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={14} /> Remove Image
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Warning shown when user clicked Remove */}
+              {removeImage && (
+                <div className="flex items-center gap-2 text-sm text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2 mb-3">
+                  <X size={14} />
+                  Image will be removed on save.
+                  <button
+                    type="button"
+                    onClick={() => setRemoveImage(false)}
+                    className="ml-auto underline hover:no-underline"
+                  >
+                    Undo
+                  </button>
+                </div>
+              )}
+
               <div className="relative group">
                 <input
                   type="file"
                   onChange={(e) =>
-                    setImageFile(e.target.files ? e.target.files[0] : null)
+                    handleImageChange(e.target.files ? e.target.files[0] : null)
                   }
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   accept="image/*"
                 />
-                <div className="w-full bg-black/50 border border-white/10 border-dashed rounded-xl px-4 py-8 flex flex-col items-center justify-center gap-2 group-hover:border-purple-500/50 transition-colors">
+                <div className="w-full bg-black/50 border border-white/10 border-dashed rounded-xl px-4 py-6 flex flex-col items-center justify-center gap-2 group-hover:border-purple-500/50 transition-colors">
                   <Upload
                     size={24}
                     className="text-zinc-500 group-hover:text-purple-400 transition-colors"
                   />
                   <span className="text-zinc-500 text-sm group-hover:text-zinc-300">
-                    {imageFile ? imageFile.name : "Click to upload an image"}
+                    {imageFile
+                      ? imageFile.name
+                      : editingCategory?.image && !removeImage
+                        ? "Click to replace image"
+                        : "Click to upload an image"}
                   </span>
                 </div>
               </div>
