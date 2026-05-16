@@ -1,0 +1,650 @@
+"use client";
+
+import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
+import {
+    ArrowLeft,
+    Calendar,
+    Camera,
+    ChevronDown,
+    ChevronUp,
+    Edit2,
+    Image as ImageIcon,
+    MapPin,
+    Plus,
+    Trash2,
+    Upload,
+    X,
+} from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import ConfirmDialog from "./ConfirmDialog";
+
+type Album = {
+  id: string;
+  name: string;
+  description: string;
+  conductDate: string | null;
+  location: string;
+  coverPhoto: string;
+  photos: string[];
+};
+
+export default function AlbumManagement({
+  initialAlbums,
+  categoryId,
+  categoryName,
+}: {
+  initialAlbums: Album[];
+  categoryId: string;
+  categoryName: string;
+}) {
+  const router = useRouter();
+  const [albums, setAlbums] = useState<Album[]>(initialAlbums);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
+  const [expandedAlbumId, setExpandedAlbumId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Album form states
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [conductDate, setConductDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  // Photo upload states
+  const [photoFiles, setPhotoFiles] = useState<FileList | null>(null);
+  const [uploadingPhotosId, setUploadingPhotosId] = useState<string | null>(
+    null,
+  );
+
+  const openCreate = () => {
+    setEditingAlbum(null);
+    setName("");
+    setDescription("");
+    setConductDate("");
+    setLocation("");
+    setCoverFile(null);
+    setCoverPreview(null);
+    setError(null);
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (album: Album) => {
+    setEditingAlbum(album);
+    setName(album.name);
+    setDescription(album.description || "");
+    setConductDate(album.conductDate ? album.conductDate.substring(0, 10) : "");
+    setLocation(album.location || "");
+    setCoverFile(null);
+    setCoverPreview(null);
+    setError(null);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingAlbum(null);
+    setError(null);
+  };
+
+  const handleCoverChange = (file: File | null) => {
+    setCoverFile(file);
+    if (file) setCoverPreview(URL.createObjectURL(file));
+    else setCoverPreview(null);
+  };
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setUploading(true);
+    setError(null);
+
+    // Derive slugs for folder naming
+    const toSlug = (s: string) =>
+      s
+        .toLowerCase()
+        .replace(/ /g, "-")
+        .replace(/[^\w-]+/g, "");
+    const catSlug = toSlug(categoryName);
+    const albumSlug = toSlug(name);
+    const albumFolder = `snapify/categories/gallery/${catSlug}/${albumSlug}`;
+
+    try {
+      let coverPhoto = editingAlbum?.coverPhoto || "";
+      if (coverFile) {
+        const { url } = await uploadToCloudinary(coverFile, albumFolder);
+        coverPhoto = url;
+      }
+
+      const payload = {
+        name,
+        description,
+        conductDate: conductDate || null,
+        location,
+        coverPhoto,
+        category: categoryId,
+      };
+
+      if (editingAlbum) {
+        const res = await fetch(`/api/albums/${editingAlbum.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const updated = await res.json();
+          const id = updated._id || updated.id;
+          setAlbums(
+            albums.map((a) =>
+              a.id === editingAlbum.id ? { ...a, ...updated, id } : a,
+            ),
+          );
+          closeModal();
+        } else {
+          const d = await res.json().catch(() => ({}));
+          setError(d.error || "Failed to update album.");
+        }
+      } else {
+        const res = await fetch("/api/albums", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const created = await res.json();
+          setAlbums([
+            { ...created, id: created._id || created.id, photos: [] },
+            ...albums,
+          ]);
+          closeModal();
+        } else {
+          const d = await res.json().catch(() => ({}));
+          setError(d.error || "Failed to create album.");
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleDeleteAlbum(id: string) {
+    const res = await fetch(`/api/albums/${id}`, { method: "DELETE" });
+    if (res.ok) setAlbums(albums.filter((a) => a.id !== id));
+    else setError("Failed to delete album.");
+    setConfirmDeleteId(null);
+  }
+
+  async function handleUploadPhotos(albumId: string) {
+    if (!photoFiles || photoFiles.length === 0) return;
+    setUploadingPhotosId(albumId);
+
+    // Get the album to derive folder path
+    const album = albums.find((a) => a.id === albumId)!;
+    const toSlug = (s: string) =>
+      s
+        .toLowerCase()
+        .replace(/ /g, "-")
+        .replace(/[^\w-]+/g, "");
+    const catSlug = toSlug(categoryName);
+    const albumSlug = toSlug(album.name);
+    const folder = `snapify/categories/gallery/${catSlug}/${albumSlug}`;
+
+    try {
+      const newUrls: string[] = [];
+      for (let i = 0; i < photoFiles.length; i++) {
+        const { url } = await uploadToCloudinary(photoFiles[i], folder);
+        newUrls.push(url);
+      }
+      const album = albums.find((a) => a.id === albumId)!;
+      const updatedPhotos = [...album.photos, ...newUrls];
+      const res = await fetch(`/api/albums/${albumId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photos: updatedPhotos }),
+      });
+      if (res.ok) {
+        setAlbums(
+          albums.map((a) =>
+            a.id === albumId ? { ...a, photos: updatedPhotos } : a,
+          ),
+        );
+        setPhotoFiles(null);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploadingPhotosId(null);
+    }
+  }
+
+  async function handleRemovePhoto(albumId: string, photoUrl: string) {
+    const album = albums.find((a) => a.id === albumId)!;
+    const updatedPhotos = album.photos.filter((p) => p !== photoUrl);
+    const res = await fetch(`/api/albums/${albumId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photos: updatedPhotos }),
+    });
+    if (res.ok) {
+      setAlbums(
+        albums.map((a) =>
+          a.id === albumId ? { ...a, photos: updatedPhotos } : a,
+        ),
+      );
+    }
+  }
+
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return null;
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      <ConfirmDialog
+        open={confirmDeleteId !== null}
+        title="Delete Album"
+        message="Are you sure you want to delete this album and all its photos? This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => confirmDeleteId && handleDeleteAlbum(confirmDeleteId)}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
+
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 text-sm">
+          <X size={16} className="shrink-0" />
+          <span className="flex-1">{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="shrink-0 hover:text-red-300 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Page header */}
+      <div className="flex flex-wrap gap-3 justify-between items-center">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push("/admin/products?type=gallery")}
+            className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+            title="Back to categories"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              {categoryName}
+            </h1>
+            <p className="text-zinc-400 text-sm mt-1">
+              Manage albums &amp; photos
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={openCreate}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium bg-white text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105 transition-all duration-300"
+        >
+          <Plus size={18} /> New Album
+        </button>
+      </div>
+
+      {/* Albums list */}
+      {albums.length === 0 ? (
+        <div className="bg-zinc-900/50 rounded-2xl border border-white/5 px-6 py-20 flex flex-col items-center gap-4 text-zinc-500">
+          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+            <Camera size={32} className="opacity-50" />
+          </div>
+          <p>No albums yet. Create your first album above.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {albums.map((album) => (
+            <div
+              key={album.id}
+              className="bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden"
+            >
+              {/* Album row */}
+              <div className="flex items-center gap-4 p-4">
+                {/* Cover thumbnail */}
+                <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-white/10 shrink-0">
+                  {album.coverPhoto ? (
+                    <Image
+                      src={album.coverPhoto}
+                      alt={album.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                      <Camera size={24} className="text-zinc-600" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Album info */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-white font-semibold text-lg leading-tight truncate">
+                    {album.name}
+                  </h3>
+                  {album.description && (
+                    <p className="text-zinc-500 text-sm mt-0.5 line-clamp-1">
+                      {album.description}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {album.conductDate && (
+                      <span className="flex items-center gap-1 text-xs text-zinc-400">
+                        <Calendar size={11} />
+                        {formatDate(album.conductDate)}
+                      </span>
+                    )}
+                    {album.location && (
+                      <span className="flex items-center gap-1 text-xs text-zinc-400">
+                        <MapPin size={11} />
+                        {album.location}
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1 text-xs text-zinc-500">
+                      <ImageIcon size={11} />
+                      {album.photos.length} photo
+                      {album.photos.length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => openEdit(album)}
+                    className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
+                    title="Edit album"
+                  >
+                    <Edit2 size={15} />
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteId(album.id)}
+                    className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                    title="Delete album"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                  <button
+                    onClick={() =>
+                      setExpandedAlbumId(
+                        expandedAlbumId === album.id ? null : album.id,
+                      )
+                    }
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors text-sm font-medium"
+                  >
+                    Photos
+                    {expandedAlbumId === album.id ? (
+                      <ChevronUp size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Expanded photos panel */}
+              {expandedAlbumId === album.id && (
+                <div className="border-t border-white/5 px-4 py-5">
+                  {/* Upload bar */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="relative flex-1 group">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => setPhotoFiles(e.target.files)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      />
+                      <div className="bg-black/30 border border-white/10 border-dashed rounded-xl px-4 py-3 flex items-center gap-3 group-hover:border-purple-500/50 transition-colors">
+                        <Upload
+                          size={15}
+                          className="text-zinc-500 group-hover:text-purple-400 transition-colors shrink-0"
+                        />
+                        <span className="text-zinc-500 text-sm group-hover:text-zinc-300 truncate">
+                          {photoFiles && photoFiles.length > 0
+                            ? `${photoFiles.length} file${photoFiles.length > 1 ? "s" : ""} selected`
+                            : "Click to select photos"}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      disabled={
+                        !photoFiles ||
+                        photoFiles.length === 0 ||
+                        uploadingPhotosId === album.id
+                      }
+                      onClick={() => handleUploadPhotos(album.id)}
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                    >
+                      {uploadingPhotosId === album.id ? (
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <Upload size={14} />
+                      )}
+                      {uploadingPhotosId === album.id ? "Uploading…" : "Upload"}
+                    </button>
+                  </div>
+
+                  {/* Photo grid */}
+                  {album.photos.length > 0 ? (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                      {album.photos.map((url, i) => (
+                        <div
+                          key={i}
+                          className="relative aspect-square group rounded-lg overflow-hidden border border-white/10"
+                        >
+                          <Image
+                            src={url}
+                            alt={`Photo ${i + 1}`}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button
+                              onClick={() => handleRemovePhoto(album.id, url)}
+                              className="p-1.5 bg-red-600/90 hover:bg-red-600 text-white rounded-full transition-colors"
+                              title="Remove photo"
+                            >
+                              <Trash2 size={11} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-zinc-600 text-sm">
+                      No photos yet. Upload some above.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Album create / edit modal */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeModal();
+          }}
+        >
+          <div className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/10">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                {editingAlbum ? (
+                  <Edit2 size={20} className="text-purple-400" />
+                ) : (
+                  <Plus size={20} className="text-purple-400" />
+                )}
+                {editingAlbum ? "Edit Album" : "New Album"}
+              </h2>
+              <button
+                onClick={closeModal}
+                className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="px-8 py-6">
+              {error && (
+                <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 text-sm mb-5">
+                  <X size={14} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Album Name */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 mb-2">
+                    Album Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-zinc-600"
+                    placeholder="e.g. Summer Wedding 2024"
+                    required
+                  />
+                </div>
+
+                {/* Shoot Date + Location */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 mb-2">
+                      <Calendar size={13} /> Shoot Date
+                    </label>
+                    <input
+                      type="date"
+                      value={conductDate}
+                      onChange={(e) => setConductDate(e.target.value)}
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all scheme-dark"
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 mb-2">
+                      <MapPin size={13} /> Location
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-zinc-600"
+                      placeholder="e.g. Colombo, Sri Lanka"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-zinc-600 resize-none"
+                    placeholder="Brief description of this shoot…"
+                  />
+                </div>
+
+                {/* Cover Photo */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 mb-2">
+                    Cover Photo
+                  </label>
+                  {(coverPreview ||
+                    (editingAlbum?.coverPhoto && !coverPreview)) && (
+                    <div className="relative w-full h-40 rounded-xl overflow-hidden border border-white/10 mb-3">
+                      <Image
+                        src={coverPreview ?? editingAlbum!.coverPhoto}
+                        alt="Cover preview"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="relative group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) =>
+                        handleCoverChange(e.target.files?.[0] ?? null)
+                      }
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="w-full bg-black/50 border border-white/10 border-dashed rounded-xl px-4 py-5 flex flex-col items-center gap-2 group-hover:border-purple-500/50 transition-colors">
+                      <Upload
+                        size={20}
+                        className="text-zinc-500 group-hover:text-purple-400 transition-colors"
+                      />
+                      <span className="text-zinc-500 text-sm group-hover:text-zinc-300">
+                        {coverFile
+                          ? coverFile.name
+                          : editingAlbum?.coverPhoto
+                            ? "Click to replace cover"
+                            : "Click to upload cover photo"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit / Cancel */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={uploading}
+                    className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploading ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Camera size={18} />
+                    )}
+                    {uploading
+                      ? "Saving…"
+                      : editingAlbum
+                        ? "Update Album"
+                        : "Create Album"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-6 py-3 rounded-xl font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

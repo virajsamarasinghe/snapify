@@ -90,6 +90,12 @@ export default function CategoryManagement({
     setError(null);
     let imageUrl = removeImage ? "" : editingCategory?.image || "";
 
+    // Build slug the same way the server does
+    const slug = name
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+
     try {
       // 1. Upload Image if exists
       if (imageFile) {

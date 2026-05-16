@@ -90,6 +90,16 @@ export default function ProductManagement({
     // Start from current existingImages (already has removed ones filtered out)
     let uploadedImages: string[] = editingProduct ? existingImages : [];
 
+    // Derive category slug for organized Cloudinary folder
+    const selectedCat = categories.find((c) => c.id === categoryId);
+    const catSlug = selectedCat
+      ? selectedCat.name
+          .toLowerCase()
+          .replace(/ /g, "-")
+          .replace(/[^\w-]+/g, "")
+      : "uncategorized";
+    const productFolder = `snapify/categories/market/${catSlug}`;
+
     try {
       // 1. Upload Images
       if (imageFiles && imageFiles.length > 0) {
@@ -98,7 +108,7 @@ export default function ProductManagement({
           // Upload directly from browser → Cloudinary (bypasses Vercel body limit)
           const { url } = await uploadToCloudinary(
             imageFiles[i],
-            "snapify/marketplace/products",
+            productFolder,
           );
           newImages.push(url);
         }
