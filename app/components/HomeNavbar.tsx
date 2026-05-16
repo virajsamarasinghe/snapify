@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
-import TransitionLink from "./TransitionLink";
+import { useEffect, useRef, useState } from "react";
 import ContactPopup from "./ContactPopup";
+import TransitionLink from "./TransitionLink";
 
 interface HomeNavbarProps {
   animateOnMount?: boolean;
@@ -19,7 +18,15 @@ export default function HomeNavbar({
 }: HomeNavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [showMarketplace, setShowMarketplace] = useState(true);
   const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    fetch("/api/settings/public", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setShowMarketplace(d.showMarketplace))
+      .catch(() => setShowMarketplace(true));
+  }, []);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -60,28 +67,20 @@ export default function HomeNavbar({
             JK
           </TransitionLink>
           <div className="hidden lg:flex items-center gap-8">
-            <TransitionLink href="/gallery" className="text-white/80 hover:text-white transition-colors">Gallery</TransitionLink>
-            {/* <button
-              onClick={() => {
-                const gallerySection = document.getElementById("gallery");
-                if (gallerySection) {
-                  gallerySection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                }
-              }}
-              className="text-white/80 hover:text-white transition-colors cursor-pointer"
-            >
-              Gallery
-            </button> */}
-            {/* <TransitionLink href="#about" className="text-white/80 hover:text-white transition-colors">About</TransitionLink> */}
             <TransitionLink
-              href="/marketplace"
+              href="/gallery"
               className="text-white/80 hover:text-white transition-colors"
             >
-              Marketplace
+              Gallery
             </TransitionLink>
+            {showMarketplace && (
+              <TransitionLink
+                href="/marketplace"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Marketplace
+              </TransitionLink>
+            )}
           </div>
         </div>
 
@@ -137,13 +136,15 @@ export default function HomeNavbar({
         >
           Gallery
         </button>
-        <TransitionLink
-          href="/marketplace"
-          className="text-4xl font-light text-white hover:text-purple-400 transition-colors"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Marketplace
-        </TransitionLink>
+        {showMarketplace && (
+          <TransitionLink
+            href="/marketplace"
+            className="text-4xl font-light text-white hover:text-purple-400 transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Marketplace
+          </TransitionLink>
+        )}
         <button
           onClick={() => {
             setIsMobileMenuOpen(false);

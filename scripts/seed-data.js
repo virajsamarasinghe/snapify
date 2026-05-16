@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const MONGODB_URI = process.env.DATABASE_URL;
 
 if (!MONGODB_URI) {
-  console.error('Error: DATABASE_URL is not defined.');
+  console.error("Error: DATABASE_URL is not defined.");
   process.exit(1);
 }
 
@@ -12,7 +12,7 @@ const CategorySchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true },
     image: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ProductSchema = new mongoose.Schema(
@@ -27,11 +27,97 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const Category = mongoose.models.Category || mongoose.model("Category", CategorySchema);
-const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
+const Category =
+  mongoose.models.Category || mongoose.model("Category", CategorySchema);
+const Product =
+  mongoose.models.Product || mongoose.model("Product", ProductSchema);
+
+const RecognitionSchema = new mongoose.Schema(
+  {
+    year: { type: String, required: true },
+    title: { type: String, required: true },
+    venue: { type: String, required: true },
+    description: { type: String, required: true },
+    type: {
+      type: String,
+      enum: ["award", "exhibition", "feature"],
+      required: true,
+    },
+    image: { type: String, default: "" },
+    order: { type: Number, default: 0 },
+  },
+  { timestamps: true },
+);
+
+const Recognition =
+  mongoose.models.Recognition ||
+  mongoose.model("Recognition", RecognitionSchema);
+
+const defaultRecognition = [
+  {
+    year: "2024",
+    title: "International Photography Excellence",
+    venue: "World Photography Organization",
+    description:
+      "Awarded for innovative approach to contemporary portrait photography, capturing the essence of human emotion.",
+    type: "award",
+    image: "/img4.jpg",
+    order: 0,
+  },
+  {
+    year: "2024",
+    title: "Shadows & Light",
+    venue: "Modern Art Gallery, New York",
+    description:
+      "A solo exhibition featuring 50 pieces exploring the interplay between darkness and illumination.",
+    type: "exhibition",
+    image: "/img7.jpg",
+    order: 1,
+  },
+  {
+    year: "2023",
+    title: "Contemporary Visions",
+    venue: "Tate Modern, London",
+    description:
+      "Group exhibition alongside renowned international artists, showcasing the future of visual storytelling.",
+    type: "exhibition",
+    image: "/img9.jpg",
+    order: 2,
+  },
+  {
+    year: "2023",
+    title: "Wildlife Series",
+    venue: "National Geographic",
+    description:
+      "Featured photographer for an exclusive series documenting endangered species.",
+    type: "feature",
+    image: "/img11.jpg",
+    order: 3,
+  },
+  {
+    year: "2022",
+    title: "Architecture Category Winner",
+    venue: "Sony World Photography Awards",
+    description:
+      "Recognition for capturing the poetry of modern architecture through unique perspectives.",
+    type: "award",
+    image: "/img13.jpg",
+    order: 4,
+  },
+  {
+    year: "2021",
+    title: "Urban Narratives",
+    venue: "MoMA PS1, New York",
+    description:
+      "Breakthrough exhibition exploring the stories hidden within city streets.",
+    type: "exhibition",
+    image: "/img15.jpg",
+    order: 5,
+  },
+];
 
 const originalCategories = [
   {
@@ -86,18 +172,18 @@ const originalCategories = [
 async function seed() {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('Connected to MongoDB...');
+    console.log("Connected to MongoDB...");
 
     for (const catData of originalCategories) {
       const slug = catData.title.toLowerCase().replace(/ /g, "-");
-      
+
       // Upsert Category
       let category = await Category.findOne({ slug });
       if (!category) {
         category = await Category.create({
           name: catData.title,
           slug: slug,
-          image: catData.images[0] // Set first image as cover
+          image: catData.images[0], // Set first image as cover
         });
         console.log(`Created Category: ${catData.title}`);
       } else {
@@ -113,15 +199,26 @@ async function seed() {
           description: catData.description,
           price: 0, // Not really for sale, just for gallery
           images: catData.images, // Add all images here
-          category: category._id
+          category: category._id,
         });
         console.log(` - Added images to ${catData.title}`);
       }
     }
 
-    console.log('Seeding complete!');
+    console.log("Seeding complete!");
+
+    // Seed recognition entries if none exist
+    const recognitionCount = await Recognition.countDocuments();
+    if (recognitionCount === 0) {
+      await Recognition.insertMany(defaultRecognition);
+      console.log("Seeded 6 recognition entries.");
+    } else {
+      console.log(
+        `Recognition entries exist (${recognitionCount}), skipping seed.`,
+      );
+    }
   } catch (error) {
-    console.error('Seeding error:', error);
+    console.error("Seeding error:", error);
   } finally {
     await mongoose.disconnect();
   }

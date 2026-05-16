@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import ConfirmDialog from "@/app/components/admin/ConfirmDialog";
+import {
+    Eye,
+    EyeOff,
+    Image as ImageIcon,
+    Loader2,
+    Trash2,
+    UploadCloud,
+} from "lucide-react";
 import Image from "next/image";
-import { Trash2, Image as ImageIcon, Loader2, UploadCloud, Eye, EyeOff } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface LocalFile {
   filename: string;
@@ -13,10 +21,13 @@ interface LocalFile {
 export default function ManageHero() {
   const [localFiles, setLocalFiles] = useState<LocalFile[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Upload state
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [confirmDeleteFile, setConfirmDeleteFile] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     fetchData();
@@ -28,7 +39,7 @@ export default function ManageHero() {
       // Fetch local files from public/hero
       const filesRes = await fetch("/api/hero/files");
       const filesData = await filesRes.json();
-      
+
       // Fetch hidden list from DB
       const hiddenRes = await fetch("/api/hero/toggle-visibility");
       const hiddenData = await hiddenRes.json();
@@ -41,7 +52,7 @@ export default function ManageHero() {
         return {
           filename,
           url,
-          isHidden: hiddenSrcs.includes(url)
+          isHidden: hiddenSrcs.includes(url),
         };
       });
 
@@ -73,9 +84,11 @@ export default function ManageHero() {
       }
 
       setFile(null);
-      const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+      const fileInput = document.getElementById(
+        "file-upload",
+      ) as HTMLInputElement;
       if (fileInput) fileInput.value = "";
-      
+
       // Refresh to show the new file
       fetchData();
     } catch (error: any) {
@@ -86,12 +99,13 @@ export default function ManageHero() {
   };
 
   const handleDelete = async (filename: string) => {
-    if (!confirm(`Are you sure you want to delete ${filename}? This cannot be undone.`)) return;
-
     try {
-      const res = await fetch(`/api/hero/files/${encodeURIComponent(filename)}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/hero/files/${encodeURIComponent(filename)}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (res.ok) {
         fetchData();
@@ -103,31 +117,59 @@ export default function ManageHero() {
     }
   };
 
-  const toggleVisibility = async (url: string, currentHiddenStatus: boolean) => {
+  const toggleVisibility = async (
+    url: string,
+    currentHiddenStatus: boolean,
+  ) => {
     try {
       // Optimistic update
-      setLocalFiles(prev => prev.map(f => f.url === url ? { ...f, isHidden: !currentHiddenStatus } : f));
-      
+      setLocalFiles((prev) =>
+        prev.map((f) =>
+          f.url === url ? { ...f, isHidden: !currentHiddenStatus } : f,
+        ),
+      );
+
       const res = await fetch("/api/hero/toggle-visibility", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ src: url, isHidden: !currentHiddenStatus })
+        body: JSON.stringify({ src: url, isHidden: !currentHiddenStatus }),
       });
 
       if (!res.ok) {
         // Revert on error
-        setLocalFiles(prev => prev.map(f => f.url === url ? { ...f, isHidden: currentHiddenStatus } : f));
+        setLocalFiles((prev) =>
+          prev.map((f) =>
+            f.url === url ? { ...f, isHidden: currentHiddenStatus } : f,
+          ),
+        );
         alert("Failed to update visibility");
       }
     } catch (error) {
       console.error("Error toggling visibility:", error);
       // Revert on error
-      setLocalFiles(prev => prev.map(f => f.url === url ? { ...f, isHidden: currentHiddenStatus } : f));
+      setLocalFiles((prev) =>
+        prev.map((f) =>
+          f.url === url ? { ...f, isHidden: currentHiddenStatus } : f,
+        ),
+      );
     }
   };
 
   return (
     <div className="space-y-8">
+      <ConfirmDialog
+        open={confirmDeleteFile !== null}
+        title="Delete Hero Image"
+        message={`Are you sure you want to delete "${confirmDeleteFile}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (confirmDeleteFile) {
+            handleDelete(confirmDeleteFile);
+            setConfirmDeleteFile(null);
+          }
+        }}
+        onCancel={() => setConfirmDeleteFile(null)}
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
           Manage Hero Images
@@ -140,8 +182,11 @@ export default function ManageHero() {
           <UploadCloud className="text-purple-400" />
           Upload New Image
         </h2>
-        
-        <form onSubmit={handleUploadFile} className="flex gap-4 items-end flex-wrap sm:flex-nowrap">
+
+        <form
+          onSubmit={handleUploadFile}
+          className="flex gap-4 items-end flex-wrap sm:flex-nowrap"
+        >
           <div className="flex-1 w-full">
             <input
               id="file-upload"
@@ -184,10 +229,12 @@ export default function ManageHero() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {localFiles.map((file) => (
-              <div 
-                key={file.filename} 
+              <div
+                key={file.filename}
                 className={`group relative bg-black border rounded-xl overflow-hidden transition-all duration-300 ${
-                  file.isHidden ? "border-zinc-800 opacity-50" : "border-purple-500/30 hover:border-purple-500/60"
+                  file.isHidden
+                    ? "border-zinc-800 opacity-50"
+                    : "border-purple-500/30 hover:border-purple-500/60"
                 }`}
               >
                 <div className="aspect-video relative">
@@ -198,7 +245,7 @@ export default function ManageHero() {
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                  
+
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
                     {file.isHidden ? (
@@ -213,7 +260,9 @@ export default function ManageHero() {
                   </div>
 
                   <div className="absolute bottom-3 left-3 right-3">
-                    <p className="text-white text-sm font-mono truncate">{file.filename}</p>
+                    <p className="text-white text-sm font-mono truncate">
+                      {file.filename}
+                    </p>
                   </div>
                 </div>
 
@@ -221,7 +270,9 @@ export default function ManageHero() {
                   <button
                     onClick={() => toggleVisibility(file.url, file.isHidden)}
                     className={`p-2 text-white rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium ${
-                      file.isHidden ? "bg-purple-500/90 hover:bg-purple-600" : "bg-zinc-700/90 hover:bg-zinc-600"
+                      file.isHidden
+                        ? "bg-purple-500/90 hover:bg-purple-600"
+                        : "bg-zinc-700/90 hover:bg-zinc-600"
                     }`}
                     title={file.isHidden ? "Show Image" : "Hide Image"}
                   >
@@ -229,7 +280,7 @@ export default function ManageHero() {
                   </button>
 
                   <button
-                    onClick={() => handleDelete(file.filename)}
+                    onClick={() => setConfirmDeleteFile(file.filename)}
                     className="p-2 bg-red-500/90 hover:bg-red-600 text-white rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium"
                     title="Delete Image File"
                   >

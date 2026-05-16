@@ -1,14 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
-import TransitionLink from "./TransitionLink";
+import { useEffect, useRef, useState } from "react";
 import ContactPopup from "./ContactPopup";
+import TransitionLink from "./TransitionLink";
 
-export default function Navbar({ className = "" }: { className?: string; animateOnMount?: boolean }) {
+export default function Navbar({
+  className = "",
+}: {
+  className?: string;
+  animateOnMount?: boolean;
+}) {
   const navRef = useRef<HTMLDivElement>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [showMarketplace, setShowMarketplace] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/settings/public", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setShowMarketplace(d.showMarketplace))
+      .catch(() => setShowMarketplace(true));
+  }, []);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -25,7 +37,7 @@ export default function Navbar({ className = "" }: { className?: string; animate
         stagger: 0.1,
         ease: "power2.out",
         delay: 0.3,
-      }
+      },
     );
 
     gsap.fromTo(
@@ -36,7 +48,7 @@ export default function Navbar({ className = "" }: { className?: string; animate
         duration: 1,
         ease: "power2.inOut",
         delay: 0.8,
-      }
+      },
     );
   }, []);
 
@@ -86,12 +98,14 @@ export default function Navbar({ className = "" }: { className?: string; animate
               >
                 Gallery
               </TransitionLink>
-              <TransitionLink
-                href="/marketplace"
-                className="nav-item text-white/60 hover:text-white transition-colors"
-              >
-                Marketplace
-              </TransitionLink>
+              {showMarketplace && (
+                <TransitionLink
+                  href="/marketplace"
+                  className="nav-item text-white/60 hover:text-white transition-colors"
+                >
+                  Marketplace
+                </TransitionLink>
+              )}
               <button
                 onClick={() => setIsContactOpen(true)}
                 className="nav-item px-6 py-2 border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all duration-300"

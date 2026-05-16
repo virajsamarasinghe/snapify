@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 interface Achievement {
+  _id?: string;
   year: string;
   title: string;
   venue: string;
@@ -18,7 +19,11 @@ interface Achievement {
   image: string;
 }
 
-const achievements: Achievement[] = [
+interface AchievementsProps {
+  achievements?: Achievement[];
+}
+
+const FALLBACK_ACHIEVEMENTS: Achievement[] = [
   {
     year: "2024",
     title: "International Photography Excellence",
@@ -75,7 +80,13 @@ const achievements: Achievement[] = [
   },
 ];
 
-export default function Achievements() {
+export default function Achievements({
+  achievements: propAchievements,
+}: AchievementsProps = {}) {
+  const achievements =
+    propAchievements && propAchievements.length > 0
+      ? propAchievements
+      : FALLBACK_ACHIEVEMENTS;
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -169,7 +180,7 @@ export default function Achievements() {
           scrub: 1,
           onUpdate: (self) => {
             if (!gridRef.current || !pathRef.current) return;
-            
+
             const drawLength = self.progress * pathLength;
 
             const containerRect = gridRef.current.getBoundingClientRect();

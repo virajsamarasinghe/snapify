@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import PageTransition from "./components/PageTransition";
 import SmoothScroll from "./components/SmoothScroll";
 import { PageTransitionProvider } from "./contexts/PageTransitionContext";
-import PageTransition from "./components/PageTransition";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,15 +26,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <PageTransitionProvider>
           <PageTransition />
-          <SmoothScroll>
-            {children}
-          </SmoothScroll>
+          <SmoothScroll>{children}</SmoothScroll>
         </PageTransitionProvider>
       </body>
     </html>

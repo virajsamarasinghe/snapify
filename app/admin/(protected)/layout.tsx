@@ -1,8 +1,8 @@
+import SessionProvider from "@/app/components/admin/SessionProvider";
+import Sidebar from "@/app/components/admin/Sidebar";
+import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import Sidebar from "@/app/components/admin/Sidebar";
-import SessionProvider from "@/app/components/admin/SessionProvider";
-import { authOptions } from "@/lib/auth";
 
 export default async function AdminLayout({
   children,
@@ -19,8 +19,8 @@ export default async function AdminLayout({
     <SessionProvider>
       <div className="min-h-screen bg-black text-white">
         <Sidebar />
-        <main className="pl-64 min-h-screen">
-          <div className="p-8 max-w-7xl mx-auto">{children}</div>
+        <main className="md:pl-64 min-h-screen pt-14 md:pt-0">
+          <div className="p-4 md:p-8 max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
     </SessionProvider>
