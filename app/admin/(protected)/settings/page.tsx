@@ -9,13 +9,11 @@ import {
     Globe,
     Lock,
     Mail,
-    MapPin,
-    Phone,
     Save,
     Shield,
     ShoppingBag,
     ToggleLeft,
-    ToggleRight,
+    ToggleRight
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -582,100 +580,109 @@ export default function SettingsPage() {
 
         {/* ── CONTACT TAB ── */}
         {activeTab === "contact" && (
-          <div
-            id="contact"
-            className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden"
-          >
-            <div className="px-6 py-4 border-b border-white/10 flex items-center gap-3">
-              <Globe size={18} className="text-purple-400" />
-              <h2 className="text-white font-semibold text-sm tracking-wide">
-                Contact & Social Media
-              </h2>
-            </div>
-            <form onSubmit={handleContactSave} className="p-6 space-y-6">
-              {/* Contact Info */}
-              <div>
-                <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                  <Mail size={13} className="text-purple-400" /> Email Addresses
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {(["email1", "email2"] as const).map((k, i) => (
-                    <input
-                      key={k}
-                      type="email"
-                      value={contact[k]}
-                      onChange={(e) =>
-                        setContact((p) => ({ ...p, [k]: e.target.value }))
-                      }
-                      placeholder={`Email ${i + 1}`}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                    />
-                  ))}
+          <form onSubmit={handleContactSave} className="space-y-6">
+            {/* Row 1: Contact info + Social media */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Contact Info card */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                  <Mail size={15} className="text-purple-400" />
+                  <span className="text-xs font-semibold text-zinc-300 uppercase tracking-widest">
+                    Contact Info
+                  </span>
                 </div>
-              </div>
-              <div>
-                <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                  <Phone size={13} className="text-purple-400" /> Phone Numbers
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {(["phone1", "phone2"] as const).map((k, i) => (
+                <div className="p-5 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    {(["email1", "email2"] as const).map((k, i) => (
+                      <input
+                        key={k}
+                        type="email"
+                        value={contact[k]}
+                        onChange={(e) =>
+                          setContact((p) => ({ ...p, [k]: e.target.value }))
+                        }
+                        placeholder={`Email ${i + 1}`}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                      />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {(["phone1", "phone2"] as const).map((k, i) => (
+                      <input
+                        key={k}
+                        type="text"
+                        value={contact[k]}
+                        onChange={(e) =>
+                          setContact((p) => ({ ...p, [k]: e.target.value }))
+                        }
+                        placeholder={`Phone ${i + 1}`}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                      />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
                     <input
-                      key={k}
                       type="text"
-                      value={contact[k]}
+                      value={contact.studioAddress}
                       onChange={(e) =>
-                        setContact((p) => ({ ...p, [k]: e.target.value }))
+                        setContact((p) => ({
+                          ...p,
+                          studioAddress: e.target.value,
+                        }))
                       }
-                      placeholder={`Phone ${i + 1}`}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                      placeholder="Street address"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
                     />
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                  <MapPin size={13} className="text-purple-400" /> Studio
-                  Address
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    value={contact.studioAddress}
-                    onChange={(e) =>
-                      setContact((p) => ({
-                        ...p,
-                        studioAddress: e.target.value,
-                      }))
-                    }
-                    placeholder="Street address"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                  />
-                  <input
-                    type="text"
-                    value={contact.studioCity}
-                    onChange={(e) =>
-                      setContact((p) => ({ ...p, studioCity: e.target.value }))
-                    }
-                    placeholder="City, Country"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
-                  />
+                    <input
+                      type="text"
+                      value={contact.studioCity}
+                      onChange={(e) =>
+                        setContact((p) => ({
+                          ...p,
+                          studioCity: e.target.value,
+                        }))
+                      }
+                      placeholder="City, Country"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs text-zinc-500 mb-1.5">
+                      WhatsApp{" "}
+                      <span className="text-zinc-600">
+                        (digits only, e.g. 94777901129)
+                      </span>
+                    </p>
+                    <input
+                      type="text"
+                      value={contact.whatsapp}
+                      onChange={(e) =>
+                        setContact((p) => ({ ...p, whatsapp: e.target.value }))
+                      }
+                      placeholder="e.g. 94777901129"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-green-500/60 transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Social Links */}
-              <div>
-                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                  Social Media URLs
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Social Media card */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                  <Globe size={15} className="text-purple-400" />
+                  <span className="text-xs font-semibold text-zinc-300 uppercase tracking-widest">
+                    Social Media URLs
+                  </span>
+                </div>
+                <div className="p-5 grid grid-cols-2 gap-3">
                   {(
                     [
-                      { key: "instagram", label: "Instagram URL" },
-                      { key: "facebook", label: "Facebook URL" },
-                      { key: "tiktok", label: "TikTok URL" },
-                      { key: "youtube", label: "YouTube URL" },
-                      { key: "twitter", label: "Twitter / X URL" },
-                      { key: "linkedin", label: "LinkedIn URL" },
+                      { key: "instagram", label: "Instagram" },
+                      { key: "facebook", label: "Facebook" },
+                      { key: "tiktok", label: "TikTok" },
+                      { key: "youtube", label: "YouTube" },
+                      { key: "twitter", label: "Twitter / X" },
+                      { key: "linkedin", label: "LinkedIn" },
                     ] as { key: keyof typeof contact; label: string }[]
                   ).map(({ key, label }) => (
                     <input
@@ -686,38 +693,24 @@ export default function SettingsPage() {
                         setContact((p) => ({ ...p, [key]: e.target.value }))
                       }
                       placeholder={label}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
                     />
                   ))}
                 </div>
               </div>
+            </div>
 
-              {/* WhatsApp — Marketplace only */}
-              <div>
-                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
-                  WhatsApp Number
-                </p>
-                <p className="text-xs text-zinc-600 mb-3">
-                  Used for the &ldquo;Inquire on WhatsApp&rdquo; button in the
-                  Marketplace. Enter digits only (e.g. 94777901129).
-                </p>
-                <input
-                  type="text"
-                  value={contact.whatsapp}
-                  onChange={(e) =>
-                    setContact((p) => ({ ...p, whatsapp: e.target.value }))
-                  }
-                  placeholder="e.g. 94777901129"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-green-500/60 transition-all"
-                />
-              </div>
-
-              {/* Footer text */}
-              <div>
-                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
-                  Footer Text
-                </p>
-                <div className="space-y-3">
+            {/* Row 2: Footer text + Gallery quote */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Footer text card */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                  <ShoppingBag size={15} className="text-purple-400" />
+                  <span className="text-xs font-semibold text-zinc-300 uppercase tracking-widest">
+                    Footer Text
+                  </span>
+                </div>
+                <div className="p-5 space-y-3">
                   <textarea
                     value={contact.footerTagline}
                     onChange={(e) =>
@@ -727,8 +720,8 @@ export default function SettingsPage() {
                       }))
                     }
                     placeholder="Footer tagline / description"
-                    rows={2}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
+                    rows={3}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
                   />
                   <input
                     type="text"
@@ -740,20 +733,20 @@ export default function SettingsPage() {
                       }))
                     }
                     placeholder="Copyright name (e.g. Studio Nethma)"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
                   />
                 </div>
               </div>
 
-              {/* Gallery Quote */}
-              <div>
-                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
-                  Gallery Section Quote
-                </p>
-                <p className="text-xs text-zinc-600 mb-3">
-                  Displayed in the scrolling gallery section on the home page.
-                </p>
-                <div className="space-y-3">
+              {/* Gallery Quote card */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+                  <Globe size={15} className="text-purple-400" />
+                  <span className="text-xs font-semibold text-zinc-300 uppercase tracking-widest">
+                    Gallery Quote
+                  </span>
+                </div>
+                <div className="p-5 space-y-3">
                   <textarea
                     value={contact.galleryQuote}
                     onChange={(e) =>
@@ -763,8 +756,8 @@ export default function SettingsPage() {
                       }))
                     }
                     placeholder="e.g. Photography is the story I fail to put into words."
-                    rows={2}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
+                    rows={3}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all resize-none"
                   />
                   <input
                     type="text"
@@ -776,18 +769,18 @@ export default function SettingsPage() {
                       }))
                     }
                     placeholder="Quote author (e.g. Destin Sparks)"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-purple-500/60 transition-all"
                   />
                 </div>
               </div>
+            </div>
 
-              <Feedback msg={contactMsg} />
-              <SubmitButton
-                loading={contactLoading}
-                label="Save Contact & Social"
-              />
-            </form>
-          </div>
+            <Feedback msg={contactMsg} />
+            <SubmitButton
+              loading={contactLoading}
+              label="Save Contact & Social"
+            />
+          </form>
         )}
 
         {/* Security note — only on account tab */}
