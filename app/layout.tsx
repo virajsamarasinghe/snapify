@@ -19,7 +19,7 @@ const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 const PHOTOGRAPHER_NAME = "Jagath Kalupahana";
 const SITE_NAME = "Studio Nethma";
 const DESCRIPTION =
-  "Jagath Kalupahana — Sri Lanka's best award-winning photographer, recognised for outstanding wildlife, wedding, sports and fine-art photography. Senior Photographer & Owner of Studio Nethma. 12+ years experience, 50+ global exhibitions, multiple international photography awards.";
+  "Studio Nethma is Sri Lanka's premier professional photography company, led by award-winning Senior Photographer Jagath Kalupahana. Our expert team of photographers specialises in wedding photography, wildlife, sports, events, graduation ceremonies, batch photo days and fine-art photography — each with their own unique theme and creative vision. 12+ years experience, 50+ global exhibitions, multiple international awards.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -73,6 +73,15 @@ export const metadata: Metadata = {
     "most awarded photographer Sri Lanka",
     "professional wildlife photographer Sri Lanka",
     "nature photographer Sri Lanka",
+    "photography company Sri Lanka",
+    "photography studio Sri Lanka",
+    "professional photography team Sri Lanka",
+    "wedding photography company Sri Lanka",
+    "photography company Ratmalana",
+    "photography studio Colombo",
+    "team of photographers Sri Lanka",
+    "event photography company Sri Lanka",
+    "Studio Nethma photography",
   ],
   authors: [{ name: PHOTOGRAPHER_NAME, url: SITE_URL }],
   creator: PHOTOGRAPHER_NAME,
@@ -187,16 +196,20 @@ const jsonLd = {
       email: "studionethma@yahoo.com",
     },
     {
-      "@type": "LocalBusiness",
+      "@type": ["LocalBusiness", "ProfessionalService"],
       "@id": `${SITE_URL}/#business`,
       name: SITE_NAME,
+      legalName: "Studio Nethma",
       url: SITE_URL,
-      description: DESCRIPTION,
+      description:
+        "Studio Nethma is a professional photography company in Sri Lanka with a dedicated team of photographers. Specialising in wedding photography, wildlife, sports, cricket, corporate events, university graduations, batch photo days and fine-art photography. Each photographer brings a unique theme, style and creative vision.",
       image: `${SITE_URL}/og-image.jpg`,
       telephone: "+94777901129",
       email: "studionethma@yahoo.com",
       founder: { "@id": `${SITE_URL}/#person` },
       employee: { "@id": `${SITE_URL}/#person` },
+      numberOfEmployees: { "@type": "QuantitativeValue", minValue: 2 },
+      slogan: "Capturing Moments, Creating Art",
       address: {
         "@type": "PostalAddress",
         streetAddress: "No 144, Raja Mawatha",
@@ -212,11 +225,16 @@ const jsonLd = {
       priceRange: "$$",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
-        name: "Photography Services",
+        name: "Photography Services — Studio Nethma",
         itemListElement: [
           {
             "@type": "Offer",
-            itemOffered: { "@type": "Service", name: "Wedding Photography" },
+            itemOffered: {
+              "@type": "Service",
+              name: "Wedding Photography",
+              description:
+                "Full wedding coverage by a dedicated team of photographers with different styles and visions",
+            },
           },
           {
             "@type": "Offer",
@@ -224,7 +242,10 @@ const jsonLd = {
           },
           {
             "@type": "Offer",
-            itemOffered: { "@type": "Service", name: "Event Photography" },
+            itemOffered: {
+              "@type": "Service",
+              name: "Event Photography & Coverage",
+            },
           },
           {
             "@type": "Offer",
@@ -267,6 +288,20 @@ const jsonLd = {
             itemOffered: {
               "@type": "Service",
               name: "Corporate Event Coverage",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "School Event Photography",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Nature & Landscape Photography",
             },
           },
         ],
