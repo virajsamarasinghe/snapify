@@ -11,7 +11,7 @@ import HomePageWrapper from "./components/HomePageWrapper";
 // Ensure Product model is registered for populate
 import "@/models/Product";
 
-const SITE_URL = "https://snapify-sooty.vercel.app";
+const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
 export const metadata: Metadata = {
   title: "Jagath Kalupahana | Professional Photographer Sri Lanka",

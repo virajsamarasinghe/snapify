@@ -23,13 +23,15 @@ export const metadata: Metadata = {
     "wildlife photography prints",
     "photography marketplace",
   ],
-  alternates: { canonical: "https://snapify-sooty.vercel.app/marketplace" },
+  alternates: {
+    canonical: "https://www.jagathkalupahanaphotography.com/marketplace",
+  },
   openGraph: {
     type: "website",
     title: "Buy Fine-Art Photography Prints | Jagath Kalupahana Marketplace",
     description:
       "Limited edition fine-art photography prints. Weddings, wildlife, events, portraits. Worldwide shipping. By award-winning Sri Lankan photographer Jagath Kalupahana.",
-    url: "https://snapify-sooty.vercel.app/marketplace",
+    url: "https://www.jagathkalupahanaphotography.com/marketplace",
     images: [
       {
         url: "/og-image.jpg",
@@ -86,7 +88,7 @@ export default async function MarketplacePage() {
     count: categoryCounts[doc._id.toString()] || 0,
   }));
 
-  const SITE_URL = "https://snapify-sooty.vercel.app";
+  const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
   const storeSchema = {
     "@context": "https://schema.org",

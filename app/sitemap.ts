@@ -2,7 +2,7 @@ import fs from "fs";
 import type { MetadataRoute } from "next";
 import path from "path";
 
-const SITE_URL = "https://snapify-sooty.vercel.app";
+const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
 function getHeroImages(): string[] {
   try {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import WorkClient from "./WorkClient";
 
-const SITE_URL = "https://snapify-sooty.vercel.app";
+const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
 export const metadata: Metadata = {
   title: "Portfolio — Selected Works & Fine Art",

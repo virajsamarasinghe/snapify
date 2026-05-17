@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://snapify-sooty.vercel.app";
+const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 const PHOTOGRAPHER_NAME = "Jagath Kalupahana";
 const SITE_NAME = "JK Photography";
 const DESCRIPTION =

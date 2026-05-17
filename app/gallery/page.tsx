@@ -5,7 +5,7 @@ import Category from "@/models/Category";
 import type { Metadata } from "next";
 import GalleryClient from "./GalleryClient";
 
-const SITE_URL = "https://snapify-sooty.vercel.app";
+const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
 export const metadata: Metadata = {
   title: "Photography Gallery — Weddings, Wildlife, Events & More",
