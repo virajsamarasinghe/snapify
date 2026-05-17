@@ -17,9 +17,9 @@ const geistMono = Geist_Mono({
 
 const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 const PHOTOGRAPHER_NAME = "Jagath Kalupahana";
-const SITE_NAME = "JK Photography";
+const SITE_NAME = "Studio Nethma";
 const DESCRIPTION =
-  "Award-winning professional photographer Jagath Kalupahana — specialising in weddings, wildlife, events, portraits and fine-art photography in Sri Lanka. 12+ years experience, 50+ global exhibitions.";
+  "Jagath Kalupahana — Sri Lanka's best award-winning photographer, recognised for outstanding wildlife, wedding, sports and fine-art photography. Senior Photographer & Owner of Studio Nethma. 12+ years experience, 50+ global exhibitions, multiple international photography awards.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -36,6 +36,10 @@ export const metadata: Metadata = {
     "professional photographer",
     "Jagath Kalupahana",
     "JK photography",
+    "Studio Nethma",
+    "Ratmalana photographer",
+    "Colombo wedding photographer",
+    "Sri Lanka wildlife photographer",
     "portrait photographer",
     "event photographer",
     "school event photographer",
@@ -45,6 +49,30 @@ export const metadata: Metadata = {
     "photography portfolio",
     "buy photography prints",
     "limited edition photo prints",
+    "best photographer in Sri Lanka",
+    "professional photographer Ratmalana",
+    "cricket photographer Sri Lanka",
+    "sports photographer Sri Lanka",
+    "university graduation photographer",
+    "graduation ceremony photographer Sri Lanka",
+    "batch photo day photographer",
+    "convocation photographer Sri Lanka",
+    "event coverage photographer Sri Lanka",
+    "corporate event photographer",
+    "university batch photo Sri Lanka",
+    "sports event photographer Sri Lanka",
+    "best photographer Sri Lanka",
+    "best wildlife photographer Sri Lanka",
+    "award winning photographer Sri Lanka",
+    "awarded photographer Sri Lanka",
+    "international award winning photographer",
+    "best wedding photographer Sri Lanka",
+    "top photographer Sri Lanka",
+    "Sri Lanka photography awards",
+    "wildlife photography Sri Lanka award",
+    "most awarded photographer Sri Lanka",
+    "professional wildlife photographer Sri Lanka",
+    "nature photographer Sri Lanka",
   ],
   authors: [{ name: PHOTOGRAPHER_NAME, url: SITE_URL }],
   creator: PHOTOGRAPHER_NAME,
@@ -106,6 +134,163 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
+      name: PHOTOGRAPHER_NAME,
+      url: SITE_URL,
+      jobTitle: "Senior Photographer & Owner",
+      worksFor: { "@id": `${SITE_URL}/#business` },
+      founder: { "@id": `${SITE_URL}/#business` },
+      hasOccupation: {
+        "@type": "Occupation",
+        name: "Senior Photographer",
+        occupationLocation: { "@type": "Country", name: "Sri Lanka" },
+        skills:
+          "Wedding Photography, Wildlife Photography, Portrait Photography, Event Photography, Fine Art Photography, Cricket Photography, Sports Photography, University Graduation Photography, Batch Photo Day Photography, Convocation Photography, Corporate Event Photography, Event Coverage Photography, Nature Photography",
+      },
+      award: [
+        "International Photography Excellence Award 2024",
+        "Shadows & Light Solo Exhibition 2024",
+        "Contemporary Visions Group Exhibition 2023",
+        "Wildlife Series Featured Photographer 2023",
+        "Architecture Category Winner 2022",
+        "Urban Narratives Breakthrough Exhibition 2021",
+      ],
+      knowsAbout: [
+        "Wildlife Photography",
+        "Wedding Photography",
+        "Sports Photography",
+        "Cricket Photography",
+        "Nature Photography",
+        "Fine Art Photography",
+        "University Graduation Photography",
+        "Event Coverage Photography",
+      ],
+      description: DESCRIPTION,
+      image: `${SITE_URL}/og-image.jpg`,
+      sameAs: [
+        "https://www.instagram.com/jagathkalupahana_photography",
+        "https://www.facebook.com/share/1AaFHJ5cJj/",
+        "https://www.tiktok.com/@j_kalupahana_photography",
+      ],
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "No 144, Raja Mawatha",
+        addressLocality: "Ratmalana",
+        addressCountry: "LK",
+      },
+      telephone: "+94777901129",
+      email: "studionethma@yahoo.com",
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": `${SITE_URL}/#business`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: DESCRIPTION,
+      image: `${SITE_URL}/og-image.jpg`,
+      telephone: "+94777901129",
+      email: "studionethma@yahoo.com",
+      founder: { "@id": `${SITE_URL}/#person` },
+      employee: { "@id": `${SITE_URL}/#person` },
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "No 144, Raja Mawatha",
+        addressLocality: "Ratmalana",
+        addressCountry: "LK",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 6.8211,
+        longitude: 79.8834,
+      },
+      openingHours: "Mo-Sa 09:00-18:00",
+      priceRange: "$$",
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Photography Services",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "Wedding Photography" },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "Wildlife Photography" },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "Event Photography" },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "Portrait Photography" },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "Fine Art Photography" },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Cricket & Sports Photography",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "University Graduation Photography",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Batch Photo Day Photography",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Convocation Photography",
+            },
+          },
+          {
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Service",
+              name: "Corporate Event Coverage",
+            },
+          },
+        ],
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      description: DESCRIPTION,
+      publisher: { "@id": `${SITE_URL}/#person` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${SITE_URL}/gallery?category={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -113,6 +298,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
