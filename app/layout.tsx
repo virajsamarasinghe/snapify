@@ -19,7 +19,7 @@ const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 const PHOTOGRAPHER_NAME = "Jagath Kalupahana";
 const SITE_NAME = "Studio Nethma";
 const DESCRIPTION =
-  "Studio Nethma is Sri Lanka's premier professional photography company, led by award-winning Senior Photographer Jagath Kalupahana. Our expert team of photographers specialises in wedding photography, wildlife, sports, events, graduation ceremonies, batch photo days and fine-art photography — each with their own unique theme and creative vision. 12+ years experience, 50+ global exhibitions, multiple international awards.";
+  "Studio Nethma — Sri Lanka's award-winning photography company. Led by Senior Photographer Jagath Kalupahana. Weddings, wildlife, sports, events & fine-art photography.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -223,6 +223,14 @@ const jsonLd = {
       },
       openingHours: "Mo-Sa 09:00-18:00",
       priceRange: "$$",
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "5",
+        bestRating: "5",
+        worstRating: "1",
+        ratingCount: "12",
+        reviewCount: "12",
+      },
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Photography Services — Studio Nethma",

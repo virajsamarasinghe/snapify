@@ -301,50 +301,58 @@ export default async function Home() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "What types of photography does Jagath Kalupahana specialise in?",
+        name: "What is Studio Nethma?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Jagath Kalupahana specialises in wedding photography, wildlife photography, event coverage (school events, university events, army events), portrait photography, and fine-art photography across Sri Lanka and globally.",
+          text: "Studio Nethma is a professional photography company based in Ratmalana, Sri Lanka. Founded and led by award-winning Senior Photographer Jagath Kalupahana, Studio Nethma has a dedicated team of photographers each with their own unique theme and creative vision, covering weddings, wildlife, sports, events, graduations and fine-art photography.",
         },
       },
       {
         "@type": "Question",
-        name: "How many years of photography experience does Jagath Kalupahana have?",
+        name: "What types of photography does Studio Nethma specialise in?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Jagath Kalupahana has over 12 years of professional photography experience and has participated in 50+ global exhibitions.",
+          text: "Studio Nethma specialises in wedding photography, wildlife photography, cricket and sports photography, university graduation and batch photo day photography, corporate and school event coverage, portrait photography, and fine-art photography across Sri Lanka and globally.",
         },
       },
       {
         "@type": "Question",
-        name: "Can I purchase fine-art photography prints?",
+        name: "Who is Jagath Kalupahana?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes. Limited edition fine-art prints are available to purchase directly through the marketplace on this website. Worldwide shipping is available.",
+          text: "Jagath Kalupahana is the founder, owner and Senior Photographer of Studio Nethma. He is an award-winning photographer with over 12 years of professional experience, 50+ global exhibitions, and multiple international photography awards including the International Photography Excellence Award 2024.",
         },
       },
       {
         "@type": "Question",
-        name: "Where is Jagath Kalupahana based and does he travel for shoots?",
+        name: "Does Studio Nethma have a team of photographers?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Jagath Kalupahana is based in Sri Lanka and is available for photography assignments both locally and internationally.",
+          text: "Yes. Studio Nethma has a team of professional photographers, each specialising in different styles, themes and visions. This allows the studio to cover multiple events simultaneously and offer diverse photography styles to clients.",
         },
       },
       {
         "@type": "Question",
-        name: "How do I book Jagath Kalupahana for a wedding or event?",
+        name: "How do I book Studio Nethma for a wedding or event?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "You can reach out through the contact form on this website or via Instagram and Facebook. Early booking is recommended for weddings.",
+          text: "You can contact Studio Nethma via the contact form on this website, by email at studionethma@yahoo.com, or by phone at +94 777 901 129. Early booking is strongly recommended for weddings and large events.",
         },
       },
       {
         "@type": "Question",
-        name: "What camera equipment does Jagath Kalupahana use?",
+        name: "Can I purchase photography prints from Studio Nethma?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Jagath Kalupahana uses professional-grade camera systems to deliver high-resolution images suitable for large-format printing and exhibition.",
+          text: "Yes. Limited edition fine-art photography prints by Jagath Kalupahana are available to purchase through the Studio Nethma marketplace on this website. Worldwide shipping is available.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is Studio Nethma available for events outside Sri Lanka?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. Studio Nethma and Jagath Kalupahana are available for photography assignments both within Sri Lanka and internationally.",
         },
       },
     ],
