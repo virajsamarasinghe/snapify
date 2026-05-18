@@ -80,6 +80,8 @@ const navigationLinks = [
   { name: "Gallery", href: "/gallery" },
   { name: "Marketplace", href: "/marketplace" },
   { name: "Contact", href: "#contact" },
+  { name: "Terms of Service", href: "/terms" },
+  { name: "Privacy Policy", href: "/privacy" },
 ];
 
 export default function Footer() {
