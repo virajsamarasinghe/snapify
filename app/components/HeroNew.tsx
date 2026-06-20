@@ -234,7 +234,8 @@ export default function HeroNew({
   return (
     <section
       ref={heroRef}
-      className="relative w-full h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] overflow-hidden"
+      className="relative w-full bg-black overflow-hidden"
+      style={{ height: "100dvh", minHeight: "100dvh" }}
     >
       {/* Overlay for entrance animation */}
       <div className="hero-overlay absolute inset-0 bg-[#0a0a0a] z-50 pointer-events-none" />
@@ -290,50 +291,50 @@ export default function HeroNew({
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="relative h-full px-8 lg:px-20">
-        {/* Full Background Images */}
-        <div className="absolute inset-0">
-          {featuredImages.map((img, index) => (
-            <div
-              key={index}
-              className={`absolute inset-0 transition-all duration-1000 ${
-                index === currentImage ? "opacity-100" : "opacity-0"
+      {/* Full Background Images */}
+      <div className="absolute inset-0">
+        {featuredImages.map((img, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentImage ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <Image
+              src={img.src}
+              alt={img.title || "Hero Image"}
+              fill
+              className={`object-cover transition-transform duration-[8000ms] ${
+                index === currentImage ? "scale-110" : "scale-100"
               }`}
-            >
-              <div className="relative w-full h-full overflow-hidden">
-                <Image
-                  src={img.src}
-                  alt={img.title || "Hero Image"}
-                  fill
-                  className={`object-cover transition-transform duration-[8000ms] ${
-                    index === currentImage ? "scale-110" : "scale-100"
-                  }`}
-                  priority={index === 0}
-                />
-              </div>
-              {/* Subtle bottom gradient for text readability only */}
-              <div className="absolute bottom-0 left-0 right-0 h-[70vh] bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-            </div>
-          ))}
-        </div>
+              priority={index === 0}
+              sizes="100vw"
+            />
+          </div>
+        ))}
 
+        {/* Mobile full-screen overlay \u2014 prevents bright image center showing */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/95 lg:hidden" />
+        {/* Desktop overlay \u2014 subtle bottom fade only */}
+        <div className="absolute bottom-0 left-0 right-0 h-[70vh] bg-gradient-to-t from-black/90 via-black/40 to-transparent hidden lg:block" />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative h-full lg:px-20">
         {/* Hero Text - Positioned Bottom Left */}
-        <div className="absolute bottom-12 left-6 min-[380px]:left-8 lg:left-20 z-20 text-left max-w-4xl pr-4">
-          <div className="mb-4">
-            <p className="hero-subtitle text-sm min-[380px]:text-lg lg:text-xl text-white/60 uppercase tracking-[0.2em] min-[380px]:tracking-[0.3em] font-light">
+        <div className="absolute bottom-8 sm:bottom-12 left-5 sm:left-8 lg:left-20 z-20 text-left w-[calc(100%-6rem)] sm:w-auto sm:max-w-2xl lg:max-w-4xl">
+          <div className="mb-2 sm:mb-4">
+            <p className="hero-subtitle text-xs sm:text-base lg:text-xl text-white/70 uppercase tracking-[0.25em] font-light">
               Visual Storyteller
             </p>
           </div>
 
-          <h1 className="hero-title text-4xl min-[380px]:text-[3.5rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-bold leading-[1.1] min-[380px]:leading-[0.9] mb-4 min-[380px]:mb-6">
+          <h1 className="hero-title text-[2.6rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[7.5rem] font-bold leading-[0.95] mb-3 sm:mb-5">
             {Array.from("CAPTURING").map((char, i) => (
               <span
                 key={i}
                 className="hero-title-char inline-block text-white"
-                style={{
-                  textShadow: "0 0 80px rgba(255,255,255,0.5)",
-                }}
+                style={{ textShadow: "0 0 80px rgba(255,255,255,0.5)" }}
               >
                 {char === " " ? "\u00A0" : char}
               </span>
@@ -356,7 +357,7 @@ export default function HeroNew({
             ))}
           </h1>
 
-          <p className="hero-description text-sm min-[380px]:text-base sm:text-lg md:text-xl text-white/70 max-w-xl mb-6 min-[380px]:mb-8 leading-relaxed">
+          <p className="hero-description text-xs sm:text-base lg:text-xl text-white/70 max-w-sm sm:max-w-lg mb-5 sm:mb-7 leading-relaxed">
             Through my lens, I transform fleeting instants into timeless art,
             revealing beauty in the raw, unscripted moments of life.
           </p>
@@ -372,13 +373,13 @@ export default function HeroNew({
                   });
                 }
               }}
-              className="hero-cta group relative inline-flex items-center justify-center gap-4 bg-white text-black px-8 py-4 rounded-full text-lg font-medium overflow-hidden cursor-pointer z-50"
+              className="hero-cta group relative inline-flex items-center justify-center gap-3 bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-full text-sm sm:text-lg font-medium overflow-hidden cursor-pointer z-50"
             >
               <span className="relative z-10 whitespace-nowrap">
                 View My Portfolio
               </span>
               <svg
-                className="w-5 h-5 transform group-hover:translate-x-1 transition-transform relative z-10"
+                className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform relative z-10"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -395,19 +396,19 @@ export default function HeroNew({
           </div>
         </div>
 
-        {/* Image Counter / Indicators - Bottom Right on Desktop, Top Right on Mobile */}
-        <div className="image-counter absolute top-28 right-8 lg:top-auto lg:bottom-12 lg:right-20 flex flex-col items-end gap-4 z-30">
-          {/* Current Image Category Display */}
-          <div className="mb-4 text-right">
-            <p className="text-white/40 text-xs min-[380px]:text-sm uppercase tracking-widest mb-1">
+        {/* Image Indicators \u2014 bottom-right desktop, bottom-right mobile (above text area) */}
+        <div className="image-counter absolute bottom-8 sm:bottom-12 right-5 sm:right-8 lg:right-20 flex flex-col items-end gap-3 z-30">
+          {/* Category label \u2014 desktop only */}
+          <div className="hidden lg:block mb-2 text-right">
+            <p className="text-white/40 text-sm uppercase tracking-widest mb-1">
               Current Collection
             </p>
-            <p className="text-white text-lg min-[380px]:text-xl font-light tracking-wide">
+            <p className="text-white text-xl font-light tracking-wide">
               {featuredImages[currentImage]?.category || "Featured"}
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {featuredImages.map((img, index) => (
               <button
                 key={index}
@@ -416,10 +417,10 @@ export default function HeroNew({
                 aria-label={`View ${img.title || "Image"}`}
               >
                 <div
-                  className={`h-1 rounded-full transition-all duration-500 ${
+                  className={`h-[3px] rounded-full transition-all duration-500 ${
                     index === currentImage
-                      ? "bg-white w-16"
-                      : "bg-white/30 w-8 hover:w-12 hover:bg-white/50"
+                      ? "bg-white w-10 sm:w-16"
+                      : "bg-white/40 w-5 sm:w-8 hover:w-8 hover:bg-white/60"
                   }`}
                 />
               </button>
