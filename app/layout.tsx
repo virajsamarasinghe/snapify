@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import PageTransition from "./components/PageTransition";
 import SmoothScroll from "./components/SmoothScroll";
 import { PageTransitionProvider } from "./contexts/PageTransitionContext";
 import "./globals.css";
+
+const GA_ID = "G-C8L8TLDDD6";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -344,6 +347,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Google Analytics 4 */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}', { send_page_view: true });
+          `}
+        </Script>
         <PageTransitionProvider>
           <PageTransition />
           <SmoothScroll>{children}</SmoothScroll>
