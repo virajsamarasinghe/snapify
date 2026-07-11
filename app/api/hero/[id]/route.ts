@@ -1,11 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Hero from "@/models/Hero";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     await dbConnect();
     const resolvedParams = await params;
@@ -15,7 +21,7 @@ export async function DELETE(
     if (!hero) {
       return NextResponse.json(
         { error: "Hero image not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -23,7 +29,7 @@ export async function DELETE(
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Failed to delete hero image" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

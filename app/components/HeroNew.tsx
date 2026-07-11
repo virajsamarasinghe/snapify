@@ -5,9 +5,15 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import HomeNavbar from "./HomeNavbar";
 
+interface HeroImage {
+  src: string;
+  title?: string;
+  category?: string;
+}
+
 interface HeroNewProps {
   animationReady?: boolean;
-  heroImages?: any[];
+  heroImages?: HeroImage[];
 }
 
 export default function HeroNew({
@@ -304,7 +310,7 @@ export default function HeroNew({
               src={img.src}
               alt={img.title || "Hero Image"}
               fill
-              className={`object-cover transition-transform duration-[8000ms] ${
+              className={`object-cover transition-transform duration-8000 ${
                 index === currentImage ? "scale-110" : "scale-100"
               }`}
               priority={index === 0}
@@ -314,9 +320,9 @@ export default function HeroNew({
         ))}
 
         {/* Mobile full-screen overlay \u2014 prevents bright image center showing */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/95 lg:hidden" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/95 lg:hidden" />
         {/* Desktop overlay \u2014 subtle bottom fade only */}
-        <div className="absolute bottom-0 left-0 right-0 h-[70vh] bg-gradient-to-t from-black/90 via-black/40 to-transparent hidden lg:block" />
+        <div className="absolute bottom-0 left-0 right-0 h-[70vh] bg-linear-to-t from-black/90 via-black/40 to-transparent hidden lg:block" />
       </div>
 
       {/* Main Content */}
@@ -391,7 +397,7 @@ export default function HeroNew({
                   d="M17 8l4 4m0 0l-4 4m4-4H3"
                 />
               </svg>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+              <div className="absolute inset-0 bg-linear-to-r from-purple-600 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
             </button>
           </div>
         </div>

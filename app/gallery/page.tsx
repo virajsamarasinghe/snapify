@@ -61,41 +61,10 @@ const gallerySchema = {
       },
     ],
   },
-  hasPart: [
-    {
-      "@type": "ImageGallery",
-      name: "Wedding Photography",
-      url: `${SITE_URL}/gallery?category=Weddings`,
-    },
-    {
-      "@type": "ImageGallery",
-      name: "Wildlife Photography",
-      url: `${SITE_URL}/gallery?category=Wildlife`,
-    },
-    {
-      "@type": "ImageGallery",
-      name: "Events Coverage",
-      url: `${SITE_URL}/gallery?category=Events%20Coverage`,
-    },
-    {
-      "@type": "ImageGallery",
-      name: "University Events",
-      url: `${SITE_URL}/gallery?category=University`,
-    },
-    {
-      "@type": "ImageGallery",
-      name: "School Events",
-      url: `${SITE_URL}/gallery?category=School%20Events`,
-    },
-    {
-      "@type": "ImageGallery",
-      name: "World Photography",
-      url: `${SITE_URL}/gallery?category=World%20Photography`,
-    },
-  ],
+  hasPart: [] as { "@type": string; name: string; url: string }[],
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function GalleryPage() {
   await dbConnect();
@@ -146,7 +115,16 @@ export default async function GalleryPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(gallerySchema) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            ...gallerySchema,
+            hasPart: galleryCategories.map((cat) => ({
+              "@type": "ImageGallery",
+              name: `${cat.name} Photography`,
+              url: `${SITE_URL}/gallery?category=${encodeURIComponent(cat.name)}`,
+            })),
+          }),
+        }}
       />
       <GalleryClient galleryCategories={galleryCategories} />
     </>

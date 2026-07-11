@@ -337,7 +337,7 @@ const AboutNew = ({
                 />
               </div>
             ))}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
 
             {/* iPhone-style Curved Camera Zoom Control - Right Side */}
             <div

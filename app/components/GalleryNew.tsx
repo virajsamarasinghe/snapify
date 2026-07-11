@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import { CustomEase } from "gsap/dist/CustomEase";
+import { useEffect, useRef, useState } from "react";
 import items from "./items";
 
 let SplitType: any;
@@ -35,7 +34,10 @@ export default function GalleryNew() {
     return () => {
       if (containerRef.current) {
         containerRef.current.removeEventListener("mousedown", handleMouseDown);
-        containerRef.current.removeEventListener("touchstart", handleTouchStart);
+        containerRef.current.removeEventListener(
+          "touchstart",
+          handleTouchStart,
+        );
       }
 
       window.removeEventListener("mousemove", handleMouseMove);
@@ -90,7 +92,7 @@ export default function GalleryNew() {
           x: e.clientX - 50,
           y: e.clientY - 50,
           duration: 0.3,
-          ease: "power2.out"
+          ease: "power2.out",
         });
       }
     };
@@ -109,7 +111,11 @@ export default function GalleryNew() {
     stateRef.current.titleSplit = new SplitType(projectTitleElement, {
       types: "chars",
     });
-    gsap.set(stateRef.current.titleSplit.chars, { y: "120%", opacity: 0, rotation: 10 });
+    gsap.set(stateRef.current.titleSplit.chars, {
+      y: "120%",
+      opacity: 0,
+      rotation: 10,
+    });
   };
 
   const animateTitleIn = () => {
@@ -150,23 +156,23 @@ export default function GalleryNew() {
 
     const startCol = Math.floor(
       (-state.currentX - viewWidth / 2 + (movingRight ? directionBufferX : 0)) /
-        (itemWidth + itemGap)
+        (itemWidth + itemGap),
     );
     const endCol = Math.ceil(
       (-state.currentX +
         viewWidth * 1.5 +
         (!movingRight ? directionBufferX : 0)) /
-        (itemWidth + itemGap)
+        (itemWidth + itemGap),
     );
     const startRow = Math.floor(
       (-state.currentY - viewHeight / 2 + (movingDown ? directionBufferY : 0)) /
-        (itemHeight + itemGap)
+        (itemHeight + itemGap),
     );
     const endRow = Math.ceil(
       (-state.currentY +
         viewHeight * 1.5 +
         (!movingDown ? directionBufferY : 0)) /
-        (itemHeight + itemGap)
+        (itemHeight + itemGap),
     );
 
     const currentItems = new Set();
@@ -191,22 +197,26 @@ export default function GalleryNew() {
 
         const itemNum = (Math.abs(row * columns + col) % itemCount) + 1;
         const imgContainer = document.createElement("div");
-        imgContainer.className = "relative w-full h-full rounded-xl overflow-hidden bg-gradient-to-br from-purple-900/20 to-pink-900/20";
+        imgContainer.className =
+          "relative w-full h-full rounded-xl overflow-hidden bg-linear-to-br from-purple-900/20 to-pink-900/20";
 
         const img = document.createElement("img");
         img.src = `/img${itemNum}.jpg`;
         img.alt = `Image ${itemNum}`;
-        img.className = "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110";
+        img.className =
+          "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110";
         imgContainer.appendChild(img);
 
         // Add gradient overlay
         const overlay = document.createElement("div");
-        overlay.className = "absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500";
+        overlay.className =
+          "absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500";
         imgContainer.appendChild(overlay);
 
         // Add title on hover
         const titleDiv = document.createElement("div");
-        titleDiv.className = "absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500";
+        titleDiv.className =
+          "absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500";
         titleDiv.innerHTML = `
           <p class="text-white font-bold text-sm">${items[(itemNum - 1) % items.length]}</p>
           <p class="text-white/60 text-xs">Click to view</p>
@@ -215,7 +225,8 @@ export default function GalleryNew() {
 
         // Add border effect
         const border = document.createElement("div");
-        border.className = "absolute inset-0 rounded-xl border-2 border-white/0 group-hover:border-white/30 transition-colors duration-500";
+        border.className =
+          "absolute inset-0 rounded-xl border-2 border-white/0 group-hover:border-white/30 transition-colors duration-500";
         imgContainer.appendChild(border);
 
         item.appendChild(imgContainer);
@@ -287,7 +298,8 @@ export default function GalleryNew() {
     overlay.classList.add("active");
 
     const expandedItem = document.createElement("div");
-    expandedItem.className = "fixed z-[100] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl cursor-pointer";
+    expandedItem.className =
+      "fixed z-[100] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl cursor-pointer";
     expandedItem.style.width = `${itemWidth}px`;
     expandedItem.style.height = `${itemHeight}px`;
 
@@ -301,7 +313,8 @@ export default function GalleryNew() {
 
     // Add gradient overlay to expanded item
     const gradientOverlay = document.createElement("div");
-    gradientOverlay.className = "absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 mix-blend-overlay";
+    gradientOverlay.className =
+      "absolute inset-0 bg-linear-to-br from-purple-500/20 to-pink-500/20 mix-blend-overlay";
     imgContainer.appendChild(gradientOverlay);
 
     expandedItem.appendChild(imgContainer);
@@ -343,7 +356,7 @@ export default function GalleryNew() {
         y: 0,
         duration: 1,
         ease: "hop",
-      }
+      },
     );
   };
 
@@ -419,7 +432,7 @@ export default function GalleryNew() {
       const now = Date.now();
       const distMoved = Math.sqrt(
         Math.pow(state.currentX - state.lastX, 2) +
-          Math.pow(state.currentY - state.lastY, 2)
+          Math.pow(state.currentY - state.lastY, 2),
       );
 
       if (distMoved > 100 || now - state.lastUpdateTime > 120) {
@@ -589,27 +602,30 @@ export default function GalleryNew() {
 
       {/* Gallery Container */}
       <div
-        className="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] cursor-none select-none"
+        className="relative w-screen h-screen overflow-hidden bg-linear-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] cursor-none select-none"
         ref={containerRef}
         style={{
-          cursor: stateRef.current.isExpanded ? 'auto' : 'none',
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          MozUserSelect: 'none',
-          msUserSelect: 'none'
+          cursor: stateRef.current.isExpanded ? "auto" : "none",
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
         }}
         onDragStart={(e) => e.preventDefault()}
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-[0.03]">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px)`,
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px)`,
+            }}
+          />
         </div>
 
         {/* Floating Background Elements */}
-        <div className="absolute top-20 left-20 w-60 h-60 rounded-full bg-gradient-to-br from-purple-500/5 to-pink-500/5 blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-gradient-to-br from-blue-500/5 to-green-500/5 blur-3xl animate-pulse" />
+        <div className="absolute top-20 left-20 w-60 h-60 rounded-full bg-linear-to-br from-purple-500/5 to-pink-500/5 blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 rounded-full bg-linear-to-br from-blue-500/5 to-green-500/5 blur-3xl animate-pulse" />
 
         {/* Canvas for Gallery Items */}
         <div className="absolute will-change-transform" ref={canvasRef}></div>
@@ -622,7 +638,10 @@ export default function GalleryNew() {
       </div>
 
       {/* Project Title */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none z-[10000]" ref={projectTitleRef}>
+      <div
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none z-[10000]"
+        ref={projectTitleRef}
+      >
         <p className="relative h-[60px] text-white [clip-path:polygon(0_0,100%_0,100%_100%,0%_100%)] overflow-hidden"></p>
       </div>
 
@@ -669,7 +688,7 @@ export default function GalleryNew() {
         .char {
           position: relative;
           display: inline-block;
-          font-family: 'Inter', sans-serif;
+          font-family: "Inter", sans-serif;
           font-size: 48px;
           font-weight: bold;
           letter-spacing: -0.02rem;

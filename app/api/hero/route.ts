@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Hero from "@/models/Hero";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
@@ -10,12 +12,16 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch hero images" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     await dbConnect();
     const data = await request.json();
@@ -24,7 +30,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Failed to create hero image" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

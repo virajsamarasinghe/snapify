@@ -146,7 +146,7 @@ export default function MarketplaceClient({
       {/* Hero Section */}
       <section
         ref={heroRef}
-        className="relative min-h-[60vh] bg-gradient-to-b from-black to-[#0a0a0a] flex items-center justify-center mt-20"
+        className="relative min-h-[60vh] bg-linear-to-b from-black to-[#0a0a0a] flex items-center justify-center mt-20"
       >
         <div className="container mx-auto px-6 lg:px-12 text-center">
           <p className="hero-text text-white/60 text-sm uppercase tracking-[0.3em] mb-4">
@@ -210,7 +210,7 @@ export default function MarketplaceClient({
       </section>
 
       {/* Artworks Grid */}
-      <section className="bg-gradient-to-b from-[#0a0a0a] to-black py-20">
+      <section className="bg-linear-to-b from-[#0a0a0a] to-black py-20">
         <div className="container mx-auto px-6 lg:px-12">
           {filteredArtworks.length === 0 ? (
             <div className="text-center text-white/50 py-20">
@@ -239,7 +239,7 @@ export default function MarketplaceClient({
                       />
 
                       {/* Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                       {/* Quick View */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">

@@ -33,6 +33,8 @@ interface GalleryClientProps {
   galleryCategories: GalleryCategoryProp[];
 }
 
+const PAGE_SIZE = 24;
+
 function GalleryContent({ galleryCategories }: GalleryClientProps) {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
@@ -68,6 +70,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedAlbum, setSelectedAlbum] = useState("All");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -104,6 +107,16 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
     }
     return list;
   }, [selectedCategory, selectedAlbum, artworks]);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [selectedCategory, selectedAlbum]);
+
+  const visibleArtworks = useMemo(
+    () => filteredArtworks.slice(0, visibleCount),
+    [filteredArtworks, visibleCount],
+  );
 
   // Animation for category change
   useEffect(() => {
@@ -173,6 +186,26 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
   };
 
   const selectedArtwork = artworks.find((art) => art.id === selectedImage);
+
+  // Keyboard navigation for the lightbox
+  useEffect(() => {
+    if (!selectedImage) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedImage(null);
+      else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        const dir = e.key === "ArrowLeft" ? -1 : 1;
+        const currentIndex = filteredArtworks.findIndex(
+          (art) => art.id === selectedImage,
+        );
+        const newIndex = currentIndex + dir;
+        if (newIndex >= 0 && newIndex < filteredArtworks.length) {
+          setSelectedImage(filteredArtworks[newIndex].id);
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedImage, filteredArtworks]);
 
   return (
     <div
@@ -335,67 +368,80 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
             No photos found for this category.
           </div>
         ) : (
-          <div
-            ref={gridRef}
-            className="columns-1 sm:columns-2 lg:columns-3 gap-0"
-          >
-            {filteredArtworks.map((artwork, index) => (
-              <div
-                key={artwork.id}
-                className="gallery-item group relative overflow-hidden cursor-pointer break-inside-avoid mb-0"
-                onClick={() => openImage(artwork.id)}
-                onMouseEnter={() => setHoveredId(artwork.id)}
-                onMouseLeave={() => setHoveredId(null)}
-              >
-                <div className="relative w-full transform-gpu transition-all duration-1000 ease-out group-hover:scale-[1.02]">
-                  <Image
-                    src={artwork.src}
-                    alt={`${artwork.category} photo`}
-                    width={1200}
-                    height={800}
-                    className="w-full h-auto object-cover transition-all duration-1000 ease-out group-hover:brightness-110"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    priority={index < 6}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
-                    <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-out">
-                      <p className="text-xs font-mono text-white/80 mb-2 uppercase tracking-widest">
-                        {artwork.category}
-                        {artwork.album ? ` — ${artwork.album}` : ""}
-                      </p>
-                      <div className="flex items-center gap-2 text-white/60 text-sm">
-                        <span className="flex items-center gap-1">
-                          View
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5l7 7-7 7"
-                            />
-                          </svg>
-                        </span>
+          <>
+            <div
+              ref={gridRef}
+              className="columns-1 sm:columns-2 lg:columns-3 gap-0"
+            >
+              {visibleArtworks.map((artwork, index) => (
+                <div
+                  key={artwork.id}
+                  className="gallery-item group relative overflow-hidden cursor-pointer break-inside-avoid mb-0"
+                  onClick={() => openImage(artwork.id)}
+                  onMouseEnter={() => setHoveredId(artwork.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  <div className="relative w-full transform-gpu transition-all duration-1000 ease-out group-hover:scale-[1.02]">
+                    <Image
+                      src={artwork.src}
+                      alt={`${artwork.category} photo`}
+                      width={1200}
+                      height={800}
+                      className="w-full h-auto object-cover transition-all duration-1000 ease-out group-hover:brightness-110"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={index < 6}
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
+                      <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-out">
+                        <p className="text-xs font-mono text-white/80 mb-2 uppercase tracking-widest">
+                          {artwork.category}
+                          {artwork.album ? ` — ${artwork.album}` : ""}
+                        </p>
+                        <div className="flex items-center gap-2 text-white/60 text-sm">
+                          <span className="flex items-center gap-1">
+                            View
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
+                            </svg>
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-white/0 group-hover:border-white/30 transition-all duration-700" />
                   </div>
-                  <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-white/0 group-hover:border-white/30 transition-all duration-700" />
                 </div>
+              ))}
+            </div>
+
+            {visibleCount < filteredArtworks.length && (
+              <div className="mt-12 text-center">
+                <button
+                  onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                  className="px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm uppercase tracking-widest hover:text-white hover:border-white/50 transition-all duration-300"
+                >
+                  Load More ({filteredArtworks.length - visibleCount} remaining)
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </main>
 
       {/* Lightbox */}
       {selectedImage && selectedArtwork && (
-        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center">
-          <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-[110]">
+        <div className="fixed inset-0 z-100 bg-black/95 backdrop-blur-xl flex items-center justify-center">
+          <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-110">
             <div className="text-white/50 font-mono text-sm">
               {String(
                 filteredArtworks.findIndex((a) => a.id === selectedImage) + 1,

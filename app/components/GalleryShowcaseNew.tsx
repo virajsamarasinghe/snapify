@@ -227,7 +227,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
     <section
       id="gallery"
       ref={sectionRef}
-      className="relative min-h-screen bg-gradient-to-b from-[#1a1a1a] via-[#0a0a0a] to-[#0a0a0a] overflow-hidden py-20 lg:py-32"
+      className="relative min-h-screen bg-linear-to-b from-[#1a1a1a] via-[#0a0a0a] to-[#0a0a0a] overflow-hidden py-20 lg:py-32"
     >
       {/* Background Texture */}
       <div className="absolute inset-0 opacity-[0.02]">
@@ -240,9 +240,9 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
       </div>
 
       {/* Floating Shapes */}
-      <div className="floating-shape absolute top-20 left-20 w-40 h-40 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
-      <div className="floating-shape absolute bottom-20 right-20 w-60 h-60 rounded-full bg-gradient-to-br from-blue-500 to-green-500" />
-      <div className="floating-shape absolute top-1/2 left-1/2 w-32 h-32 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500" />
+      <div className="floating-shape absolute top-20 left-20 w-40 h-40 rounded-full bg-linear-to-br from-purple-500 to-pink-500" />
+      <div className="floating-shape absolute bottom-20 right-20 w-60 h-60 rounded-full bg-linear-to-br from-blue-500 to-green-500" />
+      <div className="floating-shape absolute top-1/2 left-1/2 w-32 h-32 rounded-full bg-linear-to-br from-yellow-500 to-orange-500" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* Section Header */}
@@ -318,7 +318,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
 
                 {/* Gradient Overlays */}
                 <div
-                  className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-500 pointer-events-none ${
+                  className={`absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-500 pointer-events-none ${
                     activeColorCard === item.id || hoveredItem === item.id
                       ? "opacity-100"
                       : "opacity-80"

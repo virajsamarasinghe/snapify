@@ -132,7 +132,7 @@ export default function GalleryScroll({
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] py-20 lg:py-32 overflow-hidden"
+      className="relative min-h-screen bg-linear-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] py-20 lg:py-32 overflow-hidden"
     >
       <div className="container mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -195,7 +195,7 @@ export default function GalleryScroll({
                     />
 
                     {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                     {/* Image number */}
                     <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">

@@ -87,13 +87,13 @@ export default function MarketplaceCTA() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[50vh] bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a] py-20 lg:py-32 overflow-hidden"
+      className="relative min-h-[50vh] bg-linear-to-b from-[#0a0a0a] to-[#1a1a1a] py-20 lg:py-32 overflow-hidden"
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="cta-bg-element absolute top-10 left-10 w-64 h-64 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-full blur-3xl"></div>
-        <div className="cta-bg-element absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 rounded-full blur-3xl"></div>
-        <div className="cta-bg-element absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-blue-600/10 rounded-full blur-3xl"></div>
+        <div className="cta-bg-element absolute top-10 left-10 w-64 h-64 bg-linear-to-br from-purple-600/20 to-pink-600/20 rounded-full blur-3xl"></div>
+        <div className="cta-bg-element absolute bottom-10 right-10 w-96 h-96 bg-linear-to-tr from-blue-600/20 to-purple-600/20 rounded-full blur-3xl"></div>
+        <div className="cta-bg-element absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-linear-to-r from-purple-600/10 via-pink-600/10 to-blue-600/10 rounded-full blur-3xl"></div>
       </div>
 
       {/* Content */}
@@ -189,7 +189,7 @@ export default function MarketplaceCTA() {
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-black to-transparent pointer-events-none"></div>
     </section>
   );
 }

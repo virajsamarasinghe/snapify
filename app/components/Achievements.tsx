@@ -349,7 +349,7 @@ export default function Achievements({
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-black flex items-center justify-center">
+                      <div className="absolute inset-0 bg-linear-to-br from-purple-900/30 to-black flex items-center justify-center">
                         <span className="text-white/20 text-4xl font-bold">
                           {achievement.year}
                         </span>

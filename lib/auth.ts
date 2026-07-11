@@ -1,8 +1,8 @@
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import bcrypt from "bcryptjs";
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,17 +21,21 @@ export const authOptions: NextAuthOptions = {
 
         const user = await User.findOne({ email: credentials.email });
 
+        // Small constant delay on failure to slow brute-force attempts,
+        // and a generic error to avoid leaking which accounts exist.
         if (!user) {
-          throw new Error("No user found");
+          await new Promise((r) => setTimeout(r, 500));
+          throw new Error("Invalid credentials");
         }
 
         const isValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isValid) {
-          throw new Error("Invalid password");
+          await new Promise((r) => setTimeout(r, 500));
+          throw new Error("Invalid credentials");
         }
 
         return {

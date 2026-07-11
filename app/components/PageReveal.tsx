@@ -218,7 +218,7 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
       <div className="reveal-text-wrapper relative z-40">
         {/* Decorative lines */}
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[200px]">
-          <div className="reveal-line h-[1px] bg-gradient-to-r from-transparent via-white to-transparent mb-2" />
+          <div className="reveal-line h-[1px] bg-linear-to-r from-transparent via-white to-transparent mb-2" />
         </div>
 
         {/* Main text */}
@@ -236,7 +236,7 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
 
         {/* Bottom decorative lines */}
         <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[200px]">
-          <div className="reveal-line h-[1px] bg-gradient-to-r from-transparent via-white to-transparent mt-2" />
+          <div className="reveal-line h-[1px] bg-linear-to-r from-transparent via-white to-transparent mt-2" />
         </div>
 
         {/* Counter */}
@@ -258,7 +258,7 @@ export default function PageReveal({ onRevealComplete }: PageRevealProps) {
 
       {/* Animated gradient background */}
       <div className="absolute inset-0 z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0a0a] to-black" />
+        <div className="absolute inset-0 bg-linear-to-br from-black via-[#0a0a0a] to-black" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-3xl animate-pulse" />
       </div>
 

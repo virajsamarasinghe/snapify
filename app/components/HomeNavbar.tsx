@@ -25,7 +25,7 @@ export default function HomeNavbar({
     fetch("/api/settings/public", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setShowMarketplace(d.showMarketplace))
-      .catch(() => setShowMarketplace(true));
+      .catch(() => setShowMarketplace(false));
   }, []);
 
   useEffect(() => {

@@ -33,6 +33,7 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
     phone: "",
     subject: "",
     message: "",
+    website: "", // honeypot — hidden from real users
   });
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -75,7 +76,14 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
       document.body.style.overflow = "auto";
       // Reset form when closed
       setTimeout(() => {
-        setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+        setForm({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+          website: "",
+        });
         setStatus("idle");
         setErrorMsg("");
       }, 400);
@@ -117,7 +125,14 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
         setErrorMsg(data.error || "Something went wrong. Please try again.");
       } else {
         setStatus("success");
-        setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+        setForm({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+          website: "",
+        });
       }
     } catch {
       setStatus("error");
@@ -192,6 +207,19 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Honeypot — invisible to humans, bots fill it in */}
+              <input
+                type="text"
+                name="website"
+                value={form.website}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, website: e.target.value }))
+                }
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label
