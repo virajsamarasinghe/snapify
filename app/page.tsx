@@ -7,7 +7,7 @@ import Hero from "@/models/Hero";
 import Recognition from "@/models/Recognition";
 import SiteSettings from "@/models/SiteSettings";
 import type { Metadata } from "next";
-import { FAQS } from "./components/FAQSection";
+import { FAQS } from "./components/faq-data";
 import HomePageWrapper from "./components/HomePageWrapper";
 // Ensure Product model is registered for populate
 import "@/models/Product";
