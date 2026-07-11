@@ -322,7 +322,7 @@ export default function HeroNew({
       {/* Main Content */}
       <div className="relative h-full lg:px-20">
         {/* Hero Text - Positioned Bottom Left */}
-        <div className="absolute bottom-8 sm:bottom-12 left-5 sm:left-8 lg:left-20 z-20 text-left w-[calc(100%-6rem)] sm:w-auto sm:max-w-2xl lg:max-w-4xl">
+        <div className="absolute bottom-16 sm:bottom-12 left-5 sm:left-8 lg:left-20 z-20 text-left w-[calc(100%-2.5rem)] sm:w-auto sm:max-w-2xl lg:max-w-4xl">
           <div className="mb-2 sm:mb-4">
             <p className="hero-subtitle text-xs sm:text-base lg:text-xl text-white/70 uppercase tracking-[0.25em] font-light">
               Visual Storyteller
@@ -397,7 +397,7 @@ export default function HeroNew({
         </div>
 
         {/* Image Indicators \u2014 bottom-right desktop, bottom-right mobile (above text area) */}
-        <div className="image-counter absolute bottom-8 sm:bottom-12 right-5 sm:right-8 lg:right-20 flex flex-col items-end gap-3 z-30">
+        <div className="image-counter absolute bottom-4 left-1/2 -translate-x-1/2 sm:bottom-12 sm:left-auto sm:translate-x-0 sm:right-8 lg:right-20 flex flex-col items-center sm:items-end gap-3 z-30 max-w-[calc(100%-2.5rem)]">
           {/* Category label \u2014 desktop only */}
           <div className="hidden lg:block mb-2 text-right">
             <p className="text-white/40 text-sm uppercase tracking-widest mb-1">
@@ -408,19 +408,19 @@ export default function HeroNew({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-3">
             {featuredImages.map((img, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentImage(index)}
-                className="relative group"
+                className="relative group py-2"
                 aria-label={`View ${img.title || "Image"}`}
               >
                 <div
                   className={`h-[3px] rounded-full transition-all duration-500 ${
                     index === currentImage
-                      ? "bg-white w-10 sm:w-16"
-                      : "bg-white/40 w-5 sm:w-8 hover:w-8 hover:bg-white/60"
+                      ? "bg-white w-6 sm:w-16"
+                      : "bg-white/40 w-3 sm:w-8 sm:hover:w-10 hover:bg-white/60"
                   }`}
                 />
               </button>
