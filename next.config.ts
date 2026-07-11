@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ["gsap"],
   serverExternalPackages: ["mongoose"],
   images: {
+    loader: "custom",
+    loaderFile: "./lib/cloudinaryLoader.ts",
     remotePatterns: [
       {
         protocol: "https",
