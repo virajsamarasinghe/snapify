@@ -173,8 +173,10 @@ export default async function Home() {
     },
     address: {
       "@type": "PostalAddress",
+      streetAddress: "No 144, Raja Mawatha",
+      addressLocality: "Ratmalana",
+      addressRegion: "Western Province",
       addressCountry: "LK",
-      addressLocality: "Sri Lanka",
     },
     sameAs: [
       "https://www.instagram.com/jagathkalupahana_photography",
@@ -230,10 +232,16 @@ export default async function Home() {
     image: `${SITE_URL}/og-image.jpg`,
     address: {
       "@type": "PostalAddress",
+      streetAddress: "No 144, Raja Mawatha",
+      addressLocality: "Ratmalana",
+      addressRegion: "Western Province",
       addressCountry: "LK",
-      addressLocality: "Sri Lanka",
     },
-    geo: { "@type": "GeoCoordinates", latitude: 7.8731, longitude: 80.7718 },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 6.8158751,
+      longitude: 79.8674623,
+    },
     areaServed: [
       { "@type": "Country", name: "Sri Lanka" },
       { "@type": "Country", name: "Worldwide" },
