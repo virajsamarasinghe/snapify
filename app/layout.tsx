@@ -1,7 +1,6 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import PageTransition from "./components/PageTransition";
 import SmoothScroll from "./components/SmoothScroll";
 import { PageTransitionProvider } from "./contexts/PageTransitionContext";
@@ -340,6 +339,25 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <meta name="color-scheme" content="dark" />
+        {/* Google tag (gtag.js) — in <head> so verification bots find it */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}', {
+                send_page_view: true,
+                transport_url: 'https://www.jagathkalupahanaphotography.com/analytics'
+              });
+            `,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -348,22 +366,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Google Analytics 4 */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="ga4-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}', {
-              send_page_view: true,
-              transport_url: 'https://www.jagathkalupahanaphotography.com/analytics'
-            });
-          `}
-        </Script>
         <PageTransitionProvider>
           <PageTransition />
           <SmoothScroll>{children}</SmoothScroll>
