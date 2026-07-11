@@ -87,8 +87,13 @@ const navigationLinks = [
 export default function Footer() {
   const footerRef = useRef<HTMLDivElement>(null);
   const [settings, setSettings] = useState<ContactSettings>(DEFAULTS);
+  // Render contact details only after mount: Cloudflare's Email Address
+  // Obfuscation rewrites emails in server HTML, causing React hydration
+  // mismatches (error #418). Client-only rendering avoids the rewrite.
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetch("/api/settings/public", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setSettings((prev) => ({ ...prev, ...d })))
@@ -223,7 +228,7 @@ export default function Footer() {
               Get in Touch
             </h3>
             <div className="space-y-3">
-              {(settings.email1 || settings.email2) && (
+              {mounted && (settings.email1 || settings.email2) && (
                 <p className="footer-text text-white/60">
                   <span className="text-white/40">Email:</span>
                   <br />
