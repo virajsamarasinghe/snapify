@@ -34,6 +34,16 @@ body {
   min-height: 100vh;
 }
 
+/* Hide scrollbars on horizontally scrollable filter rows */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Prevent double scrollbar */
 html.lenis {
   height: auto;

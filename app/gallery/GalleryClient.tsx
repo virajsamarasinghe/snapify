@@ -273,7 +273,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-12 overflow-x-auto pb-4 no-scrollbar">
+        <div className="flex flex-nowrap sm:flex-wrap gap-2.5 sm:gap-4 mt-8 sm:mt-12 overflow-x-auto sm:overflow-visible pb-4 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
           {categoryNames.map((cat) => (
             <button
               key={cat}
@@ -286,7 +286,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
                 else url.searchParams.set("category", cat);
                 window.history.replaceState({}, "", url);
               }}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full border text-xs sm:text-sm uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
+              className={`shrink-0 snap-start px-4 sm:px-6 py-2 sm:py-3 rounded-full border text-xs sm:text-sm uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
                 selectedCategory === cat
                   ? "bg-white text-black border-white"
                   : "bg-transparent text-white/50 border-white/20 hover:text-white hover:border-white/50"
@@ -303,7 +303,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
             <p className="text-white/40 text-[10px] sm:text-xs uppercase tracking-[0.25em] mb-3">
               Albums
             </p>
-            <div className="flex flex-wrap gap-2 sm:gap-3 overflow-x-auto pb-4 no-scrollbar">
+            <div className="flex flex-nowrap sm:flex-wrap gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible pb-4 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
               {albumNames.map((album) => (
                 <button
                   key={album}
@@ -314,7 +314,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
                     else url.searchParams.set("album", album);
                     window.history.replaceState({}, "", url);
                   }}
-                  className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-full border text-[11px] sm:text-xs tracking-wider transition-all duration-300 whitespace-nowrap ${
+                  className={`shrink-0 snap-start max-w-[70vw] truncate px-3 sm:px-5 py-1.5 sm:py-2 rounded-full border text-[11px] sm:text-xs tracking-wider transition-all duration-300 whitespace-nowrap ${
                     selectedAlbum === album
                       ? "bg-white/90 text-black border-white"
                       : "bg-transparent text-white/50 border-white/15 hover:text-white hover:border-white/40"
