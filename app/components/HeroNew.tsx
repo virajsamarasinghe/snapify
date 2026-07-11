@@ -61,6 +61,19 @@ export default function HeroNew({
   const featuredImages =
     heroImages && heroImages.length > 0 ? heroImages : defaultImages;
 
+  // Indicator lines: show at most 5, as a sliding window following the current slide
+  const indicatorWindowSize = Math.min(5, featuredImages.length);
+  const indicatorStart = Math.max(
+    0,
+    Math.min(
+      currentImage - Math.floor(indicatorWindowSize / 2),
+      featuredImages.length - indicatorWindowSize,
+    ),
+  );
+  const indicatorItems = featuredImages
+    .slice(indicatorStart, indicatorStart + indicatorWindowSize)
+    .map((img, i) => ({ img, index: indicatorStart + i }));
+
   useEffect(() => {
     // Mouse movement effect
     const handleMouseMove = (e: MouseEvent) => {
@@ -415,7 +428,7 @@ export default function HeroNew({
           </div>
 
           <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-3">
-            {featuredImages.map((img, index) => (
+            {indicatorItems.map(({ img, index }) => (
               <button
                 key={index}
                 onClick={() => setCurrentImage(index)}
