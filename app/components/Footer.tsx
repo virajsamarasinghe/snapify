@@ -76,7 +76,9 @@ const LinkedInIcon = () => (
 );
 const navigationLinks = [
   { name: "Home", href: "/" },
-  { name: "About", href: "#about" },
+  { name: "Convocation Photography", href: "/convocation-photography" },
+  { name: "Cricket & Sports Photography", href: "/cricket-sports-photography" },
+  { name: "About Jagath", href: "/about-jagath-kalupahana" },
   { name: "Gallery", href: "/gallery" },
   { name: "Marketplace", href: "/marketplace" },
   { name: "Contact", href: "#contact" },

@@ -68,6 +68,18 @@ export default function HomeNavbar({
           </TransitionLink>
           <div className="hidden lg:flex items-center gap-8">
             <TransitionLink
+              href="/convocation-photography"
+              className="text-white/80 hover:text-white transition-colors"
+            >
+              Convocation
+            </TransitionLink>
+            <TransitionLink
+              href="/cricket-sports-photography"
+              className="text-white/80 hover:text-white transition-colors"
+            >
+              Cricket &amp; Sports
+            </TransitionLink>
+            <TransitionLink
               href="/gallery"
               className="text-white/80 hover:text-white transition-colors"
             >
@@ -121,6 +133,20 @@ export default function HomeNavbar({
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
+        <TransitionLink
+          href="/convocation-photography"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="text-4xl font-light text-white hover:text-purple-400 transition-colors"
+        >
+          Convocation
+        </TransitionLink>
+        <TransitionLink
+          href="/cricket-sports-photography"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="text-4xl font-light text-white hover:text-purple-400 transition-colors"
+        >
+          Cricket &amp; Sports
+        </TransitionLink>
         <button
           onClick={() => {
             const gallerySection = document.getElementById("gallery");

@@ -34,6 +34,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
     },
     {
+      url: `${SITE_URL}/convocation-photography`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/cricket-sports-photography`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/about-jagath-kalupahana`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${SITE_URL}/gallery`,
       lastModified: now,
       changeFrequency: "weekly",
