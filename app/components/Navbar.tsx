@@ -88,6 +88,18 @@ export default function Navbar({
               >
                 Home
               </TransitionLink>
+              <TransitionLink
+                href="/convocation-photography"
+                className="nav-item text-white/60 hover:text-white transition-colors"
+              >
+                Convocation
+              </TransitionLink>
+              <TransitionLink
+                href="/cricket-sports-photography"
+                className="nav-item text-white/60 hover:text-white transition-colors"
+              >
+                Cricket &amp; Sports
+              </TransitionLink>
               {/* <TransitionLink
                 href="/#about"
                 className="nav-item text-white/60 hover:text-white transition-colors"

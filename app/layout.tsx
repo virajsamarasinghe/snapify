@@ -221,6 +221,21 @@ const jsonLd = {
         latitude: 6.8211,
         longitude: 79.8834,
       },
+      areaServed: [
+        { "@type": "City", name: "Colombo" },
+        { "@type": "City", name: "Ratmalana" },
+        { "@type": "City", name: "Galle" },
+        { "@type": "City", name: "Kandy" },
+        { "@type": "Country", name: "Sri Lanka" },
+      ],
+      knowsAbout: [
+        "Convocation Photography",
+        "University Graduation Photography",
+        "Sri Lanka Cricket Photography",
+        "LPL Photography",
+        "Sports Photography",
+        "Event Photography",
+      ],
       openingHours: "Mo-Sa 09:00-18:00",
       priceRange: "$$",
       aggregateRating: {

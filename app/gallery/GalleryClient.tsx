@@ -25,6 +25,30 @@ interface GalleryClientProps {
   galleryCategories: GalleryCategoryProp[];
 }
 
+// SEO intro paragraph per gallery category (keyword-rich, people-first)
+function categoryIntro(category: string): string {
+  const name = category.toLowerCase();
+  if (name.includes("convocation") || name.includes("graduation") || name.includes("university")) {
+    return "Convocation and graduation photography by Jagath Kalupahana — real university ceremony and batch photo day coverage across Sri Lanka, including Colombo, Kandy and Galle.";
+  }
+  if (name.includes("cricket") || name.includes("sport")) {
+    return "Cricket and sports photography by Jagath Kalupahana — Sri Lanka national team and LPL match coverage at the Premadasa, Galle and Pallekele stadiums.";
+  }
+  if (name.includes("wedding")) {
+    return "Wedding photography by Jagath Kalupahana — full-day coverage capturing real moments across Sri Lanka with an artistic, story-led style.";
+  }
+  if (name.includes("wildlife") || name.includes("nature")) {
+    return "Award-winning wildlife and nature photography by Jagath Kalupahana, shot across Sri Lanka's national parks and beyond.";
+  }
+  if (name.includes("event") || name.includes("corporate")) {
+    return "Professional event and corporate photography by Jagath Kalupahana — reliable coverage for ceremonies, functions and media events across Sri Lanka.";
+  }
+  if (name === "all") {
+    return "Browse the full photography portfolio of Jagath Kalupahana (Studio Nethma) — convocation, cricket and sports, weddings, wildlife and events across Sri Lanka.";
+  }
+  return "Professional photography by Jagath Kalupahana (Studio Nethma), capturing real moments with technical precision across Sri Lanka.";
+}
+
 function GalleryContent({ galleryCategories }: GalleryClientProps) {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
@@ -231,6 +255,9 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
           </h1>
           <p className="gallery-subtitle text-white/60 text-base sm:text-lg lg:text-xl font-light">
             photography
+          </p>
+          <p className="gallery-subtitle text-white/50 text-sm sm:text-base leading-relaxed max-w-2xl mt-4">
+            {categoryIntro(selectedCategory)}
           </p>
         </div>
 
