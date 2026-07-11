@@ -134,6 +134,11 @@ export default async function GalleryPage() {
       id: doc._id.toString(),
       name: doc.name,
       images: allPhotos.filter(Boolean),
+      albums: catAlbums.map((album: any) => ({
+        id: album._id.toString(),
+        name: album.name,
+        images: [album.coverPhoto, ...(album.photos || [])].filter(Boolean),
+      })),
     };
   });
 

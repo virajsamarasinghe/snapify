@@ -13,12 +13,20 @@ interface Artwork {
   id: number;
   src: string;
   category: string;
+  album: string | null;
+}
+
+interface GalleryAlbumProp {
+  id: string;
+  name: string;
+  images: string[];
 }
 
 interface GalleryCategoryProp {
   id: string;
   name: string;
   images: string[];
+  albums?: GalleryAlbumProp[];
 }
 
 interface GalleryClientProps {
@@ -28,14 +36,26 @@ interface GalleryClientProps {
 function GalleryContent({ galleryCategories }: GalleryClientProps) {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
+  const albumFromUrl = searchParams.get("album");
 
   // Build flat artwork list from DB categories
   const artworks: Artwork[] = useMemo(() => {
     let id = 1;
     const list: Artwork[] = [];
     galleryCategories.forEach((cat) => {
+      const albumImageMap = new Map<string, string>();
+      (cat.albums || []).forEach((album) => {
+        album.images.forEach((src) => {
+          if (!albumImageMap.has(src)) albumImageMap.set(src, album.name);
+        });
+      });
       cat.images.forEach((src) => {
-        list.push({ id: id++, src, category: cat.name });
+        list.push({
+          id: id++,
+          src,
+          category: cat.name,
+          album: albumImageMap.get(src) ?? null,
+        });
       });
     });
     return list;
@@ -47,25 +67,43 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
   );
 
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedAlbum, setSelectedAlbum] = useState("All");
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // Set category from URL on mount
+  // Album names for the currently selected category
+  const albumNames = useMemo(() => {
+    if (selectedCategory === "All") return [];
+    const cat = galleryCategories.find((c) => c.name === selectedCategory);
+    if (!cat?.albums?.length) return [];
+    return ["All", ...cat.albums.map((a) => a.name)];
+  }, [selectedCategory, galleryCategories]);
+
+  // Set category/album from URL on mount
   useEffect(() => {
     if (categoryFromUrl && categoryNames.includes(categoryFromUrl)) {
       setSelectedCategory(categoryFromUrl);
+      if (albumFromUrl) {
+        const cat = galleryCategories.find((c) => c.name === categoryFromUrl);
+        if (cat?.albums?.some((a) => a.name === albumFromUrl)) {
+          setSelectedAlbum(albumFromUrl);
+        }
+      }
     }
-  }, [categoryFromUrl, categoryNames]);
+  }, [categoryFromUrl, albumFromUrl, categoryNames, galleryCategories]);
 
-  const filteredArtworks = useMemo(
-    () =>
+  const filteredArtworks = useMemo(() => {
+    let list =
       selectedCategory === "All"
         ? artworks
-        : artworks.filter((art) => art.category === selectedCategory),
-    [selectedCategory, artworks],
-  );
+        : artworks.filter((art) => art.category === selectedCategory);
+    if (selectedCategory !== "All" && selectedAlbum !== "All") {
+      list = list.filter((art) => art.album === selectedAlbum);
+    }
+    return list;
+  }, [selectedCategory, selectedAlbum, artworks]);
 
   // Animation for category change
   useEffect(() => {
@@ -99,7 +137,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
       });
     }, gridRef);
     return () => ctx.revert();
-  }, [selectedCategory]);
+  }, [selectedCategory, selectedAlbum]);
 
   // Initial Page Animation (subtitle + back button only — title is handled by category change effect)
   useEffect(() => {
@@ -241,7 +279,9 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
               key={cat}
               onClick={() => {
                 setSelectedCategory(cat);
+                setSelectedAlbum("All");
                 const url = new URL(window.location.href);
+                url.searchParams.delete("album");
                 if (cat === "All") url.searchParams.delete("category");
                 else url.searchParams.set("category", cat);
                 window.history.replaceState({}, "", url);
@@ -256,6 +296,36 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
             </button>
           ))}
         </div>
+
+        {/* Album Filters (shown when a category with albums is selected) */}
+        {albumNames.length > 0 && (
+          <div className="mt-4 sm:mt-6">
+            <p className="text-white/40 text-[10px] sm:text-xs uppercase tracking-[0.25em] mb-3">
+              Albums
+            </p>
+            <div className="flex flex-wrap gap-2 sm:gap-3 overflow-x-auto pb-4 no-scrollbar">
+              {albumNames.map((album) => (
+                <button
+                  key={album}
+                  onClick={() => {
+                    setSelectedAlbum(album);
+                    const url = new URL(window.location.href);
+                    if (album === "All") url.searchParams.delete("album");
+                    else url.searchParams.set("album", album);
+                    window.history.replaceState({}, "", url);
+                  }}
+                  className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-full border text-[11px] sm:text-xs tracking-wider transition-all duration-300 whitespace-nowrap ${
+                    selectedAlbum === album
+                      ? "bg-white/90 text-black border-white"
+                      : "bg-transparent text-white/50 border-white/15 hover:text-white hover:border-white/40"
+                  }`}
+                >
+                  {album === "All" ? "All Albums" : album}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Masonry Grid */}
@@ -292,6 +362,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
                     <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-out">
                       <p className="text-xs font-mono text-white/80 mb-2 uppercase tracking-widest">
                         {artwork.category}
+                        {artwork.album ? ` — ${artwork.album}` : ""}
                       </p>
                       <div className="flex items-center gap-2 text-white/60 text-sm">
                         <span className="flex items-center gap-1">
@@ -357,7 +428,7 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
           </div>
 
           <div className="w-full h-full flex flex-col lg:flex-row">
-            <div className="flex-1 relative h-full flex items-center justify-center p-4 lg:p-12">
+            <div className="flex-1 relative min-h-0 flex items-center justify-center p-4 pt-20 lg:pt-12 lg:p-12">
               <div className="relative w-full h-full max-w-5xl max-h-[80vh]">
                 <Image
                   src={selectedArtwork.src}
@@ -411,20 +482,23 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
               </button>
             </div>
 
-            <div className="lg:w-[360px] bg-[#0f0f0f] border-l border-white/5 p-8 lg:p-12 flex flex-col justify-center">
-              <div className="space-y-6">
+            <div className="lg:w-[360px] bg-[#0f0f0f] border-t lg:border-t-0 lg:border-l border-white/5 p-6 lg:p-12 flex flex-col justify-center shrink-0">
+              <div className="space-y-4 lg:space-y-6">
                 <div>
-                  <h2 className="text-3xl font-bold text-white mb-2">
+                  <h2 className="text-2xl lg:text-3xl font-bold text-white mb-2">
                     {selectedArtwork.category}
                   </h2>
                   <p className="text-white/40 font-mono text-sm uppercase tracking-widest">
-                    Photography
+                    {selectedArtwork.album ?? "Photography"}
                   </p>
                 </div>
                 <p className="text-white/60 leading-relaxed font-light">
                   A captured moment from the{" "}
-                  {selectedArtwork.category.toLowerCase()} collection. Each
-                  image tells a unique story through light and composition.
+                  {selectedArtwork.album
+                    ? `${selectedArtwork.album} album`
+                    : `${selectedArtwork.category.toLowerCase()} collection`}
+                  . Each image tells a unique story through light and
+                  composition.
                 </p>
               </div>
             </div>

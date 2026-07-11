@@ -105,18 +105,18 @@ export default function MarketplaceCTA() {
           </p>
 
           {/* Main heading with highlight pattern */}
-          <h2 className="text-[2.5rem] lg:text-[5rem] font-bold mb-8 leading-[0.9]">
-            <span className="inline-block bg-white text-black px-4">
+          <h2 className="text-[2rem] sm:text-[3rem] md:text-[4rem] lg:text-[5rem] font-bold mb-6 sm:mb-8 leading-[0.9]">
+            <span className="inline-block bg-white text-black px-2 sm:px-4">
               BE PART
             </span>
-            <span className="inline-block mx-3">{"\u00A0"}</span>
+            <span className="inline-block mx-2 sm:mx-3">{"\u00A0"}</span>
             <span className="inline-block text-white">OF THE</span>
             <br />
             <span className="inline-block text-white mt-2">COLLECTION</span>
           </h2>
 
           {/* Description */}
-          <p className="text-white/70 text-lg lg:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="text-white/70 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed">
             Transform your space with exclusive artwork. Each piece tells a
             unique story, captured through the lens of artistic vision. Join
             collectors worldwide who appreciate the beauty of authentic
@@ -125,7 +125,7 @@ export default function MarketplaceCTA() {
 
           {/* CTA Button — Coming Soon */}
           <div className="cta-button inline-flex flex-col items-center gap-3">
-            <div className="relative inline-flex items-center gap-4 bg-white/10 border border-white/20 text-white/50 px-8 py-4 rounded-full font-semibold text-lg cursor-not-allowed select-none">
+            <div className="relative inline-flex items-center gap-3 sm:gap-4 bg-white/10 border border-white/20 text-white/50 px-6 py-3.5 sm:px-8 sm:py-4 rounded-full font-semibold text-base sm:text-lg cursor-not-allowed select-none">
               <Lock size={20} className="text-white/40" />
               <span>Explore Marketplace</span>
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-black text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full whitespace-nowrap">
@@ -135,7 +135,7 @@ export default function MarketplaceCTA() {
           </div>
 
           {/* Additional info */}
-          <div className="mt-12 flex flex-wrap justify-center gap-8 text-white/50 text-sm">
+          <div className="mt-8 sm:mt-12 flex flex-wrap justify-center gap-4 sm:gap-8 text-white/50 text-sm">
             <div className="flex items-center gap-2">
               <svg
                 className="w-5 h-5"

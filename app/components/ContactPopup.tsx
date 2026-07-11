@@ -141,13 +141,13 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
       {/* Popup */}
       <div
         ref={popupRef}
-        className="relative z-10 w-full max-w-2xl bg-linear-to-b from-black/95 to-black/90 border border-white/10 rounded-2xl p-8 lg:p-12 shadow-2xl"
+        className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-linear-to-b from-black/95 to-black/90 border border-white/10 rounded-2xl p-6 sm:p-8 lg:p-12 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-6 right-6 text-white/60 hover:text-white transition-colors"
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-white/60 hover:text-white transition-colors"
         >
           <svg
             className="w-6 h-6"
@@ -165,12 +165,12 @@ export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
         </button>
 
         {/* Content */}
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           <div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-2">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2">
               Let's Talk
             </h2>
-            <p className="text-white/60 text-lg">
+            <p className="text-white/60 text-base sm:text-lg">
               Get in touch and let's create something amazing together
             </p>
           </div>

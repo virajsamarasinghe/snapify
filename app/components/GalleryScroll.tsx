@@ -140,19 +140,19 @@ export default function GalleryScroll({
           <div ref={quoteRef} className="relative">
             <div className="lg:sticky lg:top-32">
               {/* Opening quote mark */}
-              <div className="absolute -top-10 -left-4 text-white/10 text-[150px] leading-none font-serif select-none pointer-events-none">
+              <div className="absolute -top-6 -left-2 lg:-top-10 lg:-left-4 text-white/10 text-[100px] lg:text-[150px] leading-none font-serif select-none pointer-events-none">
                 &ldquo;
               </div>
 
               {/* Quote content */}
-              <div className="relative z-10 pt-16 pb-2">
+              <div className="relative z-10 pt-12 lg:pt-16 pb-2">
                 <h2 className="quote-line text-3xl lg:text-5xl font-light leading-tight text-white">
                   {quote}
                 </h2>
               </div>
 
               {/* Closing quote mark */}
-              <div className="relative z-10 text-white/10 text-[120px] leading-none font-serif text-right -mt-6 select-none pointer-events-none">
+              <div className="relative z-10 text-white/10 text-[80px] lg:text-[120px] leading-none font-serif text-right -mt-4 lg:-mt-6 select-none pointer-events-none">
                 &rdquo;
               </div>
 
