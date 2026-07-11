@@ -1,24 +1,28 @@
-import fs from "fs";
+import dbConnect from "@/lib/db";
+import Category from "@/models/Category";
 import type { MetadataRoute } from "next";
-import path from "path";
 
 const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
-function getHeroImages(): string[] {
-  try {
-    const heroDir = path.join(process.cwd(), "public/hero");
-    return fs
-      .readdirSync(heroDir)
-      .filter((f) => /\.(jpe?g|png|webp)$/i.test(f))
-      .map((f) => `/hero/${f}`);
-  } catch {
-    return [];
-  }
-}
-
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const heroImages = getHeroImages();
+
+  // Category gallery URLs generated from the database
+  let categoryEntries: MetadataRoute.Sitemap = [];
+  try {
+    await dbConnect();
+    const categories = await Category.find({ showInGallery: { $ne: false } })
+      .select("name")
+      .lean();
+    categoryEntries = (categories as { name: string }[]).map((c) => ({
+      url: `${SITE_URL}/gallery?category=${encodeURIComponent(c.name)}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch {
+    // DB unavailable — base pages still emitted
+  }
 
   return [
     {
@@ -26,12 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 1.0,
-      // @ts-expect-error — Next.js image sitemap extension
-      images: heroImages.map((src) => ({
-        loc: `${SITE_URL}${src}`,
-        title: "Jagath Kalupahana Photography",
-        caption: "Professional photography by Jagath Kalupahana",
-      })),
     },
     {
       url: `${SITE_URL}/gallery`,
@@ -39,24 +37,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
-    {
-      url: `${SITE_URL}/gallery?category=Wedding%20`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/gallery?category=Wildlife`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/gallery?category=Events%20Coverage`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
+    ...categoryEntries,
     {
       url: `${SITE_URL}/work`,
       lastModified: now,

@@ -7,35 +7,75 @@ import GalleryClient from "./GalleryClient";
 
 const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
-export const metadata: Metadata = {
-  title: "Photography Gallery — Weddings, Wildlife, Events & More",
-  description:
-    "Browse the complete photography gallery of Jagath Kalupahana. Curated collections spanning weddings, wildlife, university events, army coverage, school events and world photography. Award-winning images from Sri Lanka and beyond.",
-  keywords: [
-    "photography gallery Sri Lanka",
-    "wedding photography gallery",
-    "wildlife photography gallery",
-    "event photography Sri Lanka",
-    "Jagath Kalupahana gallery",
-  ],
-  alternates: { canonical: `${SITE_URL}/gallery` },
-  openGraph: {
-    type: "website",
-    title:
-      "Photography Gallery — Weddings, Wildlife & Events | Jagath Kalupahana",
-    description:
-      "Curated photography collections: weddings, wildlife, university events, army coverage, school events and world photography by award-winning photographer Jagath Kalupahana.",
-    url: `${SITE_URL}/gallery`,
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Jagath Kalupahana Photography Gallery",
-      },
+const DEFAULT_TITLE = "Photography Gallery — Weddings, Wildlife, Events & More";
+const DEFAULT_DESCRIPTION =
+  "Browse the complete photography gallery of Jagath Kalupahana. Curated collections spanning weddings, wildlife, university events, army coverage, school events and world photography. Award-winning images from Sri Lanka and beyond.";
+
+// Per-category OG image/title when ?category= is present
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}): Promise<Metadata> {
+  const { category } = await searchParams;
+
+  let title = DEFAULT_TITLE;
+  let description = DEFAULT_DESCRIPTION;
+  let ogImage = "/og-image.jpg";
+  let canonical = `${SITE_URL}/gallery`;
+
+  if (category) {
+    try {
+      await dbConnect();
+      const cat: any = await Category.findOne({
+        name: category,
+        showInGallery: { $ne: false },
+      })
+        .select("name image")
+        .lean();
+      if (cat) {
+        title = `${cat.name} Photography — Gallery`;
+        description = `Explore the ${cat.name} photography collection by award-winning photographer Jagath Kalupahana. Professional ${cat.name.toLowerCase()} photography from Sri Lanka and beyond.`;
+        canonical = `${SITE_URL}/gallery?category=${encodeURIComponent(cat.name)}`;
+        if (cat.image?.includes("res.cloudinary.com")) {
+          ogImage = cat.image.replace(
+            "/upload/",
+            "/upload/f_jpg,q_auto:good,w_1200,h_630,c_fill,g_auto/",
+          );
+        }
+      }
+    } catch {
+      // fall back to defaults
+    }
+  }
+
+  return {
+    title,
+    description,
+    keywords: [
+      "photography gallery Sri Lanka",
+      "wedding photography gallery",
+      "wildlife photography gallery",
+      "event photography Sri Lanka",
+      "Jagath Kalupahana gallery",
     ],
-  },
-};
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      title: `${title} | Jagath Kalupahana`,
+      description,
+      url: canonical,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+  };
+}
 
 const gallerySchema = {
   "@context": "https://schema.org",

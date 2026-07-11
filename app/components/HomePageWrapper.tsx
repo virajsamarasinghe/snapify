@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import AboutNew from "./AboutNew";
 import Achievements from "./Achievements";
 import ArtisticReveal from "./ArtisticReveal";
+import FAQSection from "./FAQSection";
 import Footer from "./Footer";
 import GalleryScroll from "./GalleryScroll";
 import GalleryShowcaseNew, { GalleryCategory } from "./GalleryShowcaseNew";
@@ -115,6 +116,7 @@ export default function HomePageWrapper({
           images={galleryScrollImages}
         />
         {showMarketplace && <MarketplaceCTA />}
+        <FAQSection />
         <Footer />
       </div>
     </>

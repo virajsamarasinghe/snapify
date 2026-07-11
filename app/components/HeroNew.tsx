@@ -45,12 +45,12 @@ export default function HeroNew({
   // Default fallback images
   const defaultImages = [
     {
-      src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921228/snapify/hero/1_hemmnu.jpg",
+      src: "https://res.cloudinary.com/deu8faspx/image/upload/v1780906950/snapify/hero/itubfpcrg8yaie5cjsvg.jpg",
       title: "Urban Dreams",
       category: "Street",
     },
     {
-      src: "https://res.cloudinary.com/deu8faspx/image/upload/v1778921233/snapify/hero/2_ovaqo4.jpg",
+      src: "https://res.cloudinary.com/deu8faspx/image/upload/v1780906917/snapify/hero/cuqs4e2sdzrlv2asytz0.jpg",
       title: "Silent Moments",
       category: "Portrait",
     },

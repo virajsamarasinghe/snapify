@@ -223,14 +223,6 @@ const jsonLd = {
       },
       openingHours: "Mo-Sa 09:00-18:00",
       priceRange: "$$",
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "5",
-        bestRating: "5",
-        worstRating: "1",
-        ratingCount: "12",
-        reviewCount: "12",
-      },
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Photography Services — Studio Nethma",

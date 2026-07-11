@@ -7,6 +7,7 @@ import Hero from "@/models/Hero";
 import Recognition from "@/models/Recognition";
 import SiteSettings from "@/models/SiteSettings";
 import type { Metadata } from "next";
+import { FAQS } from "./components/FAQSection";
 import HomePageWrapper from "./components/HomePageWrapper";
 // Ensure Product model is registered for populate
 import "@/models/Product";
@@ -167,7 +168,7 @@ export default async function Home() {
     url: SITE_URL,
     image: {
       "@type": "ImageObject",
-      url: `${SITE_URL}/about/man.jpeg`,
+      url: `${SITE_URL}/og-image.jpg`,
       caption: "Jagath Kalupahana — Professional Photographer",
     },
     address: {
@@ -298,64 +299,14 @@ export default async function Home() {
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "What is Studio Nethma?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Studio Nethma is a professional photography company based in Ratmalana, Sri Lanka. Founded and led by award-winning Senior Photographer Jagath Kalupahana, Studio Nethma has a dedicated team of photographers each with their own unique theme and creative vision, covering weddings, wildlife, sports, events, graduations and fine-art photography.",
-        },
+    mainEntity: FAQS.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
       },
-      {
-        "@type": "Question",
-        name: "What types of photography does Studio Nethma specialise in?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Studio Nethma specialises in wedding photography, wildlife photography, cricket and sports photography, university graduation and batch photo day photography, corporate and school event coverage, portrait photography, and fine-art photography across Sri Lanka and globally.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Who is Jagath Kalupahana?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Jagath Kalupahana is the founder, owner and Senior Photographer of Studio Nethma. He is an award-winning photographer with over 12 years of professional experience, 50+ global exhibitions, and multiple international photography awards including the International Photography Excellence Award 2024.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Does Studio Nethma have a team of photographers?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes. Studio Nethma has a team of professional photographers, each specialising in different styles, themes and visions. This allows the studio to cover multiple events simultaneously and offer diverse photography styles to clients.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "How do I book Studio Nethma for a wedding or event?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "You can contact Studio Nethma via the contact form on this website, by email at studionethma@yahoo.com, or by phone at +94 777 901 129. Early booking is strongly recommended for weddings and large events.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Can I purchase photography prints from Studio Nethma?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes. Limited edition fine-art photography prints by Jagath Kalupahana are available to purchase through the Studio Nethma marketplace on this website. Worldwide shipping is available.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Is Studio Nethma available for events outside Sri Lanka?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes. Studio Nethma and Jagath Kalupahana are available for photography assignments both within Sri Lanka and internationally.",
-        },
-      },
-    ],
+    })),
   };
 
   return (
