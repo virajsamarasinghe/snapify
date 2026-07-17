@@ -263,6 +263,14 @@ export default async function Home() {
     ],
     priceRange: "$$",
     currenciesAccepted: "LKR, USD",
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+94777901129",
+      email: "studionethma@yahoo.com",
+      contactType: "customer service",
+      availableLanguage: ["English", "Sinhala"],
+      areaServed: "LK",
+    },
     openingHoursSpecification: {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: [
@@ -325,6 +333,21 @@ export default async function Home() {
     })),
   };
 
+  const speakableSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${SITE_URL}/#webpage`,
+    url: SITE_URL,
+    name: "Wedding & Event Photographer Ratmalana, Sri Lanka – Jagath Kalupahana",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    about: { "@id": `${SITE_URL}/#business` },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", ".hero-description"],
+    },
+    inLanguage: "en-US",
+  };
+
   return (
     <>
       <script
@@ -348,6 +371,10 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
       />
       <HomePageWrapper
         categories={categories}

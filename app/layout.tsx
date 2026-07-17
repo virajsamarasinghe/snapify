@@ -1,5 +1,5 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import PageTransition from "./components/PageTransition";
 import SmoothScroll from "./components/SmoothScroll";
@@ -23,6 +23,13 @@ const PHOTOGRAPHER_NAME = "Jagath Kalupahana";
 const SITE_NAME = "Studio Nethma";
 const DESCRIPTION =
   "Studio Nethma — Sri Lanka's award-winning photography company. Led by Senior Photographer Jagath Kalupahana. Weddings, wildlife, sports, events & fine-art photography.";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0a0a0a",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -140,8 +147,10 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   other: {
-    "geo.region": "LK",
-    "geo.placename": "Sri Lanka",
+    "geo.region": "LK-1",
+    "geo.placename": "Ratmalana, Western Province, Sri Lanka",
+    "geo.position": "6.8158751;79.8674623",
+    ICBM: "6.8158751, 79.8674623",
     "theme-color": "#0a0a0a",
   },
 };

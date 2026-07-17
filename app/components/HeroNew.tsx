@@ -323,7 +323,7 @@ export default function HeroNew({
               src={img.src}
               alt={img.title || "Hero Image"}
               fill
-              className={`object-cover transition-transform duration-[8000ms] ${
+              className={`object-cover transition-transform duration-8000 ${
                 index === currentImage ? "scale-110" : "scale-100"
               }`}
               priority={index === 0}
@@ -341,7 +341,10 @@ export default function HeroNew({
       {/* Main Content */}
       <div className="relative h-full lg:px-20">
         {/* Hero Text - Positioned Bottom Left */}
-        <div className="absolute bottom-16 sm:bottom-12 left-5 sm:left-8 lg:left-20 z-20 text-left w-[calc(100%-2.5rem)] sm:w-auto sm:max-w-2xl lg:max-w-4xl">
+        <div
+          className="absolute bottom-16 sm:bottom-12 left-5 sm:left-8 lg:left-20 z-20 text-left w-[calc(100%-2.5rem)] sm:w-auto sm:max-w-2xl lg:max-w-4xl"
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        >
           <div className="mb-2 sm:mb-4">
             <p className="hero-subtitle text-xs sm:text-base lg:text-xl text-white/70 uppercase tracking-[0.25em] font-light">
               Professional Photographer &middot; Ratmalana, Sri Lanka

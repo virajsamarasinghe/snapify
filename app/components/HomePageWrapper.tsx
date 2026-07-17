@@ -5,6 +5,7 @@ import AboutNew from "./AboutNew";
 import Achievements from "./Achievements";
 import ArtisticReveal from "./ArtisticReveal";
 import FAQSection from "./FAQSection";
+import FloatingWhatsApp from "./FloatingWhatsApp";
 import Footer from "./Footer";
 import GalleryScroll from "./GalleryScroll";
 import GalleryShowcaseNew, { GalleryCategory } from "./GalleryShowcaseNew";
@@ -118,6 +119,7 @@ export default function HomePageWrapper({
         {showMarketplace && <MarketplaceCTA />}
         <FAQSection />
         <Footer />
+        <FloatingWhatsApp />
       </div>
     </>
   );

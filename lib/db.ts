@@ -2,12 +2,6 @@ import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.DATABASE_URL;
 
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the DATABASE_URL environment variable inside .env"
-  );
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
@@ -20,6 +14,14 @@ if (!cached) {
 }
 
 async function dbConnect() {
+  // Validate at runtime (not module load) so `next build` doesn't crash
+  // while collecting page data when the env var is absent.
+  if (!MONGODB_URI) {
+    throw new Error(
+      "Please define the DATABASE_URL environment variable inside .env",
+    );
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
