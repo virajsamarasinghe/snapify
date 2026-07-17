@@ -253,7 +253,7 @@ export default function HeroNew({
   return (
     <section
       ref={heroRef}
-      className="relative w-full bg-black overflow-hidden"
+      className="relative w-full bg-black overflow-hidden h-screen min-h-screen"
       style={{ height: "100dvh", minHeight: "100dvh" }}
     >
       {/* Overlay for entrance animation */}
@@ -323,7 +323,7 @@ export default function HeroNew({
               src={img.src}
               alt={img.title || "Hero Image"}
               fill
-              className={`object-cover transition-transform duration-8000 ${
+              className={`object-cover transition-transform duration-[8000ms] ${
                 index === currentImage ? "scale-110" : "scale-100"
               }`}
               priority={index === 0}
@@ -333,7 +333,7 @@ export default function HeroNew({
         ))}
 
         {/* Mobile full-screen overlay \u2014 prevents bright image center showing */}
-        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/95 lg:hidden" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/0 to-black/95 lg:hidden" />
         {/* Desktop overlay \u2014 subtle bottom fade only */}
         <div className="absolute bottom-0 left-0 right-0 h-[70vh] bg-linear-to-t from-black/90 via-black/40 to-transparent hidden lg:block" />
       </div>
@@ -344,11 +344,15 @@ export default function HeroNew({
         <div className="absolute bottom-16 sm:bottom-12 left-5 sm:left-8 lg:left-20 z-20 text-left w-[calc(100%-2.5rem)] sm:w-auto sm:max-w-2xl lg:max-w-4xl">
           <div className="mb-2 sm:mb-4">
             <p className="hero-subtitle text-xs sm:text-base lg:text-xl text-white/70 uppercase tracking-[0.25em] font-light">
-              Visual Storyteller
+              Professional Photographer &middot; Ratmalana, Sri Lanka
             </p>
           </div>
 
           <h1 className="hero-title text-[2.6rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[7.5rem] font-bold leading-[0.95] mb-3 sm:mb-5">
+            <span className="sr-only">
+              Wedding &amp; Event Photographer in Ratmalana, Sri Lanka &mdash;
+              Jagath Kalupahana | Studio Nethma
+            </span>
             {Array.from("CAPTURING").map((char, i) => (
               <span
                 key={i}
@@ -377,8 +381,9 @@ export default function HeroNew({
           </h1>
 
           <p className="hero-description text-xs sm:text-base lg:text-xl text-white/70 max-w-sm sm:max-w-lg mb-5 sm:mb-7 leading-relaxed">
-            Through my lens, I transform fleeting instants into timeless art,
-            revealing beauty in the raw, unscripted moments of life.
+            Award-winning photographer based in Ratmalana, Sri Lanka &mdash;
+            specialising in weddings, wildlife, graduation events &amp; fine-art
+            photography for over 12 years.
           </p>
 
           <div className="hero-cta-wrapper inline-block">

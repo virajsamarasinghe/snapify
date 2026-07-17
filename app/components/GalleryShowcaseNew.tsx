@@ -137,7 +137,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           trigger: sectionRef.current,
           start: "top 80%",
           end: "top 20%",
-          toggleActions: "play none none reverse",
+          toggleActions: "play none none none",
         },
       });
 
@@ -250,7 +250,10 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           <h2 className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[6rem] font-bold mb-4 leading-[0.9]">
             <span className="inline-block bg-white text-black px-4">
               {Array.from("ART").map((char, i) => (
-                <span key={i} className="gallery-title-char inline-block">
+                <span
+                  key={i}
+                  className="gallery-title-char inline-block opacity-0"
+                >
                   {char}
                 </span>
               ))}
@@ -260,14 +263,14 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
               {Array.from("CATEGORIES").map((char, i) => (
                 <span
                   key={i + 20}
-                  className="gallery-title-char inline-block text-white"
+                  className="gallery-title-char inline-block text-white opacity-0"
                 >
                   {char}
                 </span>
               ))}
             </span>
           </h2>
-          <p className="gallery-subtitle text-base sm:text-lg md:text-xl text-white/60 max-w-3xl mx-auto px-4">
+          <p className="gallery-subtitle text-base sm:text-lg md:text-xl text-white/60 max-w-3xl mx-auto px-4 opacity-0">
             Explore our curated collections by genre
           </p>
         </div>
@@ -283,7 +286,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
               href={`/gallery?category=${encodeURIComponent(item.title)}`}
               className={`gallery-item group relative ${getBentoClass(
                 index,
-              )} cursor-pointer block overflow-hidden rounded-xl sm:rounded-2xl`}
+              )} cursor-pointer block overflow-hidden rounded-xl sm:rounded-2xl opacity-0`}
               data-speed={0.5 + (index % 3) * 0.3}
             >
               <div
@@ -304,7 +307,11 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
                     >
                       <Image
                         src={img}
-                        alt={`${item.title} ${imgIndex + 1}`}
+                        alt={
+                          imgIndex === 0
+                            ? `${item.title} photography in Sri Lanka by Jagath Kalupahana`
+                            : `${item.title} – Studio Nethma Photography Sri Lanka`
+                        }
                         fill
                         className="object-cover transition-all duration-1000"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"

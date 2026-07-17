@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+import { useEffect, useRef, useState } from "react";
 
 // Register ScrollTrigger and scroll to top immediately
 if (typeof window !== "undefined") {
@@ -12,25 +12,33 @@ if (typeof window !== "undefined") {
   window.scrollTo(0, 0);
 }
 
-export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+export default function SmoothScroll({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const lenisRef = useRef<Lenis | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Force scroll to top on page load/refresh
     window.scrollTo(0, 0);
-    window.history.scrollRestoration = 'manual';
+    window.history.scrollRestoration = "manual";
+
+    const hasShownInitialReveal =
+      sessionStorage.getItem("hasShownInitialReveal") === "true";
+    const startDelay = hasShownInitialReveal ? 100 : 3800;
 
     // Hide scrollbar and disable scroll during loading
-    document.documentElement.classList.add('lenis', 'lenis-stopped');
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add("lenis", "lenis-stopped");
+    document.body.style.overflow = "hidden";
 
     // Initialize Lenis but keep it stopped initially
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
+      orientation: "vertical",
+      gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 2,
@@ -44,7 +52,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     lenis.scrollTo(0, { immediate: true });
 
     // Connect Lenis to GSAP ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update);
+    lenis.on("scroll", ScrollTrigger.update);
 
     // Add Lenis tick to GSAP ticker
     const rafCallback = (time: number) => {
@@ -58,11 +66,13 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     // Enable scroll after loading animation completes
     const loadingTimer = setTimeout(() => {
       setIsLoading(false);
-      document.documentElement.classList.remove('lenis-stopped');
-      document.documentElement.classList.add('lenis-smooth');
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove("lenis-stopped");
+      document.documentElement.classList.add("lenis-smooth");
+      document.body.style.overflow = "";
       lenis.start();
-    }, 3800); // After counter animation (3.5s) + small buffer
+      // Sync ScrollTrigger positions with actual scroll after Lenis starts
+      ScrollTrigger.refresh();
+    }, startDelay);
 
     // Update ScrollTrigger on resize
     const handleResize = () => {
@@ -70,16 +80,20 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       ScrollTrigger.refresh();
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup
     return () => {
       clearTimeout(loadingTimer);
-      document.documentElement.classList.remove('lenis', 'lenis-smooth', 'lenis-stopped');
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove(
+        "lenis",
+        "lenis-smooth",
+        "lenis-stopped",
+      );
+      document.body.style.overflow = "";
       lenis.destroy();
       gsap.ticker.remove(rafCallback);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

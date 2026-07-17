@@ -34,4 +34,31 @@ export const FAQS = [
     answer:
       "Yes. Studio Nethma and Jagath Kalupahana are available for photography assignments both within Sri Lanka and internationally.",
   },
+  {
+    question: "How much does wedding photography cost in Sri Lanka?",
+    answer:
+      "Studio Nethma offers customised wedding photography packages based on your event date, location, duration and coverage needs. Contact us directly for a personalised quote. Early booking is strongly recommended as popular dates fill quickly.",
+  },
+  {
+    question: "What areas in Sri Lanka does Studio Nethma cover?",
+    answer:
+      "Based in Ratmalana, Studio Nethma covers events across Sri Lanka including Colombo, the Western Province, Kandy, Galle, Nuwara Eliya and all other regions. We travel nationwide for weddings, wildlife safaris, sports events and corporate shoots.",
+  },
+  {
+    question: "How far in advance should I book a photographer for my wedding?",
+    answer:
+      "We recommend booking at least 6–12 months in advance for weddings, especially for peak-season dates (December–April). For other events, 4–8 weeks' notice is generally sufficient, though earlier booking is always better to secure your preferred photographer.",
+  },
+  {
+    question:
+      "Does Studio Nethma photograph university batch photo days and graduation ceremonies?",
+    answer:
+      "Yes. Studio Nethma has extensive experience photographing university graduation ceremonies, convocations and batch photo days across Sri Lanka. We handle large groups efficiently and deliver professional, timely results.",
+  },
+  {
+    question:
+      "Can I get a photographer for a corporate or school event in Colombo?",
+    answer:
+      "Yes. Studio Nethma provides professional photography coverage for corporate events, school functions, award ceremonies and institutional events in Colombo and throughout Sri Lanka.",
+  },
 ];

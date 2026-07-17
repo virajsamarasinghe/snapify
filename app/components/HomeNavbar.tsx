@@ -28,11 +28,15 @@ export default function HomeNavbar({
       .catch(() => setShowMarketplace(false));
   }, []);
 
+  const menuEverOpened = useRef(false);
   useEffect(() => {
     if (isMobileMenuOpen) {
+      menuEverOpened.current = true;
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
+    } else if (menuEverOpened.current) {
+      // Only restore overflow after the menu has actually been opened;
+      // do NOT run on initial mount (would override SmoothScroll's lock)
+      document.body.style.overflow = "";
     }
   }, [isMobileMenuOpen]);
 
@@ -57,7 +61,7 @@ export default function HomeNavbar({
     <>
       <nav
         ref={navRef}
-        className={`hero-nav fixed top-0 left-0 w-full px-8 lg:px-12 py-6 flex justify-between items-center z-50 mix-blend-difference ${className}`}
+        className={`hero-nav fixed top-0 left-0 w-full px-8 lg:px-12 py-6 flex justify-between items-center z-50 ${className}`}
       >
         <div className="flex items-center gap-12">
           <TransitionLink

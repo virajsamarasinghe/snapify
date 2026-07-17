@@ -15,14 +15,16 @@ import "@/models/Product";
 const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
 export const metadata: Metadata = {
-  title: "Jagath Kalupahana | Professional Photographer Sri Lanka",
+  title:
+    "Wedding & Event Photographer Ratmalana, Sri Lanka – Jagath Kalupahana | Studio Nethma",
   description:
-    "Welcome to the official portfolio of Jagath Kalupahana — award-winning photographer with 12+ years experience in weddings, wildlife, events and fine-art photography across Sri Lanka and globally.",
+    "Studio Nethma — award-winning wedding, wildlife, graduation & event photography studio in Ratmalana, Sri Lanka. Led by Jagath Kalupahana with 12+ years experience, 50+ global exhibitions. Serving Colombo, Western Province and beyond.",
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title: "Jagath Kalupahana | Professional Photographer Sri Lanka",
+    title:
+      "Wedding & Event Photographer Ratmalana, Sri Lanka – Jagath Kalupahana",
     description:
-      "Award-winning professional photographer. 12+ years experience, 50+ global exhibitions. Specialising in weddings, wildlife, events and portraits.",
+      "Professional photography studio in Ratmalana, Sri Lanka. Specialising in weddings, wildlife, events & fine-art prints. 12+ years experience, 50+ global exhibitions.",
     url: SITE_URL,
     images: [
       {
@@ -221,9 +223,13 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "ProfessionalService"],
     "@id": `${SITE_URL}/#business`,
-    name: "JK Photography — Jagath Kalupahana",
+    name: "Studio Nethma",
+    alternateName: "Jagath Kalupahana Photography",
     description:
-      "Professional photography services in Sri Lanka. Specialising in weddings, wildlife, events, portraits and fine-art photography. Print marketplace available.",
+      "Studio Nethma is an award-winning professional photography studio in Ratmalana, Sri Lanka, led by Senior Photographer Jagath Kalupahana. Specialising in weddings, wildlife, events, portraits and fine-art photography. Serving Colombo, Western Province and all Sri Lanka.",
+    founder: { "@id": `${SITE_URL}/#person` },
+    telephone: "+94777901129",
+    email: "studionethma@yahoo.com",
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
@@ -250,6 +256,8 @@ export default async function Home() {
       "Wedding Photography",
       "Wildlife Photography",
       "Event Photography",
+      "Graduation & Convocation Photography",
+      "University Batch Photo Day Photography",
       "Portrait Photography",
       "Fine Art Prints",
     ],
