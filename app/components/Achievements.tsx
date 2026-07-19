@@ -125,9 +125,9 @@ export default function Achievements({
 
         // Calculate curve
         // We want a curve that swings out between points
-        const midY = (prevY + y) / 2;
-        // Alternate swing direction: Left (-x), Right (+x)
-        const swing = index % 2 === 0 ? 60 : -60;
+        // Smaller swing on mobile so the line stays near the centre column
+        const swingAmount = window.innerWidth < 1024 ? 24 : 60;
+        const swing = index % 2 === 0 ? swingAmount : -swingAmount;
 
         // Cubic Bezier: C Cp1x Cp1y, Cp2x Cp2y, x y
         // Control Point 1: vertically down from prev, pushed out
@@ -147,9 +147,12 @@ export default function Achievements({
     };
 
     window.addEventListener("resize", calculatePath);
+    // Recalculate once images/fonts have settled so dot positions are exact
+    window.addEventListener("load", calculatePath);
 
     return () => {
       window.removeEventListener("resize", calculatePath);
+      window.removeEventListener("load", calculatePath);
       clearTimeout(timer);
     };
   }, []);
@@ -157,6 +160,16 @@ export default function Achievements({
   // Separate effect for animation once pathD is ready
   useEffect(() => {
     if (!pathD || !sectionRef.current || !pathRef.current) return;
+
+    // Respect reduced-motion: show everything, skip scroll animation
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReducedMotion) {
+      gsap.set(".achievement-card", { y: 0, opacity: 1, scale: 1 });
+      gsap.set(pathRef.current, { strokeDashoffset: 0 });
+      return;
+    }
 
     const pathLength = pathRef.current.getTotalLength();
 
@@ -166,7 +179,7 @@ export default function Achievements({
       strokeDashoffset: pathLength,
     });
     // Set initial card state
-    gsap.set(".achievement-card", { y: 50, opacity: 0, scale: 0.95 });
+    gsap.set(".achievement-card", { y: 40, opacity: 0, scale: 0.97 });
 
     const ctx = gsap.context(() => {
       // 1. Draw Line on Scroll
@@ -205,6 +218,7 @@ export default function Achievements({
                     boxShadow: "0 0 20px 5px rgba(168, 85, 247, 0.6)",
                     backgroundColor: "#fff",
                     duration: 0.3,
+                    overwrite: "auto",
                   });
                 }
                 // Reveal Card
@@ -214,8 +228,9 @@ export default function Achievements({
                     opacity: 1,
                     y: 0,
                     scale: 1,
-                    duration: 0.4,
+                    duration: 0.5,
                     ease: "power2.out",
+                    overwrite: "auto",
                   });
                 }
               } else {
@@ -226,7 +241,8 @@ export default function Achievements({
                     opacity: 0.5,
                     boxShadow: "none",
                     backgroundColor: "transparent",
-                    duration: 0.5,
+                    duration: 0.4,
+                    overwrite: "auto",
                   });
                 }
                 // Hide Card
@@ -234,10 +250,11 @@ export default function Achievements({
                   card.classList.remove("revealed");
                   gsap.to(card, {
                     opacity: 0,
-                    y: 50,
-                    scale: 0.95,
-                    duration: 0.5,
-                    ease: "power2.in",
+                    y: 40,
+                    scale: 0.97,
+                    duration: 0.4,
+                    ease: "power2.inOut",
+                    overwrite: "auto",
                   });
                 }
               }
@@ -307,45 +324,29 @@ export default function Achievements({
           </svg>
 
           {/* Achievement Items */}
-          <div className="space-y-32 py-20">
+          <div className="space-y-16 sm:space-y-24 lg:space-y-32 py-10 sm:py-16 lg:py-20">
             {achievements.map((achievement, index) => (
               <div
                 key={index}
-                className={`achievement-card flex items-center gap-12 lg:gap-24 relative ${
-                  index % 2 === 0 ? "flex-row" : "flex-row-reverse"
+                className={`achievement-card flex flex-col items-center gap-5 sm:gap-6 lg:gap-24 relative ${
+                  index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
                 }`}
               >
-                {/* Content Side */}
-                <div
-                  className={`flex-1 ${
-                    index % 2 === 0 ? "text-right" : "text-left"
-                  }`}
-                >
-                  <span className="text-purple-400 font-mono text-xs tracking-widest block mb-2">
-                    {achievement.year}
-                  </span>
-                  <h3 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-                    {achievement.title}
-                  </h3>
-                  <p className="text-white/40 max-w-sm ml-auto mr-0">
-                    {achievement.description}
-                  </p>
-                </div>
-
                 {/* Center Connector (Invisible Anchor for path, but visual feedback) */}
-                <div className="relative z-20 flex-shrink-0 timeline-dot-wrapper opacity-50 transition-all duration-500 rounded-full p-1">
-                  <div className="timeline-dot w-6 h-6 rounded-full bg-[#1a1a1a] border-2 border-white/20" />
+                <div className="relative z-20 shrink-0 timeline-dot-wrapper opacity-50 transition-all duration-500 rounded-full p-1 order-1 lg:order-2">
+                  <div className="timeline-dot w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-[#1a1a1a] border-2 border-white/20" />
                 </div>
 
                 {/* Image Side */}
-                <div className="flex-1">
-                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-white/10 group">
+                <div className="w-full lg:w-auto lg:flex-1 order-2 lg:order-3">
+                  <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group">
                     {achievement.image &&
                     achievement.image.startsWith("http") ? (
                       <Image
                         src={achievement.image}
-                        alt={achievement.title}
+                        alt={`${achievement.title} (${achievement.year}) — ${achievement.venue}`}
                         fill
+                        sizes="(max-width: 1024px) 100vw, 40vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (
@@ -357,6 +358,27 @@ export default function Achievements({
                     )}
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                   </div>
+                </div>
+
+                {/* Content Side */}
+                <div
+                  className={`w-full lg:w-auto lg:flex-1 order-3 lg:order-1 text-left ${
+                    index % 2 === 0 ? "lg:text-right" : "lg:text-left"
+                  }`}
+                >
+                  <span className="text-purple-400 font-mono text-xs tracking-widest block mb-2">
+                    {achievement.year}
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 lg:mb-4">
+                    {achievement.title}
+                  </h3>
+                  <p
+                    className={`text-white/40 max-w-sm ${
+                      index % 2 === 0 ? "lg:ml-auto" : ""
+                    }`}
+                  >
+                    {achievement.description}
+                  </p>
                 </div>
               </div>
             ))}
