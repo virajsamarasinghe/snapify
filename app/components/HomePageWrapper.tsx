@@ -85,14 +85,24 @@ export default function HomePageWrapper({
     setIsLoading(false);
   };
 
-  // Flatten category images into the format GalleryScroll expects
+  // Build the "Photography is the story..." section's image pool from each
+  // category's admin-picked featured images (falling back to that category's
+  // own photos when none are picked yet), taking a few per category so every
+  // category gets a chance to show up here instead of just the first one
+  // (the old flatMap-then-slice(0, 12) effectively only ever pulled from
+  // whichever category happened to be sorted first).
+  const STORY_IMAGES_PER_CATEGORY = 2;
   const galleryScrollImages = categories
-    .flatMap((cat) =>
-      cat.images
+    .flatMap((cat) => {
+      const pool =
+        cat.featuredImages && cat.featuredImages.length > 0
+          ? cat.featuredImages
+          : cat.images;
+      return pool
         .filter((src) => src && src !== "/placeholder.jpg")
-        .map((src) => ({ src, alt: cat.title })),
-    )
-    .slice(0, 12)
+        .slice(0, STORY_IMAGES_PER_CATEGORY)
+        .map((src) => ({ src, alt: cat.title }));
+    })
     .map((img, i) => ({ id: i + 1, ...img }));
 
   return (
