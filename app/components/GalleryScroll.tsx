@@ -43,15 +43,29 @@ export default function GalleryScroll({
     images.slice(0, 6),
   );
 
+  // Images that failed to load (broken URL, deleted asset, network crash)
+  // are excluded from the pool so only loadable images are shown.
+  const [failedSrcs, setFailedSrcs] = useState<Set<string>>(() => new Set());
+
+  const handleImageError = (src: string) => {
+    setFailedSrcs((prev) => {
+      if (prev.has(src)) return prev;
+      const next = new Set(prev);
+      next.add(src);
+      return next;
+    });
+  };
+
   useEffect(() => {
-    setGalleryImages(getCurrentImageSet(images));
+    const validImages = images.filter((img) => !failedSrcs.has(img.src));
+    setGalleryImages(getCurrentImageSet(validImages));
     const interval = setInterval(
-      () => setGalleryImages(getCurrentImageSet(images)),
+      () => setGalleryImages(getCurrentImageSet(validImages)),
       60000,
     );
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images]);
+  }, [images, failedSrcs]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -203,6 +217,7 @@ export default function GalleryScroll({
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                       sizes="(max-width: 768px) 50vw, 25vw"
+                      onError={() => handleImageError(image.src)}
                     />
 
                     {/* Overlay */}
