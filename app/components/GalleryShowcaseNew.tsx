@@ -11,6 +11,12 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Cap how many images each category card mounts for the crossfade preview.
+// The full set is only ever loaded when the user clicks through to /gallery,
+// which paginates properly — rendering every category photo here at once
+// was causing mobile browsers to run out of memory on scroll.
+const MAX_PREVIEW_IMAGES = 5;
+
 // Interface from DB
 export interface GalleryAlbum {
   id: string;
@@ -25,11 +31,19 @@ export interface GalleryCategory {
   description: string;
   size: "small" | "medium" | "large";
   albums?: GalleryAlbum[];
+  featuredImages?: string[]; // Admin-picked subset to show on this card
 }
 
 interface GalleryShowcaseNewProps {
   categories?: GalleryCategory[]; // Make it optional to fallback or loading
 }
+
+// Admin-picked images win when set; otherwise fall back to the first few
+// of the full pool.
+const getPreviewImages = (category: GalleryCategory) =>
+  category.featuredImages && category.featuredImages.length > 0
+    ? category.featuredImages.slice(0, MAX_PREVIEW_IMAGES)
+    : (category.images || []).slice(0, MAX_PREVIEW_IMAGES);
 
 const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -55,14 +69,15 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
     const intervals: NodeJS.Timeout[] = [];
 
     categories.forEach((category, index) => {
-      if (!category.images || category.images.length <= 1) return;
+      const previewCount = getPreviewImages(category).length;
+      if (previewCount <= 1) return;
 
       // Different interval for each category (5-8 seconds)
       const interval = setInterval(
         () => {
           setCurrentImages((prev) => ({
             ...prev,
-            [category.id]: (prev[category.id] + 1) % category.images.length,
+            [category.id]: (prev[category.id] + 1) % previewCount,
           }));
         },
         5000 + index * 500, // Stagger: 5s, 5.5s, 6s, 6.5s, 7s, 7.5s, 8s
@@ -294,9 +309,10 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
-                {/* Multiple Images with crossfade */}
+                {/* Multiple Images with crossfade — only mount a small preview
+                    set per card; the full set loads on /gallery when clicked */}
                 {item.images.length > 0 ? (
-                  item.images.map((img, imgIndex) => (
+                  getPreviewImages(item).map((img, imgIndex) => (
                     <div
                       key={imgIndex}
                       className={`absolute inset-0 transition-opacity duration-1000 ${

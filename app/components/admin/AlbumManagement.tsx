@@ -5,10 +5,12 @@ import {
     ArrowLeft,
     Calendar,
     Camera,
+    Check,
     Edit2,
     Image as ImageIcon,
     MapPin,
     Plus,
+    Sparkles,
     Trash2,
     Upload,
     X,
@@ -28,14 +30,22 @@ type Album = {
   photos: string[];
 };
 
+// Keep in sync with MAX_PREVIEW_IMAGES in app/components/GalleryShowcaseNew.tsx —
+// the homepage card only ever crossfades this many images anyway.
+const MAX_FEATURED_IMAGES = 5;
+
 export default function AlbumManagement({
   initialAlbums,
   categoryId,
   categoryName,
+  allPhotos = [],
+  initialFeaturedImages = [],
 }: {
   initialAlbums: Album[];
   categoryId: string;
   categoryName: string;
+  allPhotos?: string[];
+  initialFeaturedImages?: string[];
 }) {
   const router = useRouter();
   const [albums, setAlbums] = useState<Album[]>(initialAlbums);
@@ -43,6 +53,57 @@ export default function AlbumManagement({
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Featured (homepage preview) image selection
+  const [featuredImages, setFeaturedImages] = useState<Set<string>>(
+    () => new Set(initialFeaturedImages),
+  );
+  const [savingFeatured, setSavingFeatured] = useState(false);
+  const [featuredSaved, setFeaturedSaved] = useState(false);
+  const [featuredError, setFeaturedError] = useState<string | null>(null);
+
+  const toggleFeatured = (url: string) => {
+    setFeaturedSaved(false);
+    setFeaturedImages((prev) => {
+      const next = new Set(prev);
+      if (next.has(url)) {
+        next.delete(url);
+      } else {
+        if (next.size >= MAX_FEATURED_IMAGES) {
+          setFeaturedError(
+            `You can feature up to ${MAX_FEATURED_IMAGES} images on the homepage card.`,
+          );
+          return prev;
+        }
+        next.add(url);
+      }
+      setFeaturedError(null);
+      return next;
+    });
+  };
+
+  async function saveFeaturedImages() {
+    setSavingFeatured(true);
+    setFeaturedError(null);
+    try {
+      const res = await fetch(`/api/categories/${categoryId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ featuredImages: Array.from(featuredImages) }),
+      });
+      if (res.ok) {
+        setFeaturedSaved(true);
+      } else {
+        const d = await res.json().catch(() => ({}));
+        setFeaturedError(d.error || "Failed to save featured images.");
+      }
+    } catch (err) {
+      console.error(err);
+      setFeaturedError("An unexpected error occurred.");
+    } finally {
+      setSavingFeatured(false);
+    }
+  }
 
   // Album form states
   const [name, setName] = useState("");
@@ -232,6 +293,93 @@ export default function AlbumManagement({
           <Plus size={18} /> New Album
         </button>
       </div>
+
+      {/* Featured homepage images picker */}
+      {allPhotos.length > 0 && (
+        <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 space-y-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-start gap-2.5">
+              <Sparkles size={18} className="text-purple-400 mt-0.5 shrink-0" />
+              <div>
+                <h2 className="text-white font-semibold">
+                  Featured Homepage Images
+                </h2>
+                <p className="text-zinc-500 text-sm mt-0.5">
+                  Pick up to {MAX_FEATURED_IMAGES} photos to show on this
+                  category&apos;s homepage card. Leave empty to let the site
+                  auto-pick a preview.{" "}
+                  <span className="text-zinc-400">
+                    {featuredImages.size}/{MAX_FEATURED_IMAGES} selected
+                  </span>
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={saveFeaturedImages}
+              disabled={savingFeatured}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-purple-600 text-white hover:bg-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            >
+              {savingFeatured ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Check size={16} />
+              )}
+              {savingFeatured
+                ? "Saving…"
+                : featuredSaved
+                  ? "Saved"
+                  : "Save Selection"}
+            </button>
+          </div>
+
+          {featuredError && (
+            <div className="flex items-center gap-2 text-sm text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2">
+              <X size={14} />
+              {featuredError}
+            </div>
+          )}
+
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-96 overflow-y-auto pr-1">
+            {allPhotos.map((url) => {
+              const isSelected = featuredImages.has(url);
+              return (
+                <button
+                  key={url}
+                  type="button"
+                  onClick={() => toggleFeatured(url)}
+                  className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
+                    isSelected
+                      ? "border-purple-500"
+                      : "border-white/10 hover:border-white/30"
+                  }`}
+                >
+                  <Image
+                    src={url}
+                    alt="Category photo"
+                    fill
+                    className="object-cover"
+                    sizes="120px"
+                  />
+                  <div
+                    className={`absolute inset-0 transition-colors ${
+                      isSelected ? "bg-black/30" : "bg-black/0 hover:bg-black/20"
+                    }`}
+                  />
+                  <div
+                    className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${
+                      isSelected
+                        ? "bg-purple-500 border-purple-500"
+                        : "bg-black/40 border-white/40"
+                    }`}
+                  >
+                    {isSelected && <Check size={12} className="text-white" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Albums list */}
       {albums.length === 0 ? (

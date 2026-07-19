@@ -127,6 +127,7 @@ export default async function Home() {
         id: doc._id.toString(),
         title: doc.name,
         images: images.length > 0 ? images : [],
+        featuredImages: doc.featuredImages || [],
         description: `Explore our ${doc.name} collection.`,
         size,
         albums: categoryAlbums,

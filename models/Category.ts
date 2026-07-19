@@ -7,6 +7,9 @@ const CategorySchema = new mongoose.Schema(
     image: { type: String },
     showInMarketplace: { type: Boolean, default: false },
     showInGallery: { type: Boolean, default: true },
+    // Admin-picked subset of images to show on the homepage preview card.
+    // Falls back to an auto-selected preview when empty.
+    featuredImages: { type: [String], default: [] },
   },
   { timestamps: true },
 );
