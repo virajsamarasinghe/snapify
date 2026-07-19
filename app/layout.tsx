@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: SITE_NAME,
   title: {
-    default: `${PHOTOGRAPHER_NAME} | Professional Photographer Sri Lanka`,
+    default: `${PHOTOGRAPHER_NAME} | Professional Photographer in Sri Lanka`,
     template: `%s | ${PHOTOGRAPHER_NAME}`,
   },
   description: DESCRIPTION,
@@ -112,7 +112,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
-    title: `${PHOTOGRAPHER_NAME} | Professional Photographer Sri Lanka`,
+    title: `${PHOTOGRAPHER_NAME} | Professional Photographer in Sri Lanka`,
     description: DESCRIPTION,
     url: SITE_URL,
     images: [
@@ -212,6 +212,7 @@ const jsonLd = {
       "@id": `${SITE_URL}/#business`,
       name: SITE_NAME,
       legalName: "Studio Nethma",
+      alternateName: "Jagath Kalupahana Photography",
       url: SITE_URL,
       description:
         "Studio Nethma is a professional photography company in Sri Lanka with a dedicated team of photographers. Specialising in wedding photography, wildlife, sports, cricket, corporate events, university graduations, batch photo days and fine-art photography. Each photographer brings a unique theme, style and creative vision.",
@@ -233,6 +234,7 @@ const jsonLd = {
         latitude: 6.8158751,
         longitude: 79.8674623,
       },
+      areaServed: { "@type": "Country", name: "Sri Lanka" },
       openingHours: "Mo-Sa 09:00-18:00",
       priceRange: "$$",
       hasOfferCatalog: {

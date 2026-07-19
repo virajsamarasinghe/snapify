@@ -15,16 +15,14 @@ import "@/models/Product";
 const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
 export const metadata: Metadata = {
-  title:
-    "Wedding & Event Photographer Ratmalana, Sri Lanka – Jagath Kalupahana | Studio Nethma",
+  title: "Jagath Kalupahana | Professional Photographer in Sri Lanka",
   description:
-    "Studio Nethma — award-winning wedding, wildlife, graduation & event photography studio in Ratmalana, Sri Lanka. Led by Jagath Kalupahana with 12+ years experience, 50+ global exhibitions. Serving Colombo, Western Province and beyond.",
+    "Explore the work of Jagath Kalupahana, founder of Studio Nethma and an award-winning Sri Lankan photographer specialising in weddings, events, graduations, sports, wildlife and fine-art photography.",
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title:
-      "Wedding & Event Photographer Ratmalana, Sri Lanka – Jagath Kalupahana",
+    title: "Jagath Kalupahana | Professional Photographer in Sri Lanka",
     description:
-      "Professional photography studio in Ratmalana, Sri Lanka. Specialising in weddings, wildlife, events & fine-art prints. 12+ years experience, 50+ global exhibitions.",
+      "Award-winning Sri Lankan photographer and founder of Studio Nethma, specialising in weddings, events, graduations, sports, wildlife and fine-art photography.",
     url: SITE_URL,
     images: [
       {
@@ -342,7 +340,7 @@ export default async function Home() {
     "@type": "WebPage",
     "@id": `${SITE_URL}/#webpage`,
     url: SITE_URL,
-    name: "Wedding & Event Photographer Ratmalana, Sri Lanka – Jagath Kalupahana",
+    name: "Jagath Kalupahana | Professional Photographer in Sri Lanka",
     isPartOf: { "@id": `${SITE_URL}/#website` },
     about: { "@id": `${SITE_URL}/#business` },
     speakable: {

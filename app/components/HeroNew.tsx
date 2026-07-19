@@ -353,8 +353,7 @@ export default function HeroNew({
 
           <h1 className="hero-title text-[2.6rem] sm:text-[4rem] md:text-[5.5rem] lg:text-[7.5rem] font-bold leading-[0.95] mb-3 sm:mb-5">
             <span className="sr-only">
-              Wedding &amp; Event Photographer in Ratmalana, Sri Lanka &mdash;
-              Jagath Kalupahana | Studio Nethma
+              Jagath Kalupahana &mdash; Professional Photographer in Sri Lanka
             </span>
             {Array.from("CAPTURING").map((char, i) => (
               <span

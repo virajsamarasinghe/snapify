@@ -63,9 +63,21 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
     return list;
   }, [galleryCategories]);
 
-  const categoryNames = useMemo(
-    () => ["All", ...galleryCategories.map((c) => c.name)],
+  // Category chips carry a thumbnail (first photo) so the filter bar shows
+  // actual photos instead of bare text the moment the page loads.
+  const categoryChips = useMemo(
+    () => [
+      { name: "All", thumbnail: null as string | null },
+      ...galleryCategories.map((c) => ({
+        name: c.name,
+        thumbnail: c.images[0] ?? null,
+      })),
+    ],
     [galleryCategories],
+  );
+  const categoryNames = useMemo(
+    () => categoryChips.map((c) => c.name),
+    [categoryChips],
   );
 
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -76,12 +88,18 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
   const galleryRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // Album names for the currently selected category
-  const albumNames = useMemo(() => {
+  // Album chips (with thumbnails) for the currently selected category
+  const albumChips = useMemo(() => {
     if (selectedCategory === "All") return [];
     const cat = galleryCategories.find((c) => c.name === selectedCategory);
     if (!cat?.albums?.length) return [];
-    return ["All", ...cat.albums.map((a) => a.name)];
+    return [
+      { name: "All", thumbnail: null as string | null },
+      ...cat.albums.map((a) => ({
+        name: a.name,
+        thumbnail: a.images[0] ?? null,
+      })),
+    ];
   }, [selectedCategory, galleryCategories]);
 
   // Set category/album from URL on mount
@@ -305,55 +323,79 @@ function GalleryContent({ galleryCategories }: GalleryClientProps) {
           </p>
         </div>
 
-        {/* Category Filters */}
+        {/* Category Filters — each chip shows a photo thumbnail, not just text */}
         <div className="flex flex-nowrap sm:flex-wrap gap-2.5 sm:gap-4 mt-8 sm:mt-12 overflow-x-auto sm:overflow-visible pb-4 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-          {categoryNames.map((cat) => (
+          {categoryChips.map((chip) => (
             <button
-              key={cat}
+              key={chip.name}
               onClick={() => {
-                setSelectedCategory(cat);
+                setSelectedCategory(chip.name);
                 setSelectedAlbum("All");
                 const url = new URL(window.location.href);
                 url.searchParams.delete("album");
-                if (cat === "All") url.searchParams.delete("category");
-                else url.searchParams.set("category", cat);
+                if (chip.name === "All") url.searchParams.delete("category");
+                else url.searchParams.set("category", chip.name);
                 window.history.replaceState({}, "", url);
               }}
-              className={`shrink-0 snap-start px-4 sm:px-6 py-2 sm:py-3 rounded-full border text-xs sm:text-sm uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
-                selectedCategory === cat
+              className={`shrink-0 snap-start flex items-center gap-2 pl-2 pr-4 sm:pr-6 py-2 sm:py-2.5 rounded-full border text-xs sm:text-sm uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
+                selectedCategory === chip.name
                   ? "bg-white text-black border-white"
                   : "bg-transparent text-white/50 border-white/20 hover:text-white hover:border-white/50"
               }`}
             >
-              {cat}
+              {chip.thumbnail && (
+                <span className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden shrink-0 border border-white/20">
+                  <Image
+                    src={chip.thumbnail}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                </span>
+              )}
+              {chip.name}
             </button>
           ))}
         </div>
 
         {/* Album Filters (shown when a category with albums is selected) */}
-        {albumNames.length > 0 && (
+        {albumChips.length > 0 && (
           <div className="mt-4 sm:mt-6">
             <p className="text-white/40 text-[10px] sm:text-xs uppercase tracking-[0.25em] mb-3">
               Albums
             </p>
             <div className="flex flex-nowrap sm:flex-wrap gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible pb-4 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-              {albumNames.map((album) => (
+              {albumChips.map((chip) => (
                 <button
-                  key={album}
+                  key={chip.name}
                   onClick={() => {
-                    setSelectedAlbum(album);
+                    setSelectedAlbum(chip.name);
                     const url = new URL(window.location.href);
-                    if (album === "All") url.searchParams.delete("album");
-                    else url.searchParams.set("album", album);
+                    if (chip.name === "All") url.searchParams.delete("album");
+                    else url.searchParams.set("album", chip.name);
                     window.history.replaceState({}, "", url);
                   }}
-                  className={`shrink-0 snap-start max-w-[70vw] truncate px-3 sm:px-5 py-1.5 sm:py-2 rounded-full border text-[11px] sm:text-xs tracking-wider transition-all duration-300 whitespace-nowrap ${
-                    selectedAlbum === album
+                  className={`shrink-0 snap-start max-w-[70vw] flex items-center gap-2 pl-1.5 pr-4 sm:pr-5 py-1.5 sm:py-2 rounded-full border text-[11px] sm:text-xs tracking-wider transition-all duration-300 whitespace-nowrap ${
+                    selectedAlbum === chip.name
                       ? "bg-white/90 text-black border-white"
                       : "bg-transparent text-white/50 border-white/15 hover:text-white hover:border-white/40"
                   }`}
                 >
-                  {album === "All" ? "All Albums" : album}
+                  {chip.thumbnail && (
+                    <span className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden shrink-0 border border-white/20">
+                      <Image
+                        src={chip.thumbnail}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="28px"
+                      />
+                    </span>
+                  )}
+                  <span className="truncate">
+                    {chip.name === "All" ? "All Albums" : chip.name}
+                  </span>
                 </button>
               ))}
             </div>

@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
 import type { MetadataRoute } from "next";
+import { SERVICE_PAGES } from "./[slug]/services-data";
 
 const SITE_URL = "https://www.jagathkalupahanaphotography.com";
 
@@ -37,6 +38,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${SITE_URL}/about-jagath-kalupahana`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/awards-and-exhibitions`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/client-reviews`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    ...SERVICE_PAGES.map((s) => ({
+      url: `${SITE_URL}/${s.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     ...categoryEntries,
     {
       url: `${SITE_URL}/work`,
