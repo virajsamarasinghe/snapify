@@ -2,13 +2,13 @@
 
 import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
-    Edit2,
-    FolderOpen,
-    Image as ImageIcon,
-    Plus,
-    Trash2,
-    Upload,
-    X,
+  Edit2,
+  FolderOpen,
+  Image as ImageIcon,
+  Plus,
+  Trash2,
+  Upload,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -241,7 +241,10 @@ export default function CategoryManagement({
             if (e.target === e.currentTarget) cancelEdit();
           }}
         >
-          <div className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div
+            data-lenis-prevent
+            className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain"
+          >
             <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/10">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 {editingCategory ? (

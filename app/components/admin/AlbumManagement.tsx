@@ -112,6 +112,37 @@ export default function AlbumManagement({
   const [pickingCover, setPickingCover] = useState(false);
   const [savingCover, setSavingCover] = useState(false);
   const [coverError, setCoverError] = useState<string | null>(null);
+  // "all" or an album id — filters the picker grids
+  const [photoFilter, setPhotoFilter] = useState<string>("all");
+
+  // Group every image by the album it belongs to, so photos can be browsed
+  // and selected album by album. Product images / the current cover that
+  // don't belong to any album fall into "Other photos".
+  const photoGroups = (() => {
+    const seen = new Set<string>();
+    const groups: { id: string; label: string; photos: string[] }[] = [];
+    for (const album of albums) {
+      const photos = [
+        ...(album.coverPhoto ? [album.coverPhoto] : []),
+        ...(album.photos || []),
+      ].filter((p) => {
+        if (!p || seen.has(p)) return false;
+        seen.add(p);
+        return true;
+      });
+      if (photos.length > 0)
+        groups.push({ id: album.id, label: album.name, photos });
+    }
+    const other = allPhotos.filter((p) => !seen.has(p));
+    if (other.length > 0)
+      groups.push({ id: "other", label: "Other photos", photos: other });
+    return groups;
+  })();
+
+  const visibleGroups =
+    photoFilter === "all"
+      ? photoGroups
+      : photoGroups.filter((g) => g.id === photoFilter);
 
   async function saveCoverImage(url: string) {
     setSavingCover(true);
@@ -381,41 +412,84 @@ export default function AlbumManagement({
             </div>
           )}
 
-          {/* Picker grid — every photo in the category */}
+          {/* Picker — browse every album and pick from any of them */}
           {pickingCover && (
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-96 overflow-y-auto pr-1">
-              {allPhotos.map((url) => {
-                const isCover = coverImage === url;
-                return (
+            <div className="space-y-4">
+              {/* Album filter */}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPhotoFilter("all")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    photoFilter === "all"
+                      ? "bg-purple-600 text-white"
+                      : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  All albums ({allPhotos.length})
+                </button>
+                {photoGroups.map((g) => (
                   <button
-                    key={url}
+                    key={g.id}
                     type="button"
-                    disabled={savingCover}
-                    onClick={() => saveCoverImage(url)}
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors disabled:opacity-60 ${
-                      isCover
-                        ? "border-purple-500"
-                        : "border-white/10 hover:border-white/30"
+                    onClick={() => setPhotoFilter(g.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                      photoFilter === g.id
+                        ? "bg-purple-600 text-white"
+                        : "bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
                     }`}
-                    title={isCover ? "Current cover" : "Set as cover"}
                   >
-                    <Image
-                      src={url}
-                      alt="Category photo"
-                      fill
-                      className="object-cover"
-                      sizes="120px"
-                    />
-                    {isCover && (
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <span className="text-[10px] font-semibold text-white bg-purple-500 rounded-full px-2 py-0.5">
-                          Cover
-                        </span>
-                      </div>
-                    )}
+                    {g.label} ({g.photos.length})
                   </button>
-                );
-              })}
+                ))}
+              </div>
+
+              <div
+                data-lenis-prevent
+                className="max-h-96 overflow-y-auto overscroll-contain pr-1 space-y-5"
+              >
+                {visibleGroups.map((group) => (
+                  <div key={group.id}>
+                    <p className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-2">
+                      {group.label}
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                      {group.photos.map((url) => {
+                        const isCover = coverImage === url;
+                        return (
+                          <button
+                            key={url}
+                            type="button"
+                            disabled={savingCover}
+                            onClick={() => saveCoverImage(url)}
+                            className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors disabled:opacity-60 ${
+                              isCover
+                                ? "border-purple-500"
+                                : "border-white/10 hover:border-white/30"
+                            }`}
+                            title={isCover ? "Current cover" : "Set as cover"}
+                          >
+                            <Image
+                              src={url}
+                              alt={`${group.label} photo`}
+                              fill
+                              className="object-cover"
+                              sizes="120px"
+                            />
+                            {isCover && (
+                              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                <span className="text-[10px] font-semibold text-white bg-purple-500 rounded-full px-2 py-0.5">
+                                  Cover
+                                </span>
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -466,46 +540,60 @@ export default function AlbumManagement({
             </div>
           )}
 
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-96 overflow-y-auto pr-1">
-            {allPhotos.map((url) => {
-              const isSelected = featuredImages.has(url);
-              return (
-                <button
-                  key={url}
-                  type="button"
-                  onClick={() => toggleFeatured(url)}
-                  className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
-                    isSelected
-                      ? "border-purple-500"
-                      : "border-white/10 hover:border-white/30"
-                  }`}
-                >
-                  <Image
-                    src={url}
-                    alt="Category photo"
-                    fill
-                    className="object-cover"
-                    sizes="120px"
-                  />
-                  <div
-                    className={`absolute inset-0 transition-colors ${
-                      isSelected
-                        ? "bg-black/30"
-                        : "bg-black/0 hover:bg-black/20"
-                    }`}
-                  />
-                  <div
-                    className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${
-                      isSelected
-                        ? "bg-purple-500 border-purple-500"
-                        : "bg-black/40 border-white/40"
-                    }`}
-                  >
-                    {isSelected && <Check size={12} className="text-white" />}
-                  </div>
-                </button>
-              );
-            })}
+          <div
+            data-lenis-prevent
+            className="max-h-96 overflow-y-auto overscroll-contain pr-1 space-y-5"
+          >
+            {photoGroups.map((group) => (
+              <div key={group.id}>
+                <p className="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-2">
+                  {group.label}
+                </p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                  {group.photos.map((url) => {
+                    const isSelected = featuredImages.has(url);
+                    return (
+                      <button
+                        key={url}
+                        type="button"
+                        onClick={() => toggleFeatured(url)}
+                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
+                          isSelected
+                            ? "border-purple-500"
+                            : "border-white/10 hover:border-white/30"
+                        }`}
+                      >
+                        <Image
+                          src={url}
+                          alt={`${group.label} photo`}
+                          fill
+                          className="object-cover"
+                          sizes="120px"
+                        />
+                        <div
+                          className={`absolute inset-0 transition-colors ${
+                            isSelected
+                              ? "bg-black/30"
+                              : "bg-black/0 hover:bg-black/20"
+                          }`}
+                        />
+                        <div
+                          className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${
+                            isSelected
+                              ? "bg-purple-500 border-purple-500"
+                              : "bg-black/40 border-white/40"
+                          }`}
+                        >
+                          {isSelected && (
+                            <Check size={12} className="text-white" />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -627,7 +715,10 @@ export default function AlbumManagement({
             if (e.target === e.currentTarget) closeModal();
           }}
         >
-          <div className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div
+            data-lenis-prevent
+            className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain"
+          >
             {/* Modal header */}
             <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/10">
               <h2 className="text-xl font-bold flex items-center gap-2">

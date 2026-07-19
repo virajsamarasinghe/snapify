@@ -1,20 +1,20 @@
 "use client";
 
 import {
-    ChevronDown,
-    FolderOpen,
-    Globe,
-    Image,
-    LayoutDashboard,
-    Lock,
-    LogOut,
-    Mail,
-    Menu,
-    Settings,
-    ShoppingBag,
-    Trophy,
-    User,
-    X,
+  ChevronDown,
+  FolderOpen,
+  Globe,
+  Image,
+  LayoutDashboard,
+  Lock,
+  LogOut,
+  Mail,
+  Menu,
+  Settings,
+  ShoppingBag,
+  Trophy,
+  User,
+  X,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -135,7 +135,10 @@ const Sidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+      <nav
+        data-lenis-prevent
+        className="flex-1 px-4 py-6 space-y-1 overflow-y-auto overscroll-contain"
+      >
         {links.map((link) => {
           const isActive = pathname === link.href;
           const Icon = link.icon;
