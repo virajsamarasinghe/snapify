@@ -26,16 +26,21 @@ export default function GalleryScroll({
   const quoteRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<HTMLDivElement>(null);
 
-  // Show up to 6 images, rotating by hour if more are available
+  // Show up to 6 images, rotating by hour if more are available.
+  // Wrap-around slicing guarantees a full set of 6 — a plain slice could
+  // return a short tail chunk (e.g. 8 images → an hour with only 2 shown).
   const getCurrentImageSet = (imgs: GalleryImage[]) => {
     if (imgs.length <= 6) return imgs;
     const currentHour = new Date().getHours();
-    const startIndex = (currentHour % Math.ceil(imgs.length / 6)) * 6;
-    return imgs.slice(startIndex, startIndex + 6);
+    const start = (currentHour * 6) % imgs.length;
+    return Array.from({ length: 6 }, (_, i) => imgs[(start + i) % imgs.length]);
   };
 
+  // Initial state must be deterministic (first 6) so the server-rendered
+  // HTML matches hydration — the hour-based rotation only kicks in on the
+  // client after mount.
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(() =>
-    getCurrentImageSet(images),
+    images.slice(0, 6),
   );
 
   useEffect(() => {
@@ -45,6 +50,7 @@ export default function GalleryScroll({
       60000,
     );
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images]);
 
   useEffect(() => {
@@ -53,81 +59,86 @@ export default function GalleryScroll({
     const images = imagesRef.current;
     if (!section || !quote || !images) return;
 
-    // Set initial states
-    gsap.set(".quote-line", { opacity: 0, y: 50 });
-    gsap.set(".quote-author", { opacity: 0, y: 30 });
-    gsap.set(".gallery-image-wrapper", { opacity: 0, y: 100, scale: 0.8 });
+    const ctx = gsap.context(() => {
+      // Set initial states
+      gsap.set(".quote-line", { opacity: 0, y: 50 });
+      gsap.set(".quote-author", { opacity: 0, y: 30 });
+      gsap.set(".gallery-image-wrapper", { opacity: 0, y: 100, scale: 0.8 });
 
-    // Create timeline for quote animation
-    const quoteTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top 70%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    // Animate quote lines
-    quoteTl
-      .to(".quote-line", {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.2,
-        ease: "power3.out",
-      })
-      .to(
-        ".quote-author",
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
+      // Create timeline for quote animation
+      const quoteTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 70%",
+          toggleActions: "play none none reverse",
         },
-        "-=0.4",
-      );
-
-    // Staggered reveal animation for images
-    gsap.to(".gallery-image-wrapper", {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      duration: 1,
-      stagger: {
-        each: 0.15,
-        from: 0, // Start from first element (top-left)
-        grid: [3, 2],
-      },
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: images,
-        start: "top 80%",
-        end: "bottom 20%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    // Parallax effect on scroll for images
-    gsap.utils
-      .toArray(".gallery-image-wrapper")
-      .forEach((element: any, index) => {
-        gsap.to(element, {
-          y: -50 * (1 - index * 0.1),
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
       });
 
-    // Cleanup
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
+      // Animate quote lines
+      quoteTl
+        .to(".quote-line", {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.2,
+          ease: "power3.out",
+        })
+        .to(
+          ".quote-author",
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          "-=0.4",
+        );
+
+      // Staggered reveal animation for images
+      gsap.to(".gallery-image-wrapper", {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 1,
+        stagger: {
+          each: 0.15,
+          from: 0, // Start from first element (top-left)
+          grid: [3, 2],
+        },
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: images,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      // Parallax effect on scroll for images
+      gsap.utils
+        .toArray(".gallery-image-wrapper")
+        .forEach((element: any, index) => {
+          gsap.to(element, {
+            y: -50 * (1 - index * 0.1),
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1,
+            },
+          });
+        });
+    }, section);
+
+    ScrollTrigger.refresh();
+
+    // Cleanup — only revert this section's animations/triggers, never
+    // other components' ScrollTriggers.
+    return () => ctx.revert();
+    // Re-run when the image set rotates so new wrappers are animated in
+    // (a trigger already past its start plays immediately on creation).
+  }, [galleryImages]);
 
   return (
     <section
