@@ -3,6 +3,7 @@ import cloudinary, { extractPublicId } from "@/lib/cloudinary";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
@@ -43,6 +44,7 @@ export async function PUT(
       );
     }
 
+    revalidatePath("/");
     return NextResponse.json(category);
   } catch (error) {
     console.error("Category update error:", error);
@@ -86,6 +88,7 @@ export async function DELETE(
     }
 
     await category.deleteOne();
+    revalidatePath("/");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Category delete error:", error);

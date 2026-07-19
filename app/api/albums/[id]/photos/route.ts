@@ -3,6 +3,7 @@ import cloudinary, { extractPublicId } from "@/lib/cloudinary";
 import dbConnect from "@/lib/db";
 import Album from "@/models/Album";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -51,6 +52,7 @@ export async function DELETE(
     album.photos = remaining;
     await album.save();
 
+    revalidatePath("/");
     return NextResponse.json({ success: true, photos: remaining });
   } catch (error) {
     console.error("Album photos delete error:", error);

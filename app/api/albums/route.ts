@@ -2,6 +2,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Album from "@/models/Album";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
     const album = await Album.create(body);
+    revalidatePath("/");
     return NextResponse.json(album);
   } catch (error) {
     console.error("Album create error:", error);

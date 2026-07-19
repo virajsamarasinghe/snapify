@@ -37,7 +37,10 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
+// Cache the rendered homepage and refresh it in the background at most
+// once a minute, instead of re-running every DB query on every request.
+// Admin mutations also call revalidatePath("/") for near-instant freshness.
+export const revalidate = 60;
 
 export default async function Home() {
   await dbConnect();

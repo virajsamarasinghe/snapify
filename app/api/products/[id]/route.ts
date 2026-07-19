@@ -3,6 +3,7 @@ import cloudinary, { extractPublicId } from "@/lib/cloudinary";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
@@ -49,6 +50,7 @@ export async function PUT(
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    revalidatePath("/");
     return NextResponse.json(product);
   } catch (error) {
     console.error("Product update error:", error);
@@ -92,6 +94,7 @@ export async function DELETE(
     );
 
     await product.deleteOne();
+    revalidatePath("/");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Product delete error:", error);

@@ -2,6 +2,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
     // Populate category before returning
     await product.populate("category");
 
+    revalidatePath("/");
     return NextResponse.json(product);
   } catch (error) {
     console.error("Product creation error:", error);

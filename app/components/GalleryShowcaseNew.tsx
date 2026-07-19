@@ -45,6 +45,15 @@ const getPreviewImages = (category: GalleryCategory) =>
     ? category.featuredImages.slice(0, MAX_PREVIEW_IMAGES)
     : (category.images || []).slice(0, MAX_PREVIEW_IMAGES);
 
+// Only the currently-shown frame and the one it's about to crossfade into
+// need to be mounted/downloading — the other preview images sit unused
+// until their turn, so there's no reason to fetch them early.
+const getRenderIndices = (length: number, activeIndex: number) => {
+  if (length <= 1) return [0];
+  const next = (activeIndex + 1) % length;
+  return [activeIndex, next];
+};
+
 const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -295,118 +304,126 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
           ref={galleryRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20 auto-rows-[340px] sm:auto-rows-[300px] grid-flow-dense"
         >
-          {categories.map((item, index) => (
-            <TransitionLink
-              key={item.id}
-              href={`/gallery?category=${encodeURIComponent(item.title)}`}
-              className={`gallery-item group relative ${getBentoClass(
-                index,
-              )} cursor-pointer block overflow-hidden rounded-xl sm:rounded-2xl opacity-0`}
-              data-speed={0.5 + (index % 3) * 0.3}
-            >
-              <div
-                className="relative w-full h-full min-h-[340px] sm:min-h-[300px] rounded-xl sm:rounded-2xl overflow-hidden"
-                onMouseEnter={() => setHoveredItem(item.id)}
-                onMouseLeave={() => setHoveredItem(null)}
+          {categories.map((item, index) => {
+            const previewImages = getPreviewImages(item);
+            const activeIndex = currentImages[item.id] || 0;
+            const renderIndices = getRenderIndices(
+              previewImages.length,
+              activeIndex,
+            );
+
+            return (
+              <TransitionLink
+                key={item.id}
+                href={`/gallery?category=${encodeURIComponent(item.title)}`}
+                className={`gallery-item group relative ${getBentoClass(
+                  index,
+                )} cursor-pointer block overflow-hidden rounded-xl sm:rounded-2xl opacity-0`}
+                data-speed={0.5 + (index % 3) * 0.3}
               >
-                {/* Multiple Images with crossfade — only mount a small preview
-                    set per card; the full set loads on /gallery when clicked */}
-                {item.images.length > 0 ? (
-                  getPreviewImages(item).map((img, imgIndex) => (
-                    <div
-                      key={imgIndex}
-                      className={`absolute inset-0 transition-opacity duration-1000 ${
-                        (currentImages[item.id] || 0) === imgIndex
-                          ? "opacity-100"
-                          : "opacity-0"
-                      }`}
-                    >
-                      <Image
-                        src={img}
-                        alt={
-                          imgIndex === 0
-                            ? `${item.title} photography in Sri Lanka by Jagath Kalupahana`
-                            : `${item.title} – Studio Nethma Photography Sri Lanka`
-                        }
-                        fill
-                        className="object-cover transition-all duration-1000"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                      />
-                    </div>
-                  ))
-                ) : (
-                  // Fallback if no images
-                  <div className="absolute inset-0 bg-neutral-800" />
-                )}
-
-                {/* Gradient Overlays — always fully dark on mobile (no hover
-                    there) for text contrast; hover-reactive on sm+ */}
                 <div
-                  className={`absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-500 pointer-events-none opacity-100 ${
-                    activeColorCard === item.id || hoveredItem === item.id
-                      ? "sm:opacity-100"
-                      : "sm:opacity-80"
-                  }`}
-                />
+                  className="relative w-full h-full min-h-[340px] sm:min-h-[300px] rounded-xl sm:rounded-2xl overflow-hidden"
+                  onMouseEnter={() => setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                >
+                  {/* Crossfade — only the active frame + the one it's
+                      transitioning into are mounted, so a card with 5
+                      preview images downloads at most 2 at a time */}
+                  {previewImages.length > 0 ? (
+                    renderIndices.map((imgIndex) => (
+                      <div
+                        key={imgIndex}
+                        className={`absolute inset-0 transition-opacity duration-1000 ${
+                          activeIndex === imgIndex ? "opacity-100" : "opacity-0"
+                        }`}
+                      >
+                        <Image
+                          src={previewImages[imgIndex]}
+                          alt={
+                            imgIndex === 0
+                              ? `${item.title} photography in Sri Lanka by Jagath Kalupahana`
+                              : `${item.title} – Studio Nethma Photography Sri Lanka`
+                          }
+                          fill
+                          className="object-cover transition-all duration-1000"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    // Fallback if no images
+                    <div className="absolute inset-0 bg-neutral-800" />
+                  )}
 
-                {/* Content Overlay — always visible on mobile (there's no
+                  {/* Gradient Overlays — always fully dark on mobile (no hover
+                    there) for text contrast; hover-reactive on sm+ */}
+                  <div
+                    className={`absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-500 pointer-events-none opacity-100 ${
+                      activeColorCard === item.id || hoveredItem === item.id
+                        ? "sm:opacity-100"
+                        : "sm:opacity-80"
+                    }`}
+                  />
+
+                  {/* Content Overlay — always visible on mobile (there's no
                     hover to reveal it there); on sm+ it shows on hover or
                     when the auto-rotate highlight lands on this card */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 pointer-events-none">
-                  <h3
-                    className={`text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 transform transition-all duration-500 opacity-100 translate-y-0 ${
-                      activeColorCard === item.id || hoveredItem === item.id
-                        ? "sm:opacity-100 sm:translate-y-0"
-                        : "sm:opacity-0 sm:translate-y-4"
-                    }`}
-                  >
-                    {item.title}
-                  </h3>
-                  <p
-                    className={`text-sm sm:text-base text-white/70 leading-relaxed transform transition-all duration-500 opacity-100 translate-y-0 ${
-                      activeColorCard === item.id || hoveredItem === item.id
-                        ? "sm:opacity-100 sm:translate-y-0"
-                        : "sm:opacity-0 sm:translate-y-4"
-                    }`}
-                  >
-                    {item.description}
-                  </p>
-
-                  <div
-                    className={`mt-4 inline-flex items-center gap-2 text-purple-400 font-medium transform transition-all duration-500 opacity-100 translate-x-0 ${
-                      activeColorCard === item.id || hoveredItem === item.id
-                        ? "sm:opacity-100 sm:translate-x-0"
-                        : "sm:opacity-0 sm:-translate-x-4"
-                    }`}
-                  >
-                    <span>Explore Collection</span>
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 pointer-events-none">
+                    <h3
+                      className={`text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 transform transition-all duration-500 opacity-100 translate-y-0 ${
+                        activeColorCard === item.id || hoveredItem === item.id
+                          ? "sm:opacity-100 sm:translate-y-0"
+                          : "sm:opacity-0 sm:translate-y-4"
+                      }`}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 8l4 4m0 0l-4 4m4-4H3"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                      {item.title}
+                    </h3>
+                    <p
+                      className={`text-sm sm:text-base text-white/70 leading-relaxed transform transition-all duration-500 opacity-100 translate-y-0 ${
+                        activeColorCard === item.id || hoveredItem === item.id
+                          ? "sm:opacity-100 sm:translate-y-0"
+                          : "sm:opacity-0 sm:translate-y-4"
+                      }`}
+                    >
+                      {item.description}
+                    </p>
 
-                {/* Hover Border Effect */}
-                <div
-                  className={`absolute inset-0 border-2 transition-colors duration-500 rounded-2xl pointer-events-none ${
-                    activeColorCard === item.id || hoveredItem === item.id
-                      ? "border-white/20"
-                      : "border-white/0"
-                  }`}
-                />
-              </div>
-            </TransitionLink>
-          ))}
+                    <div
+                      className={`mt-4 inline-flex items-center gap-2 text-purple-400 font-medium transform transition-all duration-500 opacity-100 translate-x-0 ${
+                        activeColorCard === item.id || hoveredItem === item.id
+                          ? "sm:opacity-100 sm:translate-x-0"
+                          : "sm:opacity-0 sm:-translate-x-4"
+                      }`}
+                    >
+                      <span>Explore Collection</span>
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 8l4 4m0 0l-4 4m4-4H3"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Hover Border Effect */}
+                  <div
+                    className={`absolute inset-0 border-2 transition-colors duration-500 rounded-2xl pointer-events-none ${
+                      activeColorCard === item.id || hoveredItem === item.id
+                        ? "border-white/20"
+                        : "border-white/0"
+                    }`}
+                  />
+                </div>
+              </TransitionLink>
+            );
+          })}
         </div>
       </div>
     </section>
