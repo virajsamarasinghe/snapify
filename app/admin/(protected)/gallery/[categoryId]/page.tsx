@@ -47,12 +47,15 @@ export default async function GalleryCategoryPage({
   }));
 
   // Same photo pool the homepage preview card draws from: cover + product
-  // images + album photos — used here so admins can pick featured images
-  // from the exact same set.
+  // images + album covers + album photos — used here so admins can pick
+  // featured images and the category cover from the exact same set.
   const productImages = (productDocs as any[]).flatMap(
     (p: any) => p.images || [],
   );
-  const albumPhotos = albums.flatMap((a) => a.photos);
+  const albumPhotos = albums.flatMap((a) => [
+    ...(a.coverPhoto ? [a.coverPhoto] : []),
+    ...a.photos,
+  ]);
   const allPhotos = Array.from(
     new Set(
       [category.image, ...productImages, ...albumPhotos].filter(
@@ -68,6 +71,7 @@ export default async function GalleryCategoryPage({
       categoryName={category.name}
       allPhotos={allPhotos}
       initialFeaturedImages={category.featuredImages || []}
+      initialCoverImage={category.image || ""}
     />
   );
 }

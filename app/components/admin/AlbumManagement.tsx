@@ -2,18 +2,18 @@
 
 import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
 import {
-    ArrowLeft,
-    Calendar,
-    Camera,
-    Check,
-    Edit2,
-    Image as ImageIcon,
-    MapPin,
-    Plus,
-    Sparkles,
-    Trash2,
-    Upload,
-    X,
+  ArrowLeft,
+  Calendar,
+  Camera,
+  Check,
+  Edit2,
+  Image as ImageIcon,
+  MapPin,
+  Plus,
+  Sparkles,
+  Trash2,
+  Upload,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -40,12 +40,14 @@ export default function AlbumManagement({
   categoryName,
   allPhotos = [],
   initialFeaturedImages = [],
+  initialCoverImage = "",
 }: {
   initialAlbums: Album[];
   categoryId: string;
   categoryName: string;
   allPhotos?: string[];
   initialFeaturedImages?: string[];
+  initialCoverImage?: string;
 }) {
   const router = useRouter();
   const [albums, setAlbums] = useState<Album[]>(initialAlbums);
@@ -102,6 +104,36 @@ export default function AlbumManagement({
       setFeaturedError("An unexpected error occurred.");
     } finally {
       setSavingFeatured(false);
+    }
+  }
+
+  // Category cover selection — pick the best photo from all category images
+  const [coverImage, setCoverImage] = useState<string>(initialCoverImage);
+  const [pickingCover, setPickingCover] = useState(false);
+  const [savingCover, setSavingCover] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
+
+  async function saveCoverImage(url: string) {
+    setSavingCover(true);
+    setCoverError(null);
+    try {
+      const res = await fetch(`/api/categories/${categoryId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: url }),
+      });
+      if (res.ok) {
+        setCoverImage(url);
+        setPickingCover(false);
+      } else {
+        const d = await res.json().catch(() => ({}));
+        setCoverError(d.error || "Failed to update category cover.");
+      }
+    } catch (err) {
+      console.error(err);
+      setCoverError("An unexpected error occurred.");
+    } finally {
+      setSavingCover(false);
     }
   }
 
@@ -294,6 +326,101 @@ export default function AlbumManagement({
         </button>
       </div>
 
+      {/* Category cover picker */}
+      {allPhotos.length > 0 && (
+        <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 space-y-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-start gap-2.5">
+              <ImageIcon
+                size={18}
+                className="text-purple-400 mt-0.5 shrink-0"
+              />
+              <div>
+                <h2 className="text-white font-semibold">Category Cover</h2>
+                <p className="text-zinc-500 text-sm mt-0.5">
+                  Choose the best photo from all {allPhotos.length} images in
+                  this category as its cover.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setPickingCover((v) => !v);
+                setCoverError(null);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-white/10 text-white hover:bg-white/20 transition-colors shrink-0"
+            >
+              {pickingCover ? <X size={16} /> : <Edit2 size={16} />}
+              {pickingCover ? "Cancel" : "Change Cover"}
+            </button>
+          </div>
+
+          {coverError && (
+            <div className="flex items-center gap-2 text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">
+              <X size={14} />
+              {coverError}
+            </div>
+          )}
+
+          {/* Current cover */}
+          {!pickingCover && (
+            <div className="relative w-40 aspect-video rounded-lg overflow-hidden border border-white/10">
+              {coverImage ? (
+                <Image
+                  src={coverImage}
+                  alt={`${categoryName} cover`}
+                  fill
+                  className="object-cover"
+                  sizes="160px"
+                />
+              ) : (
+                <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                  <Camera size={20} className="text-zinc-600" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Picker grid — every photo in the category */}
+          {pickingCover && (
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-96 overflow-y-auto pr-1">
+              {allPhotos.map((url) => {
+                const isCover = coverImage === url;
+                return (
+                  <button
+                    key={url}
+                    type="button"
+                    disabled={savingCover}
+                    onClick={() => saveCoverImage(url)}
+                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors disabled:opacity-60 ${
+                      isCover
+                        ? "border-purple-500"
+                        : "border-white/10 hover:border-white/30"
+                    }`}
+                    title={isCover ? "Current cover" : "Set as cover"}
+                  >
+                    <Image
+                      src={url}
+                      alt="Category photo"
+                      fill
+                      className="object-cover"
+                      sizes="120px"
+                    />
+                    {isCover && (
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <span className="text-[10px] font-semibold text-white bg-purple-500 rounded-full px-2 py-0.5">
+                          Cover
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Featured homepage images picker */}
       {allPhotos.length > 0 && (
         <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 space-y-4">
@@ -362,7 +489,9 @@ export default function AlbumManagement({
                   />
                   <div
                     className={`absolute inset-0 transition-colors ${
-                      isSelected ? "bg-black/30" : "bg-black/0 hover:bg-black/20"
+                      isSelected
+                        ? "bg-black/30"
+                        : "bg-black/0 hover:bg-black/20"
                     }`}
                   />
                   <div
