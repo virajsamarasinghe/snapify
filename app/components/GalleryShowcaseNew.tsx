@@ -293,7 +293,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
         {/* Categories Bento Grid */}
         <div
           ref={galleryRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20 auto-rows-[250px] sm:auto-rows-[300px] grid-flow-dense"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20 auto-rows-[340px] sm:auto-rows-[300px] grid-flow-dense"
         >
           {categories.map((item, index) => (
             <TransitionLink
@@ -305,7 +305,7 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
               data-speed={0.5 + (index % 3) * 0.3}
             >
               <div
-                className="relative w-full h-full min-h-[250px] sm:min-h-[300px] rounded-xl sm:rounded-2xl overflow-hidden"
+                className="relative w-full h-full min-h-[340px] sm:min-h-[300px] rounded-xl sm:rounded-2xl overflow-hidden"
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
@@ -339,41 +339,44 @@ const GalleryShowcaseNew = ({ categories = [] }: GalleryShowcaseNewProps) => {
                   <div className="absolute inset-0 bg-neutral-800" />
                 )}
 
-                {/* Gradient Overlays */}
+                {/* Gradient Overlays — always fully dark on mobile (no hover
+                    there) for text contrast; hover-reactive on sm+ */}
                 <div
-                  className={`absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-500 pointer-events-none ${
+                  className={`absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-500 pointer-events-none opacity-100 ${
                     activeColorCard === item.id || hoveredItem === item.id
-                      ? "opacity-100"
-                      : "opacity-80"
+                      ? "sm:opacity-100"
+                      : "sm:opacity-80"
                   }`}
                 />
 
-                {/* Content Overlay - shows on hover or when active */}
+                {/* Content Overlay — always visible on mobile (there's no
+                    hover to reveal it there); on sm+ it shows on hover or
+                    when the auto-rotate highlight lands on this card */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 pointer-events-none">
                   <h3
-                    className={`text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 transform transition-all duration-500 ${
+                    className={`text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 transform transition-all duration-500 opacity-100 translate-y-0 ${
                       activeColorCard === item.id || hoveredItem === item.id
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-4"
+                        ? "sm:opacity-100 sm:translate-y-0"
+                        : "sm:opacity-0 sm:translate-y-4"
                     }`}
                   >
                     {item.title}
                   </h3>
                   <p
-                    className={`text-sm sm:text-base text-white/70 leading-relaxed transform transition-all duration-500 ${
+                    className={`text-sm sm:text-base text-white/70 leading-relaxed transform transition-all duration-500 opacity-100 translate-y-0 ${
                       activeColorCard === item.id || hoveredItem === item.id
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-4"
+                        ? "sm:opacity-100 sm:translate-y-0"
+                        : "sm:opacity-0 sm:translate-y-4"
                     }`}
                   >
                     {item.description}
                   </p>
 
                   <div
-                    className={`mt-4 inline-flex items-center gap-2 text-purple-400 font-medium transform transition-all duration-500 ${
+                    className={`mt-4 inline-flex items-center gap-2 text-purple-400 font-medium transform transition-all duration-500 opacity-100 translate-x-0 ${
                       activeColorCard === item.id || hoveredItem === item.id
-                        ? "opacity-100 translate-x-0"
-                        : "opacity-0 -translate-x-4"
+                        ? "sm:opacity-100 sm:translate-x-0"
+                        : "sm:opacity-0 sm:-translate-x-4"
                     }`}
                   >
                     <span>Explore Collection</span>
